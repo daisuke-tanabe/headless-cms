@@ -1,25 +1,33 @@
 {
-  "language": "japanese",
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
-  "teammateMode": "tmux",
   "permissions": {
-    "allow": ["Bash(npm *)", "Bash(pnpm *)", "Bash(yarn *)"],
-    "deny": ["Bash(curl *)", "Bash(wget *)", "Bash(sudo *)"]
-  },
-  "enabledPlugins": {
-    "commit-commands@claude-plugins-official": true,
-    "code-review@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
+    "allow": [
+      "Bash(npm *)",
+      "Bash(pnpm *)",
+      "Bash(yarn *)"
+    ],
+    "deny": [
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(sudo *)"
+    ]
   },
   "enabledMcpjsonServers": [
     "clerk",
     "context7",
     "shadcn",
     "supabase"
-  ]
+  ],
+  "enabledPlugins": {
+    "commit-commands@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
+  },
+  "language": "japanese",
+  "teammateMode": "tmux"
 }
