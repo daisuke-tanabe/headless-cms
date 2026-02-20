@@ -4,14 +4,49 @@
   },
   "permissions": {
     "allow": [
-      "Bash(npm *)",
+      "Read",
+      "Edit",
+      "MultiEdit",
+      "Write",
+      "Glob",
+      "Grep",
+      "LS",
+      "Task",
       "Bash(pnpm *)",
-      "Bash(yarn *)"
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(tsc *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(cat *)",
+      "Bash(echo *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(sort *)",
+      "Bash(touch *)",
+      "Bash(cd *)",
+      "Bash(pwd)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git switch *)",
+      "Bash(git pull *)"
     ],
     "deny": [
+      "Bash(sudo *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "Bash(sudo *)"
+      "Bash(git push *)",
+      "Bash(git remote *)",
+      "Bash(pnpm publish *)",
+      "Bash(npx vercel *)"
     ]
   },
   "enabledMcpjsonServers": [
