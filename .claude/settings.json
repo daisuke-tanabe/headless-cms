@@ -12,6 +12,8 @@
       "Grep",
       "LS",
       "Task",
+      "WebFetch",
+      "WebSearch",
       "Bash(pnpm *)",
       "Bash(npx *)",
       "Bash(node *)",
@@ -27,6 +29,7 @@
       "Bash(find *)",
       "Bash(sort *)",
       "Bash(touch *)",
+      "Bash(rm *)",
       "Bash(cd *)",
       "Bash(pwd)",
       "Bash(git add *)",
@@ -37,7 +40,11 @@
       "Bash(git branch *)",
       "Bash(git checkout *)",
       "Bash(git switch *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "mcp__clerk__*",
+      "mcp__context7__*",
+      "mcp__shadcn__*",
+      "mcp__supabase__*"
     ],
     "deny": [
       "Bash(sudo *)",
