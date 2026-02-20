@@ -1,8 +1,10 @@
 import { useUser } from "@clerk/clerk-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useArticleCount } from "@/hooks/use-articles"
 
 export function DashboardPage() {
 	const { user } = useUser()
+	const { data, isLoading } = useArticleCount()
 
 	return (
 		<div className="container mx-auto px-4 py-8">
@@ -15,8 +17,9 @@ export function DashboardPage() {
 						<CardTitle>記事数</CardTitle>
 					</CardHeader>
 					<CardContent>
-						{/* TODO: Phase 3 で useArticleCount() に接続 */}
-						<p className="text-3xl font-bold">-</p>
+						<p className="text-3xl font-bold">
+							{isLoading ? "-" : (data?.data.count ?? 0)}
+						</p>
 					</CardContent>
 				</Card>
 			</div>
