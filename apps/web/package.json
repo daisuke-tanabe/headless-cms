@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ai-cms/api": "workspace:*",
     "@ai-cms/shared": "workspace:*",
     "@clerk/clerk-react": "^5.20.4",
     "@hookform/resolvers": "^3.9.1",
