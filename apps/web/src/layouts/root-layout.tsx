@@ -1,9 +1,12 @@
 import { SignOutButton, useAuth } from "@clerk/clerk-react"
 import { Link, Outlet } from "react-router"
+import { ChatSidebar } from "@/components/chat/chat-sidebar"
 import { Button } from "@/components/ui/button"
+import { useChatStore } from "@/stores/chat-store"
 
 export function RootLayout() {
 	const { isSignedIn } = useAuth()
+	const toggleSidebar = useChatStore((s) => s.toggleSidebar)
 
 	return (
 		<div className="min-h-screen flex flex-col">
@@ -25,7 +28,9 @@ export function RootLayout() {
 										記事一覧
 									</Button>
 								</Link>
-								{/* TODO: Phase 4 でチャットサイドバーのトグルボタンを追加 */}
+								<Button variant="outline" size="sm" onClick={toggleSidebar}>
+									AI
+								</Button>
 								<SignOutButton>
 									<Button variant="ghost" size="sm">
 										ログアウト
@@ -39,6 +44,7 @@ export function RootLayout() {
 			<main className="flex-1">
 				<Outlet />
 			</main>
+			{isSignedIn ? <ChatSidebar /> : null}
 		</div>
 	)
 }
