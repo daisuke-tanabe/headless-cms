@@ -1,0 +1,36 @@
+{
+  "name": "@ai-cms/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy"
+  },
+  "dependencies": {
+    "@ai-cms/shared": "workspace:*",
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@clerk/backend": "^1.21.4",
+    "@hono/clerk-auth": "^2.0.0",
+    "@hono/node-server": "^1.13.8",
+    "@hono/zod-validator": "^0.4.2",
+    "@prisma/client": "^6.3.1",
+    "hono": "^4.7.2",
+    "nanoid": "^5.0.9",
+    "remeda": "^2.19.0",
+    "ts-pattern": "^5.6.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.4",
+    "prisma": "^6.3.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
