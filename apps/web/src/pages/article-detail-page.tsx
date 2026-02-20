@@ -4,6 +4,7 @@ import { ArticleEditor } from "@/components/article-editor"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticle, useDeleteArticle, useUpdateArticle } from "@/hooks/use-articles"
+import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
 
 export function ArticleDetailPage() {
@@ -13,6 +14,7 @@ export function ArticleDetailPage() {
 	const updateArticle = useUpdateArticle()
 	const deleteArticle = useDeleteArticle()
 	const { pendingContent, clearPendingContent } = useEditorStore()
+	const addMessage = useChatStore((s) => s.addMessage)
 
 	const [isEditing, setIsEditing] = useState(false)
 	const [editDefaults, setEditDefaults] = useState<{ title?: string; body?: string }>()
@@ -58,7 +60,12 @@ export function ArticleDetailPage() {
 					isSubmitting={updateArticle.isPending}
 					submitLabel="更新"
 					onSubmit={async (formData) => {
-						await updateArticle.mutateAsync({ id, data: formData })
+						const result = await updateArticle.mutateAsync({ id, data: formData })
+						addMessage({
+							type: "text",
+							role: "assistant",
+							content: `[システム] 記事を更新しました（ID: ${id}、タイトル: ${result.data.title}）`,
+						})
 						setIsEditing(false)
 					}}
 				/>
@@ -86,6 +93,11 @@ export function ArticleDetailPage() {
 					onClick={async () => {
 						if (window.confirm(`「${article.title}」を削除しますか？`)) {
 							await deleteArticle.mutateAsync(id)
+							addMessage({
+								type: "text",
+								role: "assistant",
+								content: `[システム] 記事を削除しました（ID: ${id}、タイトル: ${article.title}）`,
+							})
 							navigate("/articles")
 						}
 					}}

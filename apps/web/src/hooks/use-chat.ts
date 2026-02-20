@@ -2,6 +2,7 @@ import type { PageContext } from "@ai-cms/shared"
 import { useCallback } from "react"
 import { useLocation } from "react-router"
 import { apiClient } from "@/lib/api-client"
+import { useActionExecutor } from "./use-action-executor"
 import { useChatStore } from "@/stores/chat-store"
 
 const usePageContext = (): PageContext => {
@@ -13,12 +14,10 @@ const usePageContext = (): PageContext => {
 	}
 
 	if (path === "/articles/new") {
-		// TODO: Phase 5 でエディタの現在値を取得
 		return { page: "article_new", editor: { title: "", body: "" } }
 	}
 
 	if (path.startsWith("/articles/") && path !== "/articles") {
-		// TODO: Phase 5 で記事の現在値を取得
 		const id = path.split("/").pop() ?? ""
 		return { page: "article_edit", article: { id, title: "", body: "" } }
 	}
@@ -33,6 +32,7 @@ const usePageContext = (): PageContext => {
 export function useSendMessage() {
 	const { messages, addMessage, setLoading } = useChatStore()
 	const context = usePageContext()
+	const executeAction = useActionExecutor()
 
 	return useCallback(
 		async (message: string) => {
@@ -58,7 +58,10 @@ export function useSendMessage() {
 
 				addMessage({ type: "text", role: "assistant", content: data.message })
 
-				// TODO: Phase 5 で action を use-action-executor に渡す
+				if ("action" in data && data.action) {
+					executeAction(data.action)
+				}
+
 				return data
 			} catch {
 				addMessage({
@@ -71,6 +74,6 @@ export function useSendMessage() {
 				setLoading(false)
 			}
 		},
-		[messages, context, addMessage, setLoading],
+		[messages, context, addMessage, setLoading, executeAction],
 	)
 }

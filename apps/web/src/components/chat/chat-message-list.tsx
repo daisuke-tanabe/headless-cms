@@ -1,5 +1,6 @@
 import type { ChatMessage } from "@ai-cms/shared"
 import { useEffect, useRef } from "react"
+import { ApprovalMessage } from "./approval-message"
 
 type ChatMessageListProps = {
 	readonly messages: readonly ChatMessage[]
@@ -45,6 +46,15 @@ function ChatMessageItem({ message }: { readonly message: ChatMessage }) {
 		)
 	}
 
-	// approval messages は Phase 5 で ApprovalMessage コンポーネントに置換
+	if (message.type === "approval") {
+		return (
+			<ApprovalMessage
+				articleId={message.articleId}
+				articleTitle={message.articleTitle}
+				status={message.status}
+			/>
+		)
+	}
+
 	return null
 }
