@@ -1,9 +1,9 @@
-import { Toaster } from "@/components/ui/sonner"
-import { TooltipProvider } from "@/components/ui/tooltip"
 import { ClerkProvider } from "@clerk/clerk-react"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { NuqsAdapter } from "nuqs/adapters/react-router/v7"
 import { RouterProvider } from "react-router"
+import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { queryClient } from "./lib/query-client"
 import { router } from "./router"
 

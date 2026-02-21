@@ -48,7 +48,12 @@
     "zustand": "5.0.11"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["@biomejs/biome", "@prisma/client", "esbuild", "prisma"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "@prisma/client",
+      "esbuild",
+      "prisma"
+    ]
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.4",

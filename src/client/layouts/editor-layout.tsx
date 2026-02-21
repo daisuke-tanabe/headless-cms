@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@clerk/clerk-react"
 import { Navigate, Outlet } from "react-router"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function EditorLayout() {
   const { isSignedIn, isLoaded } = useAuth()

@@ -1,7 +1,7 @@
-import { PageContainer } from "@/components/page-container"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@clerk/clerk-react"
 import { Navigate, Outlet } from "react-router"
+import { PageContainer } from "@/components/page-container"
+import { Skeleton } from "@/components/ui/skeleton"
 
 function AuthLoadingSkeleton() {
   return (

@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button"
 import { SignInButton, useAuth } from "@clerk/clerk-react"
 import { ArrowRight, MessageSquare, Pencil, Zap } from "lucide-react"
 import { Navigate } from "react-router"
+import { Button } from "@/components/ui/button"
 
 const features = [
   {

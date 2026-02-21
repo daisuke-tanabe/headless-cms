@@ -1,6 +1,6 @@
+import { X } from "lucide-react"
 import { useSendMessage } from "@/hooks/use-chat"
 import { useChatStore } from "@/stores/chat-store"
-import { X } from "lucide-react"
 import { ChatInput } from "./chat-input"
 import { ChatMessageList } from "./chat-message-list"
 

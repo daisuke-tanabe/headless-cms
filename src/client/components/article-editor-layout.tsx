@@ -1,10 +1,10 @@
+import { MessageSquare, X } from "lucide-react"
+import { type ReactNode, useState } from "react"
+import { Link } from "react-router"
 import { ChatPanel } from "@/components/chat/chat-sidebar"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useIsMobile } from "@/hooks/use-mobile"
-import { MessageSquare, X } from "lucide-react"
-import { type ReactNode, useState } from "react"
-import { Link } from "react-router"
 
 type BreadcrumbSegment = {
   readonly label: string

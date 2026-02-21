@@ -1,6 +1,6 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { MessageSquare } from "lucide-react"
 import { useEffect, useRef } from "react"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import type { ChatMessage } from "~/shared"
 import { ApprovalMessage } from "./approval-message"
 import { TypingIndicator } from "./typing-indicator"

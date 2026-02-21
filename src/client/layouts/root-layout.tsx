@@ -1,3 +1,6 @@
+import { SignOutButton, useAuth } from "@clerk/clerk-react"
+import { Menu } from "lucide-react"
+import { Link, Outlet, useLocation } from "react-router"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -6,9 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { SignOutButton, useAuth } from "@clerk/clerk-react"
-import { Menu } from "lucide-react"
-import { Link, Outlet, useLocation } from "react-router"
 
 const navItems = [
   { to: "/dashboard", label: "ダッシュボード", match: "/dashboard" },

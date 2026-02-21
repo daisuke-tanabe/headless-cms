@@ -1,12 +1,12 @@
+import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
 import { EditorShell } from "@/components/article-editor-layout"
 import { Button } from "@/components/ui/button"
 import { useCreateArticle } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
-import { Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router"
 
 const FORM_ID = "article-new-form"
 

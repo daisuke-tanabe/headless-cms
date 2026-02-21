@@ -1,3 +1,5 @@
+import { AlertCircle, Check, Copy, Key, Plus, Trash2 } from "lucide-react"
+import { useState } from "react"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageContainer } from "@/components/page-container"
 import {
@@ -23,8 +25,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { useApiKeys, useCreateApiKey, useDeleteApiKey } from "@/hooks/use-api-keys"
 import { formatDate } from "@/lib/format"
-import { AlertCircle, Check, Copy, Key, Plus, Trash2 } from "lucide-react"
-import { useState } from "react"
 
 export function SettingsPage() {
   const { data, isLoading, isError, refetch } = useApiKeys()

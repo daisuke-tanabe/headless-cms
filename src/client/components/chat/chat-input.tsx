@@ -1,6 +1,6 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { ArrowUp, Loader2 } from "lucide-react"
 import { type FormEvent, useState } from "react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { MAX_CHAT_INPUT_LENGTH } from "~/shared"
 
 type ChatInputProps = {

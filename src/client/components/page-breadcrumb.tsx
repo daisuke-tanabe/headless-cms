@@ -1,3 +1,4 @@
+import { Link } from "react-router"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,7 +7,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
-import { Link } from "react-router"
 
 type BreadcrumbSegment = {
   readonly label: string

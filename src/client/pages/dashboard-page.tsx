@@ -1,11 +1,11 @@
+import { useUser } from "@clerk/clerk-react"
+import { FileText, Plus } from "lucide-react"
+import { Link } from "react-router"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageContainer } from "@/components/page-container"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticleCount } from "@/hooks/use-articles"
-import { useUser } from "@clerk/clerk-react"
-import { FileText, Plus } from "lucide-react"
-import { Link } from "react-router"
 
 export function DashboardPage() {
   const { user } = useUser()
