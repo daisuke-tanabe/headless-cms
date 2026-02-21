@@ -22,3 +22,15 @@ model Article {
   @@index([authorId])
   @@index([deletedAt])
 }
+
+model ApiKey {
+  id         String    @id @default(uuid())
+  prefix     String
+  hashedKey  String    @unique
+  userId     String
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([hashedKey])
+}

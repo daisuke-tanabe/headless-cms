@@ -78,6 +78,12 @@ export const articleRepository = {
     return prisma.article.findFirst({ where: { id, authorId } })
   },
 
+  findBySlug: async (slug: string, authorId: string) => {
+    return prisma.article.findFirst({
+      where: { slug, authorId, deletedAt: null },
+    })
+  },
+
   softDelete: async (id: string, authorId: string) => {
     const deleted = await prisma.article.updateMany({
       where: { id, authorId, deletedAt: null },

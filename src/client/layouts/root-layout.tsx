@@ -15,6 +15,7 @@ import { Link, Outlet, useLocation } from "react-router"
 const navItems = [
   { to: "/dashboard", label: "ダッシュボード", match: "/dashboard" },
   { to: "/articles", label: "記事", match: "/articles" },
+  { to: "/settings", label: "設定", match: "/settings" },
 ] as const
 
 export function RootLayout() {

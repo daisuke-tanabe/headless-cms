@@ -6,6 +6,7 @@ import { ArticleListPage } from "./pages/article-list-page"
 import { ArticleNewPage } from "./pages/article-new-page"
 import { DashboardPage } from "./pages/dashboard-page"
 import { LandingPage } from "./pages/landing-page"
+import { SettingsPage } from "./pages/settings-page"
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
           {
             path: "/articles/:id",
             element: <ArticleDetailPage />,
+          },
+          {
+            path: "/settings",
+            element: <SettingsPage />,
           },
         ],
       },
