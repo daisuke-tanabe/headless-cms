@@ -18,7 +18,7 @@ ${contextDescription}
 ## ルール
 - 日本語で応答し、100文字以内で簡潔に
 - 記事を操作する際はIDを正確に追跡してください
-- ユーザーの会話履歴にある[システム]メッセージから記事IDを参照できます
+- 操作結果の記事IDはツール実行結果から把握してください
 - 記事の削除は必ず delete_article ツールを使用してください（ユーザーの承認が必要です）
 - 記事の作成は create_article ツールを使用してエディタに反映してください
 - 記事の編集は update_article ツールを使用してエディタに反映してください
@@ -35,7 +35,11 @@ const truncate = (value: string, max: number): string =>
   value.length <= max ? value : `${value.slice(0, max)}...`
 
 const sanitizeForPrompt = (value: string): string =>
-  value.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "").trim()
+  value
+    .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "")
+    .replace(/</g, "\uff1c")
+    .replace(/>/g, "\uff1e")
+    .trim()
 
 const buildContextDescription = (context: PageContext): string => {
   switch (context.page) {
@@ -67,16 +71,19 @@ const buildContextDescription = (context: PageContext): string => {
 export const processChat = async (request: ChatRequest, userId: string): Promise<ChatResponse> => {
   const systemPrompt = buildSystemPrompt(request.context)
 
-  const trimmedHistory = request.history.slice(-MAX_HISTORY_LENGTH)
+  const trimmedHistory = request.history
+    .filter((h) => !h.content.trimStart().startsWith("[システム]"))
+    .filter((h) => h.role === "user")
+    .slice(-MAX_HISTORY_LENGTH)
   const messages: Anthropic.MessageParam[] = [
     ...trimmedHistory.map(
       (h) =>
         ({
           role: h.role,
-          content: h.content,
+          content: sanitizeForPrompt(h.content),
         }) satisfies Anthropic.MessageParam,
     ),
-    { role: "user", content: request.message },
+    { role: "user", content: sanitizeForPrompt(request.message) },
   ]
 
   const response = await anthropic.messages.create({

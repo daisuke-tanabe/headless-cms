@@ -14,7 +14,7 @@ const pageContextSchema = z.discriminatedUnion("page", [
   }),
   z.object({
     page: z.literal("article_edit"),
-    article: z.object({ id: z.string(), title: z.string(), body: z.string() }),
+    article: z.object({ id: z.string().uuid(), title: z.string(), body: z.string() }),
   }),
 ])
 
