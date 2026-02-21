@@ -8,18 +8,18 @@ import { router } from "./router"
 
 const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 if (!CLERK_PUBLISHABLE_KEY) {
-	throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable.")
+  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable.")
 }
 
 export function App() {
-	return (
-		<ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
-			<QueryClientProvider client={queryClient}>
-				<NuqsAdapter>
-					<RouterProvider router={router} />
-					<Toaster richColors position="top-right" />
-				</NuqsAdapter>
-			</QueryClientProvider>
-		</ClerkProvider>
-	)
+  return (
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <QueryClientProvider client={queryClient}>
+        <NuqsAdapter>
+          <RouterProvider router={router} />
+          <Toaster richColors position="top-right" />
+        </NuqsAdapter>
+      </QueryClientProvider>
+    </ClerkProvider>
+  )
 }

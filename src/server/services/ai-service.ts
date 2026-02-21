@@ -8,9 +8,9 @@ import { executeToolUse } from "../tools/executor.js"
 const anthropic = new Anthropic()
 
 const buildSystemPrompt = (context: PageContext): string => {
-	const contextDescription = buildContextDescription(context)
+  const contextDescription = buildContextDescription(context)
 
-	return `あなたはCMS操作アシスタントです。ユーザーの指示に基づいて、記事の作成・編集・削除・ページ遷移を代行します。
+  return `あなたはCMS操作アシスタントです。ユーザーの指示に基づいて、記事の作成・編集・削除・ページ遷移を代行します。
 
 ## 現在のページ
 ${contextDescription}
@@ -29,78 +29,78 @@ const CONTEXT_TITLE_MAX = MAX_TITLE_LENGTH
 const CONTEXT_BODY_MAX = MAX_BODY_LENGTH
 
 const truncate = (value: string, max: number): string =>
-	value.length <= max ? value : `${value.slice(0, max)}...`
+  value.length <= max ? value : `${value.slice(0, max)}...`
 
 const sanitizeForPrompt = (value: string): string =>
-	value.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "").trim()
+  value.replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "").trim()
 
 const buildContextDescription = (context: PageContext): string => {
-	switch (context.page) {
-		case "dashboard":
-			return "ダッシュボード"
-		case "articles":
-			return `記事一覧（ページ ${context.pageNum}）`
-		case "article_new": {
-			const title = sanitizeForPrompt(truncate(context.editor.title, CONTEXT_TITLE_MAX))
-			const body = sanitizeForPrompt(truncate(context.editor.body, CONTEXT_BODY_MAX))
-			return `記事作成エディタ
+  switch (context.page) {
+    case "dashboard":
+      return "ダッシュボード"
+    case "articles":
+      return `記事一覧（ページ ${context.pageNum}）`
+    case "article_new": {
+      const title = sanitizeForPrompt(truncate(context.editor.title, CONTEXT_TITLE_MAX))
+      const body = sanitizeForPrompt(truncate(context.editor.body, CONTEXT_BODY_MAX))
+      return `記事作成エディタ
 <editor_context>
 タイトル: ${title}
 本文: ${body}
 </editor_context>`
-		}
-		case "article_edit": {
-			const title = sanitizeForPrompt(truncate(context.article.title, CONTEXT_TITLE_MAX))
-			const body = sanitizeForPrompt(truncate(context.article.body, CONTEXT_BODY_MAX))
-			return `記事編集エディタ（ID: ${context.article.id}）
+    }
+    case "article_edit": {
+      const title = sanitizeForPrompt(truncate(context.article.title, CONTEXT_TITLE_MAX))
+      const body = sanitizeForPrompt(truncate(context.article.body, CONTEXT_BODY_MAX))
+      return `記事編集エディタ（ID: ${context.article.id}）
 <editor_context>
 タイトル: ${title}
 本文: ${body}
 </editor_context>`
-		}
-	}
+    }
+  }
 }
 
 export const processChat = async (request: ChatRequest, userId: string): Promise<ChatResponse> => {
-	const systemPrompt = buildSystemPrompt(request.context)
+  const systemPrompt = buildSystemPrompt(request.context)
 
-	const trimmedHistory = request.history.slice(-MAX_HISTORY_LENGTH)
-	const messages: Anthropic.MessageParam[] = [
-		...trimmedHistory.map(
-			(h) =>
-				({
-					role: h.role,
-					content: h.content,
-				}) satisfies Anthropic.MessageParam,
-		),
-		{ role: "user", content: request.message },
-	]
+  const trimmedHistory = request.history.slice(-MAX_HISTORY_LENGTH)
+  const messages: Anthropic.MessageParam[] = [
+    ...trimmedHistory.map(
+      (h) =>
+        ({
+          role: h.role,
+          content: h.content,
+        }) satisfies Anthropic.MessageParam,
+    ),
+    { role: "user", content: request.message },
+  ]
 
-	const response = await anthropic.messages.create({
-		model: "claude-sonnet-4-20250514",
-		max_tokens: 1024,
-		system: systemPrompt,
-		tools: toolDefinitions,
-		messages,
-	})
+  const response = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1024,
+    system: systemPrompt,
+    tools: toolDefinitions,
+    messages,
+  })
 
-	// テキスト応答を抽出
-	const textBlock = response.content.find((block) => block.type === "text")
-	const messageText = textBlock?.type === "text" ? textBlock.text : ""
+  // テキスト応答を抽出
+  const textBlock = response.content.find((block) => block.type === "text")
+  const messageText = textBlock?.type === "text" ? textBlock.text : ""
 
-	// tool_use ブロックを抽出（single-turn: 最初の1つのみ処理）
-	const toolUseBlock = response.content.find((block) => block.type === "tool_use")
+  // tool_use ブロックを抽出（single-turn: 最初の1つのみ処理）
+  const toolUseBlock = response.content.find((block) => block.type === "tool_use")
 
-	let action: ChatAction | null = null
-	if (toolUseBlock?.type === "tool_use") {
-		action = await executeToolUse(
-			toolUseBlock as Anthropic.ContentBlockParam & { type: "tool_use" },
-			userId,
-		)
-	}
+  let action: ChatAction | null = null
+  if (toolUseBlock?.type === "tool_use") {
+    action = await executeToolUse(
+      toolUseBlock as Anthropic.ContentBlockParam & { type: "tool_use" },
+      userId,
+    )
+  }
 
-	return {
-		message: messageText || "承知しました。",
-		action,
-	}
+  return {
+    message: messageText || "承知しました。",
+    action,
+  }
 }

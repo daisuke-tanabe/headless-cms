@@ -8,34 +8,34 @@ import { DashboardPage } from "./pages/dashboard-page"
 import { LandingPage } from "./pages/landing-page"
 
 export const router = createBrowserRouter([
-	{
-		element: <RootLayout />,
-		children: [
-			{
-				path: "/",
-				element: <LandingPage />,
-			},
-			{
-				element: <AuthenticatedLayout />,
-				children: [
-					{
-						path: "/dashboard",
-						element: <DashboardPage />,
-					},
-					{
-						path: "/articles",
-						element: <ArticleListPage />,
-					},
-					{
-						path: "/articles/new",
-						element: <ArticleNewPage />,
-					},
-					{
-						path: "/articles/:id",
-						element: <ArticleDetailPage />,
-					},
-				],
-			},
-		],
-	},
+  {
+    element: <RootLayout />,
+    children: [
+      {
+        path: "/",
+        element: <LandingPage />,
+      },
+      {
+        element: <AuthenticatedLayout />,
+        children: [
+          {
+            path: "/dashboard",
+            element: <DashboardPage />,
+          },
+          {
+            path: "/articles",
+            element: <ArticleListPage />,
+          },
+          {
+            path: "/articles/new",
+            element: <ArticleNewPage />,
+          },
+          {
+            path: "/articles/:id",
+            element: <ArticleDetailPage />,
+          },
+        ],
+      },
+    ],
+  },
 ])

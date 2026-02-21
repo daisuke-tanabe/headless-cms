@@ -3,115 +3,115 @@ import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 
 const articleKeys = {
-	all: ["articles"] as const,
-	lists: () => [...articleKeys.all, "list"] as const,
-	list: (page: number) => [...articleKeys.lists(), page] as const,
-	details: () => [...articleKeys.all, "detail"] as const,
-	detail: (id: string) => [...articleKeys.details(), id] as const,
-	count: () => [...articleKeys.all, "count"] as const,
+  all: ["articles"] as const,
+  lists: () => [...articleKeys.all, "list"] as const,
+  list: (page: number) => [...articleKeys.lists(), page] as const,
+  details: () => [...articleKeys.all, "detail"] as const,
+  detail: (id: string) => [...articleKeys.details(), id] as const,
+  count: () => [...articleKeys.all, "count"] as const,
 }
 
 export function useArticles(page: number) {
-	return useQuery({
-		queryKey: articleKeys.list(page),
-		queryFn: async () => {
-			const res = await apiClient.api.articles.$get({
-				query: { page: String(page), limit: "20" },
-			})
-			if (!res.ok) throw res
-			return res.json()
-		},
-	})
+  return useQuery({
+    queryKey: articleKeys.list(page),
+    queryFn: async () => {
+      const res = await apiClient.api.articles.$get({
+        query: { page: String(page), limit: "20" },
+      })
+      if (!res.ok) throw res
+      return res.json()
+    },
+  })
 }
 
 export function useArticle(id: string) {
-	return useQuery({
-		queryKey: articleKeys.detail(id),
-		queryFn: async () => {
-			const res = await apiClient.api.articles[":id"].$get({
-				param: { id },
-			})
-			if (!res.ok) throw res
-			return res.json()
-		},
-		enabled: !!id,
-	})
+  return useQuery({
+    queryKey: articleKeys.detail(id),
+    queryFn: async () => {
+      const res = await apiClient.api.articles[":id"].$get({
+        param: { id },
+      })
+      if (!res.ok) throw res
+      return res.json()
+    },
+    enabled: !!id,
+  })
 }
 
 export function useArticleCount() {
-	return useQuery({
-		queryKey: articleKeys.count(),
-		queryFn: async () => {
-			const res = await apiClient.api.articles.count.$get()
-			if (!res.ok) throw res
-			return res.json()
-		},
-	})
+  return useQuery({
+    queryKey: articleKeys.count(),
+    queryFn: async () => {
+      const res = await apiClient.api.articles.count.$get()
+      if (!res.ok) throw res
+      return res.json()
+    },
+  })
 }
 
 export function useCreateArticle() {
-	const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
-	return useMutation({
-		mutationFn: async (data: { title: string; body: string }) => {
-			const res = await apiClient.api.articles.$post({
-				json: data,
-			})
-			if (!res.ok) throw res
-			return res.json()
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
-			queryClient.invalidateQueries({ queryKey: articleKeys.count() })
-			toast.success("記事を作成しました")
-		},
-		onError: () => {
-			toast.error("記事の作成に失敗しました")
-		},
-	})
+  return useMutation({
+    mutationFn: async (data: { title: string; body: string }) => {
+      const res = await apiClient.api.articles.$post({
+        json: data,
+      })
+      if (!res.ok) throw res
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: articleKeys.count() })
+      toast.success("記事を作成しました")
+    },
+    onError: () => {
+      toast.error("記事の作成に失敗しました")
+    },
+  })
 }
 
 export function useUpdateArticle() {
-	const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
-	return useMutation({
-		mutationFn: async ({ id, data }: { id: string; data: { title?: string; body?: string } }) => {
-			const res = await apiClient.api.articles[":id"].$patch({
-				param: { id },
-				json: data,
-			})
-			if (!res.ok) throw res
-			return res.json()
-		},
-		onSuccess: (_data, variables) => {
-			queryClient.invalidateQueries({ queryKey: articleKeys.detail(variables.id) })
-			queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
-			toast.success("記事を更新しました")
-		},
-		onError: () => {
-			toast.error("記事の更新に失敗しました")
-		},
-	})
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: { title?: string; body?: string } }) => {
+      const res = await apiClient.api.articles[":id"].$patch({
+        param: { id },
+        json: data,
+      })
+      if (!res.ok) throw res
+      return res.json()
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: articleKeys.detail(variables.id) })
+      queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+      toast.success("記事を更新しました")
+    },
+    onError: () => {
+      toast.error("記事の更新に失敗しました")
+    },
+  })
 }
 
 export function useDeleteArticle() {
-	const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
-	return useMutation({
-		mutationFn: async (id: string) => {
-			const res = await apiClient.api.articles[":id"].$delete({
-				param: { id },
-			})
-			if (!res.ok) throw res
-			return res.json()
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
-			queryClient.invalidateQueries({ queryKey: articleKeys.count() })
-			toast.success("記事を削除しました")
-		},
-		onError: () => {
-			toast.error("記事の削除に失敗しました")
-		},
-	})
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiClient.api.articles[":id"].$delete({
+        param: { id },
+      })
+      if (!res.ok) throw res
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: articleKeys.count() })
+      toast.success("記事を削除しました")
+    },
+    onError: () => {
+      toast.error("記事の削除に失敗しました")
+    },
+  })
 }
