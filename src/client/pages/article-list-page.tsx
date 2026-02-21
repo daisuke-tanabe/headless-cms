@@ -1,6 +1,4 @@
-import { FileText, Plus } from "lucide-react"
-import { parseAsInteger, useQueryState } from "nuqs"
-import { Link } from "react-router"
+import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -13,6 +11,9 @@ import {
 } from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticles } from "@/hooks/use-articles"
+import { AlertCircle, FileText, Plus } from "lucide-react"
+import { parseAsInteger, useQueryState } from "nuqs"
+import { Link } from "react-router"
 
 function formatDate(dateStr: string) {
   const date = new Date(dateStr)
@@ -25,12 +26,14 @@ function formatDate(dateStr: string) {
 
 export function ArticleListPage() {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1))
-  const { data, isLoading } = useArticles(page)
+  const { data, isLoading, isError, refetch } = useArticles(page)
 
   const totalPages = data?.meta?.totalPages ?? 1
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <PageBreadcrumb items={[{ label: "トップ", to: "/dashboard" }, { label: "記事一覧" }]} />
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">記事一覧</h1>
         <Link to="/articles/new">
@@ -42,7 +45,18 @@ export function ArticleListPage() {
         </Link>
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <div className="text-center py-16">
+          <AlertCircle className="h-12 w-12 mx-auto text-destructive/60 mb-4" />
+          <h2 className="text-lg font-semibold mb-2">記事の読み込みに失敗しました</h2>
+          <p className="text-muted-foreground mb-6">
+            ネットワーク接続を確認して、もう一度お試しください。
+          </p>
+          <Button variant="outline" onClick={() => refetch()}>
+            再試行
+          </Button>
+        </div>
+      ) : isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Card key={`skeleton-${i}`}>

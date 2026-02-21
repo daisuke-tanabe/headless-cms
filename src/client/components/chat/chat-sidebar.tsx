@@ -1,11 +1,12 @@
-import { X } from "lucide-react"
-import { ChatInput } from "./chat-input"
-import { ChatMessageList } from "./chat-message-list"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useSendMessage } from "@/hooks/use-chat"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { useChatStore } from "@/stores/chat-store"
+import { X } from "lucide-react"
+import { ChatInput } from "./chat-input"
+import { ChatMessageList } from "./chat-message-list"
 
 function ChatContent() {
   const { messages, isLoading, toggleSidebar } = useChatStore()
@@ -15,12 +16,17 @@ function ChatContent() {
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between p-4 border-b">
         <h2 className="font-semibold text-sm">AI アシスタント</h2>
-        <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-          <X className="h-4 w-4" />
-          <span className="sr-only">閉じる</span>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={toggleSidebar}>
+              <X className="h-4 w-4" />
+              <span className="sr-only">閉じる</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>閉じる</TooltipContent>
+        </Tooltip>
       </div>
-      <ChatMessageList messages={messages} />
+      <ChatMessageList messages={messages} isLoading={isLoading} />
       <ChatInput onSend={sendMessage} disabled={isLoading} />
     </div>
   )

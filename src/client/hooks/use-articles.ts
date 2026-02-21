@@ -1,6 +1,6 @@
+import { apiClient } from "@/lib/api-client"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { apiClient } from "@/lib/api-client"
 
 const articleKeys = {
   all: ["articles"] as const,
@@ -60,13 +60,17 @@ export function useCreateArticle() {
       if (!res.ok) throw res
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
       queryClient.invalidateQueries({ queryKey: articleKeys.count() })
-      toast.success("記事を作成しました")
+      toast.success("記事を作成しました", {
+        description: `「${variables.title}」を作成しました。`,
+      })
     },
     onError: () => {
-      toast.error("記事の作成に失敗しました")
+      toast.error("記事の作成に失敗しました", {
+        description: "ネットワーク接続を確認して、もう一度お試しください。",
+      })
     },
   })
 }
@@ -83,13 +87,17 @@ export function useUpdateArticle() {
       if (!res.ok) throw res
       return res.json()
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: articleKeys.detail(variables.id) })
       queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
-      toast.success("記事を更新しました")
+      toast.success("記事を更新しました", {
+        description: `「${result.data.title}」を更新しました。`,
+      })
     },
     onError: () => {
-      toast.error("記事の更新に失敗しました")
+      toast.error("記事の更新に失敗しました", {
+        description: "ネットワーク接続を確認して、もう一度お試しください。",
+      })
     },
   })
 }
@@ -108,10 +116,14 @@ export function useDeleteArticle() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
       queryClient.invalidateQueries({ queryKey: articleKeys.count() })
-      toast.success("記事を削除しました")
+      toast.success("記事を削除しました", {
+        description: "記事を完全に削除しました。",
+      })
     },
     onError: () => {
-      toast.error("記事の削除に失敗しました")
+      toast.error("記事の削除に失敗しました", {
+        description: "ネットワーク接続を確認して、もう一度お試しください。",
+      })
     },
   })
 }

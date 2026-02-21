@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
+import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +16,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useArticle, useDeleteArticle, useUpdateArticle } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
+import { FileX } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Link, useNavigate, useParams } from "react-router"
 
 export function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -46,6 +48,7 @@ export function ArticleDetailPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl space-y-4">
+        <Skeleton className="h-5 w-48" />
         <Skeleton className="h-10 w-3/4" />
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-64 w-full" />
@@ -59,8 +62,24 @@ export function ArticleDetailPage() {
 
   if (!data?.data) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <p className="text-muted-foreground">記事が見つかりません。</p>
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <PageBreadcrumb
+          items={[
+            { label: "トップ", to: "/dashboard" },
+            { label: "記事一覧", to: "/articles" },
+            { label: "記事が見つかりません" },
+          ]}
+        />
+        <div className="text-center py-16">
+          <FileX className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <h2 className="text-lg font-semibold mb-2">記事が見つかりません</h2>
+          <p className="text-muted-foreground mb-6">
+            この記事は削除されたか、存在しない可能性があります。
+          </p>
+          <Link to="/articles">
+            <Button variant="outline">記事一覧に戻る</Button>
+          </Link>
+        </div>
       </div>
     )
   }
@@ -80,6 +99,15 @@ export function ArticleDetailPage() {
   if (isEditing) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <PageBreadcrumb
+          items={[
+            { label: "トップ", to: "/dashboard" },
+            { label: "記事一覧", to: "/articles" },
+            { label: article.title, to: `/articles/${id}` },
+            { label: "編集" },
+          ]}
+        />
+
         <h1 className="text-2xl font-bold mb-6">記事編集</h1>
         <ArticleEditor
           defaultValues={editDefaults ?? { title: article.title, body: article.body }}
@@ -104,6 +132,14 @@ export function ArticleDetailPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <PageBreadcrumb
+        items={[
+          { label: "トップ", to: "/dashboard" },
+          { label: "記事一覧", to: "/articles" },
+          { label: article.title },
+        ]}
+      />
+
       <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
       <p className="text-sm text-muted-foreground mb-6">
         {new Date(article.createdAt).toLocaleDateString("ja-JP")}

@@ -1,6 +1,6 @@
+import { create } from "zustand"
 import type { ChatMessage } from "~/shared"
 import { MAX_CONVERSATION_ROUNDS } from "~/shared"
-import { create } from "zustand"
 
 type ChatStore = {
   readonly messages: readonly ChatMessage[]

@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
+import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { useCreateArticle } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
+import { useEffect, useState } from "react"
+import { useNavigate } from "react-router"
 
 export function ArticleNewPage() {
   const navigate = useNavigate()
@@ -27,6 +28,14 @@ export function ArticleNewPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <PageBreadcrumb
+        items={[
+          { label: "トップ", to: "/dashboard" },
+          { label: "記事一覧", to: "/articles" },
+          { label: "記事作成" },
+        ]}
+      />
+
       <h1 className="text-2xl font-bold mb-6">記事作成</h1>
       <ArticleEditor
         defaultValues={defaultValues}

@@ -1,11 +1,12 @@
-import { useUser } from "@clerk/clerk-react"
-import { FileText, MessageSquare, Plus } from "lucide-react"
-import { Link } from "react-router"
+import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticleCount } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
+import { useUser } from "@clerk/clerk-react"
+import { FileText, MessageSquare, Plus } from "lucide-react"
+import { Link } from "react-router"
 
 export function DashboardPage() {
   const { user } = useUser()
@@ -16,6 +17,8 @@ export function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <PageBreadcrumb items={[{ label: "トップ" }]} />
+
       <h1 className="text-2xl font-bold mb-2">
         ようこそ{user?.firstName ? `、${user.firstName}さん` : ""}
       </h1>
@@ -30,13 +33,14 @@ export function DashboardPage() {
           </>
         ) : (
           <>
-            <Card>
+            <Card className="border-primary/20 bg-primary/5">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">記事数</CardTitle>
                 <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold">{count}</p>
+                <p className="text-4xl font-bold">{count}</p>
+                <CardDescription className="mt-1">公開中の記事の合計数</CardDescription>
               </CardContent>
             </Card>
 

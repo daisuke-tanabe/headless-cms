@@ -1,8 +1,8 @@
-import type { ChatAction } from "~/shared"
-import { useCallback } from "react"
-import { useNavigate } from "react-router"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
+import { useCallback } from "react"
+import { useNavigate } from "react-router"
+import type { ChatAction } from "~/shared"
 
 const SAFE_PATH_PATTERN = /^\/(?:dashboard|articles(?:\/new|\/[\w-]+)?)$/
 

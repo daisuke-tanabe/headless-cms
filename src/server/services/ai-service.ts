@@ -1,6 +1,6 @@
+import Anthropic from "@anthropic-ai/sdk"
 import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index.js"
 import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
-import Anthropic from "@anthropic-ai/sdk"
 import { toolDefinitions } from "../tools/definitions.js"
 import { executeToolUse } from "../tools/executor.js"
 
