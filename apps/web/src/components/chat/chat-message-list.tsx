@@ -36,7 +36,7 @@ function ChatMessageItem({ message }: { readonly message: ChatMessage }) {
 		return (
 			<div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
 				<div
-					className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
+					className={`max-w-[85%] sm:max-w-[80%] rounded-lg px-3 py-2 text-sm ${
 						isUser ? "bg-primary text-primary-foreground" : "bg-muted"
 					}`}
 				>

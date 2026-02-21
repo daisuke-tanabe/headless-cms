@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticle, useDeleteArticle, useUpdateArticle } from "@/hooks/use-articles"
@@ -35,8 +46,13 @@ export function ArticleDetailPage() {
 	if (isLoading) {
 		return (
 			<div className="container mx-auto px-4 py-8 max-w-2xl space-y-4">
-				<Skeleton className="h-8 w-1/2" />
-				<Skeleton className="h-40 w-full" />
+				<Skeleton className="h-10 w-3/4" />
+				<Skeleton className="h-5 w-32" />
+				<Skeleton className="h-64 w-full" />
+				<div className="flex gap-2">
+					<Skeleton className="h-10 w-20" />
+					<Skeleton className="h-10 w-20" />
+				</div>
 			</div>
 		)
 	}
@@ -50,6 +66,16 @@ export function ArticleDetailPage() {
 	}
 
 	const article = data.data
+
+	const handleDelete = async () => {
+		await deleteArticle.mutateAsync(id)
+		addMessage({
+			type: "text",
+			role: "assistant",
+			content: `[システム] 記事を削除しました（ID: ${id}、タイトル: ${article.title}）`,
+		})
+		navigate("/articles")
+	}
 
 	if (isEditing) {
 		return (
@@ -85,25 +111,32 @@ export function ArticleDetailPage() {
 			<div className="prose max-w-none mb-8">
 				<p className="whitespace-pre-wrap">{article.body}</p>
 			</div>
-			<div className="flex gap-2">
+			<div className="flex flex-col sm:flex-row gap-2">
 				<Button onClick={() => setIsEditing(true)}>編集</Button>
-				<Button
-					variant="destructive"
-					disabled={deleteArticle.isPending}
-					onClick={async () => {
-						if (window.confirm(`「${article.title}」を削除しますか？`)) {
-							await deleteArticle.mutateAsync(id)
-							addMessage({
-								type: "text",
-								role: "assistant",
-								content: `[システム] 記事を削除しました（ID: ${id}、タイトル: ${article.title}）`,
-							})
-							navigate("/articles")
-						}
-					}}
-				>
-					削除
-				</Button>
+				<AlertDialog>
+					<AlertDialogTrigger asChild>
+						<Button variant="destructive" disabled={deleteArticle.isPending}>
+							削除
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>記事を削除しますか？</AlertDialogTitle>
+							<AlertDialogDescription>
+								「{article.title}」を削除します。この操作は取り消せません。
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>キャンセル</AlertDialogCancel>
+							<AlertDialogAction
+								onClick={handleDelete}
+								className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+							>
+								削除する
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
 			</div>
 		</div>
 	)

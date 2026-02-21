@@ -1,4 +1,5 @@
 import { MAX_CHAT_INPUT_LENGTH } from "@ai-cms/shared"
+import { Loader2, Send } from "lucide-react"
 import { type FormEvent, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -27,8 +28,13 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
 				placeholder="メッセージを入力..."
 				disabled={disabled}
 			/>
-			<Button type="submit" disabled={disabled || !value.trim()}>
-				送信
+			<Button type="submit" size="icon" disabled={disabled || !value.trim()}>
+				{disabled ? (
+					<Loader2 className="h-4 w-4 animate-spin" />
+				) : (
+					<Send className="h-4 w-4" />
+				)}
+				<span className="sr-only">送信</span>
 			</Button>
 		</form>
 	)

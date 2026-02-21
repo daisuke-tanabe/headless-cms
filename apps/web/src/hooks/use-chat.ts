@@ -1,6 +1,7 @@
 import type { PageContext } from "@ai-cms/shared"
 import { useCallback } from "react"
 import { useLocation } from "react-router"
+import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 import { useActionExecutor } from "./use-action-executor"
 import { useChatStore } from "@/stores/chat-store"
@@ -69,6 +70,7 @@ export function useSendMessage() {
 					role: "assistant",
 					content: "エラーが発生しました。もう一度お試しください。",
 				})
+				toast.error("メッセージの送信に失敗しました")
 				return null
 			} finally {
 				setLoading(false)

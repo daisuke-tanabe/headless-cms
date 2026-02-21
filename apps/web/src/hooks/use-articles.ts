@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 
 const articleKeys = {
@@ -62,6 +63,10 @@ export function useCreateArticle() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
 			queryClient.invalidateQueries({ queryKey: articleKeys.count() })
+			toast.success("記事を作成しました")
+		},
+		onError: () => {
+			toast.error("記事の作成に失敗しました")
 		},
 	})
 }
@@ -81,6 +86,10 @@ export function useUpdateArticle() {
 		onSuccess: (_data, variables) => {
 			queryClient.invalidateQueries({ queryKey: articleKeys.detail(variables.id) })
 			queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+			toast.success("記事を更新しました")
+		},
+		onError: () => {
+			toast.error("記事の更新に失敗しました")
 		},
 	})
 }
@@ -99,6 +108,10 @@ export function useDeleteArticle() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
 			queryClient.invalidateQueries({ queryKey: articleKeys.count() })
+			toast.success("記事を削除しました")
+		},
+		onError: () => {
+			toast.error("記事の削除に失敗しました")
 		},
 	})
 }
