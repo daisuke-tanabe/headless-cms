@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MAX_BODY_LENGTH, MAX_TITLE_LENGTH, createArticleSchema } from "@ai-cms/shared"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
 import { Button } from "@/components/ui/button"
@@ -25,6 +26,7 @@ export function ArticleEditor({
 		register,
 		handleSubmit,
 		watch,
+		reset,
 		formState: { errors },
 	} = useForm<ArticleFormData>({
 		resolver: zodResolver(createArticleSchema),
@@ -33,6 +35,15 @@ export function ArticleEditor({
 			body: defaultValues?.body ?? "",
 		},
 	})
+
+	useEffect(() => {
+		if (defaultValues?.title || defaultValues?.body) {
+			reset({
+				title: defaultValues.title ?? "",
+				body: defaultValues.body ?? "",
+			})
+		}
+	}, [defaultValues, reset])
 
 	const titleLength = watch("title")?.length ?? 0
 	const bodyLength = watch("body")?.length ?? 0

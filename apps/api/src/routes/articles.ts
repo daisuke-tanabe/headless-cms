@@ -9,17 +9,21 @@ export const articlesRoute = new Hono()
 	.get("/", zValidator("query", paginationSchema), async (c) => {
 		const userId = getUserId(c)
 		const { page, limit } = c.req.valid("query")
-		const result = await articleRepository.findAll(userId, page, limit)
-
-		return c.json({
-			data: result.articles,
-			meta: {
-				total: result.total,
-				page: result.page,
-				limit: result.limit,
-				totalPages: result.totalPages,
-			},
-		})
+		try {
+			const result = await articleRepository.findAll(userId, page, limit)
+			return c.json({
+				data: result.articles,
+				meta: {
+					total: result.total,
+					page: result.page,
+					limit: result.limit,
+					totalPages: result.totalPages,
+				},
+			})
+		} catch (error) {
+			console.error("Articles findAll error:", error)
+			return c.json({ error: "Failed to fetch articles" }, 500)
+		}
 	})
 	.get("/count", async (c) => {
 		const userId = getUserId(c)
