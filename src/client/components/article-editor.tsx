@@ -1,33 +1,27 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader2 } from "lucide-react"
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import type { z } from "zod"
-import { MAX_BODY_LENGTH, MAX_TITLE_LENGTH, createArticleSchema } from "~/shared"
+import { createArticleSchema } from "~/shared"
 
 type ArticleFormData = z.infer<typeof createArticleSchema>
 
 type ArticleEditorProps = {
+  readonly formId: string
   readonly defaultValues?: { readonly title?: string; readonly body?: string }
   readonly onSubmit: (data: ArticleFormData) => void
   readonly isSubmitting?: boolean
-  readonly submitLabel?: string
 }
 
 export function ArticleEditor({
+  formId,
   defaultValues,
   onSubmit,
   isSubmitting = false,
-  submitLabel = "保存",
 }: ArticleEditorProps) {
   const {
     register,
     handleSubmit,
-    watch,
     reset,
     formState: { errors },
   } = useForm<ArticleFormData>({
@@ -47,53 +41,35 @@ export function ArticleEditor({
     }
   }, [defaultValues, reset])
 
-  const titleLength = watch("title")?.length ?? 0
-  const bodyLength = watch("body")?.length ?? 0
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="title" className="text-[13px]">
-            タイトル
-          </Label>
-          <span className="text-[10px] text-muted-foreground tabular-nums">
-            {titleLength}/{MAX_TITLE_LENGTH}
-          </span>
+    <form
+      id={formId}
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col flex-1 max-w-3xl mx-auto w-full px-6 md:px-12 py-8"
+    >
+      <fieldset disabled={isSubmitting} className="flex flex-col flex-1 gap-1">
+        <div>
+          <input
+            placeholder="タイトル"
+            className="w-full text-2xl font-bold bg-transparent border-none outline-none placeholder:text-muted-foreground/40"
+            {...register("title")}
+          />
+          {errors.title ? (
+            <p className="text-xs text-destructive mt-1">{errors.title.message}</p>
+          ) : null}
         </div>
-        <Input id="title" placeholder="タイトルを入力" {...register("title")} />
-        {errors.title ? <p className="text-xs text-destructive">{errors.title.message}</p> : null}
-      </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="body" className="text-[13px]">
-            本文
-          </Label>
-          <span className="text-[10px] text-muted-foreground tabular-nums">
-            {bodyLength}/{MAX_BODY_LENGTH}
-          </span>
+        <div className="flex flex-col flex-1">
+          <textarea
+            placeholder="ここに本文を書く..."
+            className="w-full flex-1 min-h-[300px] resize-none text-base leading-relaxed bg-transparent border-none outline-none placeholder:text-muted-foreground/40 mt-4"
+            {...register("body")}
+          />
+          {errors.body ? (
+            <p className="text-xs text-destructive mt-1">{errors.body.message}</p>
+          ) : null}
         </div>
-        <Textarea
-          id="body"
-          placeholder="本文を入力"
-          className="min-h-[200px] sm:min-h-[300px] leading-relaxed"
-          rows={10}
-          {...register("body")}
-        />
-        {errors.body ? <p className="text-xs text-destructive">{errors.body.message}</p> : null}
-      </div>
-
-      <Button type="submit" size="sm" disabled={isSubmitting} className="h-8 text-[13px]">
-        {isSubmitting ? (
-          <>
-            <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-            保存中...
-          </>
-        ) : (
-          submitLabel
-        )}
-      </Button>
+      </fieldset>
     </form>
   )
 }

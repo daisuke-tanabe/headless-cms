@@ -1,11 +1,14 @@
 import { ArticleEditor } from "@/components/article-editor"
-import { PageBreadcrumb } from "@/components/page-breadcrumb"
-import { PageContainer } from "@/components/page-container"
+import { EditorShell } from "@/components/article-editor-layout"
+import { Button } from "@/components/ui/button"
 import { useCreateArticle } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
+import { Loader2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
+
+const FORM_ID = "article-new-form"
 
 export function ArticleNewPage() {
   const navigate = useNavigate()
@@ -28,21 +31,32 @@ export function ArticleNewPage() {
   }, [pendingContent, clearPendingContent])
 
   return (
-    <PageContainer>
-      <PageBreadcrumb
-        items={[
-          { label: "ダッシュボード", to: "/dashboard" },
-          { label: "記事", to: "/articles" },
-          { label: "新規作成" },
-        ]}
-      />
-
-      <h1 className="text-lg font-semibold mb-6">記事を作成</h1>
-
+    <EditorShell
+      breadcrumbItems={[{ label: "記事", to: "/articles" }, { label: "新規作成" }]}
+      actionButton={
+        <Button
+          type="submit"
+          form={FORM_ID}
+          size="sm"
+          disabled={createArticle.isPending}
+          className="h-8 text-[13px]"
+        >
+          {createArticle.isPending ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+              作成中...
+            </>
+          ) : (
+            "作成"
+          )}
+        </Button>
+      }
+      closePath="/articles"
+    >
       <ArticleEditor
+        formId={FORM_ID}
         defaultValues={defaultValues}
         isSubmitting={createArticle.isPending}
-        submitLabel="作成"
         onSubmit={async (data) => {
           const result = await createArticle.mutateAsync(data)
           addMessage({
@@ -53,6 +67,6 @@ export function ArticleNewPage() {
           navigate(`/articles/${result.data.id}`)
         }}
       />
-    </PageContainer>
+    </EditorShell>
   )
 }

@@ -1,4 +1,3 @@
-import { ChatSidebar } from "@/components/chat/chat-sidebar"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -7,9 +6,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useChatStore } from "@/stores/chat-store"
 import { SignOutButton, useAuth } from "@clerk/clerk-react"
-import { Menu, MessageSquare } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Link, Outlet, useLocation } from "react-router"
 
 const navItems = [
@@ -20,7 +18,6 @@ const navItems = [
 
 export function RootLayout() {
   const { isSignedIn } = useAuth()
-  const toggleSidebar = useChatStore((s) => s.toggleSidebar)
   const { pathname } = useLocation()
 
   const isActive = (match: string) => pathname.startsWith(match)
@@ -55,15 +52,6 @@ export function RootLayout() {
 
           {isSignedIn ? (
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={toggleSidebar}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground rounded-md border border-border hover:border-foreground/20 transition-all duration-150"
-              >
-                <MessageSquare className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">AI</span>
-              </button>
-
               <div className="hidden md:block">
                 <SignOutButton>
                   <button
@@ -111,8 +99,6 @@ export function RootLayout() {
       <main className="flex-1">
         <Outlet />
       </main>
-
-      {isSignedIn ? <ChatSidebar /> : null}
     </div>
   )
 }

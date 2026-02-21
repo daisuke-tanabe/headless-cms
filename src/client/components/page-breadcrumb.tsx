@@ -15,11 +15,12 @@ type BreadcrumbSegment = {
 
 type PageBreadcrumbProps = {
   readonly items: readonly BreadcrumbSegment[]
+  readonly className?: string
 }
 
-export function PageBreadcrumb({ items }: PageBreadcrumbProps) {
+export function PageBreadcrumb({ items, className }: PageBreadcrumbProps) {
   return (
-    <Breadcrumb className="mb-6">
+    <Breadcrumb className={className ?? "mb-6"}>
       <BreadcrumbList className="text-xs">
         {items.map((item, index) => {
           const isLast = index === items.length - 1

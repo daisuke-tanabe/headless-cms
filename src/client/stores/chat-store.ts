@@ -4,11 +4,9 @@ import { MAX_CONVERSATION_ROUNDS } from "~/shared"
 
 type ChatStore = {
   readonly messages: readonly ChatMessage[]
-  readonly isOpen: boolean
   readonly isLoading: boolean
   readonly addMessage: (message: ChatMessage) => void
   readonly updateLastApproval: (status: "approved" | "cancelled") => void
-  readonly toggleSidebar: () => void
   readonly setLoading: (loading: boolean) => void
   readonly clearMessages: () => void
 }
@@ -30,7 +28,6 @@ const trimHistory = (messages: readonly ChatMessage[]): readonly ChatMessage[] =
 
 export const useChatStore = create<ChatStore>((set) => ({
   messages: [],
-  isOpen: false,
   isLoading: false,
 
   addMessage: (message) =>
@@ -50,8 +47,6 @@ export const useChatStore = create<ChatStore>((set) => ({
       }
       return { messages }
     }),
-
-  toggleSidebar: () => set((state) => ({ isOpen: !state.isOpen })),
 
   setLoading: (loading) => set({ isLoading: loading }),
 

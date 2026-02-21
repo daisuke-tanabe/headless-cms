@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router"
 import { AuthenticatedLayout } from "./layouts/authenticated-layout"
+import { EditorLayout } from "./layouts/editor-layout"
 import { RootLayout } from "./layouts/root-layout"
-import { ArticleDetailPage } from "./pages/article-detail-page"
+import { ArticleEditPage } from "./pages/article-edit-page"
 import { ArticleListPage } from "./pages/article-list-page"
 import { ArticleNewPage } from "./pages/article-new-page"
 import { DashboardPage } from "./pages/dashboard-page"
@@ -28,18 +29,23 @@ export const router = createBrowserRouter([
             element: <ArticleListPage />,
           },
           {
-            path: "/articles/new",
-            element: <ArticleNewPage />,
-          },
-          {
-            path: "/articles/:id",
-            element: <ArticleDetailPage />,
-          },
-          {
             path: "/settings",
             element: <SettingsPage />,
           },
         ],
+      },
+    ],
+  },
+  {
+    element: <EditorLayout />,
+    children: [
+      {
+        path: "/articles/new",
+        element: <ArticleNewPage />,
+      },
+      {
+        path: "/articles/:id",
+        element: <ArticleEditPage />,
       },
     ],
   },
