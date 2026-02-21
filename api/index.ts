@@ -1,8 +1,10 @@
-import { handle } from "hono/vercel"
-import { app } from "../apps/api/src/app.js"
-
 export const config = {
 	maxDuration: 60,
 }
 
-export default handle(app)
+// Vercel ランタイムが CJS として実行するため、ESM モジュールを動的 import で読み込む
+export default async function handler(request: Request) {
+	const { handle } = await import("hono/vercel")
+	const { app } = await import("../apps/api/src/app.js")
+	return handle(app)(request)
+}
