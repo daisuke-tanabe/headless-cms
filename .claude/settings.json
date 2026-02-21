@@ -41,6 +41,7 @@
       "Bash(git checkout *)",
       "Bash(git switch *)",
       "Bash(git pull *)",
+      "Bash(git mv *)",
       "mcp__clerk__*",
       "mcp__context7__*",
       "mcp__shadcn__*",
