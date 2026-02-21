@@ -10,7 +10,7 @@ datasource db {
 }
 
 model Article {
-  id        String    @id @default(uuid())
+  id        String    @id @default(uuid(7))
   slug      String    @unique
   title     String
   body      String
@@ -24,7 +24,7 @@ model Article {
 }
 
 model ApiKey {
-  id         String    @id @default(uuid())
+  id         String    @id @default(uuid(7))
   prefix     String
   hashedKey  String    @unique
   userId     String
