@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid"
-import type { CreateArticleInput, UpdateArticleInput } from "../../shared/index"
+import type { CreateArticleInput, UpdateArticleInput } from "../../shared"
 import { prisma } from "../lib/prisma"
 
 const MAX_SLUG_RETRIES = 3

@@ -1,6 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk"
 import { match } from "ts-pattern"
-import type { ChatAction } from "../../shared/index"
+import type { ChatAction } from "../../shared"
 import { articleRepository } from "../repositories/article-repository"
 import {
   createArticleInputSchema,

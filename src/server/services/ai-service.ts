@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk"
-import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index"
-import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index"
+import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared"
+import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared"
 import { AI_MAX_TOKENS, AI_MODEL, DEFAULT_RESPONSE } from "../lib/constants"
 import { toolDefinitions } from "../tools/definitions"
 import { executeToolUse } from "../tools/executor"

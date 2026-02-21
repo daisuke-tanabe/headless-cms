@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
-import { deleteApiKeyParamSchema } from "../../shared/index"
+import { deleteApiKeyParamSchema } from "../../shared"
 import { extractPrefix, generateApiKey, hashApiKey } from "../lib/api-key"
 import { getUserId, requireAuth } from "../middleware/auth"
 import { apiKeyRepository } from "../repositories/api-key-repository"
