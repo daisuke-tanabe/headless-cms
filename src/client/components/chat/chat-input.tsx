@@ -29,11 +29,7 @@ export function ChatInput({ onSend, disabled = false }: ChatInputProps) {
 				disabled={disabled}
 			/>
 			<Button type="submit" size="icon" disabled={disabled || !value.trim()}>
-				{disabled ? (
-					<Loader2 className="h-4 w-4 animate-spin" />
-				) : (
-					<Send className="h-4 w-4" />
-				)}
+				{disabled ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
 				<span className="sr-only">送信</span>
 			</Button>
 		</form>

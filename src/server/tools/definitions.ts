@@ -9,8 +9,7 @@ export const toolDefinitions: Anthropic.Tool[] = [
 			properties: {
 				to: {
 					type: "string",
-					description:
-						"遷移先のパス。例: /dashboard, /articles, /articles/new, /articles/:id",
+					description: "遷移先のパス。例: /dashboard, /articles, /articles/new, /articles/:id",
 				},
 			},
 			required: ["to"],

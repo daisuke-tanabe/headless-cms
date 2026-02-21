@@ -60,9 +60,7 @@ export function ArticleEditor({
 					</span>
 				</div>
 				<Input id="title" placeholder="タイトルを入力" {...register("title")} />
-				{errors.title ? (
-					<p className="text-sm text-destructive">{errors.title.message}</p>
-				) : null}
+				{errors.title ? <p className="text-sm text-destructive">{errors.title.message}</p> : null}
 			</div>
 
 			<div className="space-y-2">
@@ -79,9 +77,7 @@ export function ArticleEditor({
 					rows={10}
 					{...register("body")}
 				/>
-				{errors.body ? (
-					<p className="text-sm text-destructive">{errors.body.message}</p>
-				) : null}
+				{errors.body ? <p className="text-sm text-destructive">{errors.body.message}</p> : null}
 			</div>
 
 			<Button type="submit" disabled={isSubmitting}>

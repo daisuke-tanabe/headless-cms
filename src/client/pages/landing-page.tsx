@@ -13,9 +13,7 @@ export function LandingPage() {
 	return (
 		<div className="flex flex-1 items-center justify-center px-4 py-16">
 			<div className="max-w-2xl mx-auto text-center space-y-8">
-				<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-					AI CMS
-				</h1>
+				<h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">AI CMS</h1>
 				<p className="text-base sm:text-lg text-muted-foreground max-w-lg mx-auto">
 					AIチャットでCMS操作を代行。記事の作成・編集・削除をチャットで指示するだけで完了します。
 				</p>

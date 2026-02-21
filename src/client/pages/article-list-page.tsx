@@ -59,9 +59,7 @@ export function ArticleListPage() {
 				<div className="text-center py-16">
 					<FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
 					<h2 className="text-lg font-semibold mb-2">最初の記事を作成しましょう</h2>
-					<p className="text-muted-foreground mb-6">
-						記事を作成して、AI CMS を使い始めましょう。
-					</p>
+					<p className="text-muted-foreground mb-6">記事を作成して、AI CMS を使い始めましょう。</p>
 					<Link to="/articles/new">
 						<Button>
 							<Plus className="h-4 w-4 mr-2" />
@@ -141,7 +139,9 @@ export function ArticleListPage() {
 								<PaginationNext
 									onClick={() => setPage(Math.min(totalPages, page + 1))}
 									aria-disabled={page >= totalPages}
-									className={page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+									className={
+										page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"
+									}
 								/>
 							</PaginationItem>
 						</PaginationContent>

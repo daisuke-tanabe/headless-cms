@@ -23,9 +23,6 @@ export const chatRoute = new Hono()
 			}
 
 			console.error("Chat error:", error instanceof Error ? error.message : "Unknown error")
-			return c.json(
-				{ message: "AIの処理中にエラーが発生しました。", action: null },
-				503,
-			)
+			return c.json({ message: "AIの処理中にエラーが発生しました。", action: null }, 503)
 		}
 	})
