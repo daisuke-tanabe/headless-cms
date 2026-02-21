@@ -1,12 +1,34 @@
 import { Hono } from "hono"
+import { cors } from "hono/cors"
 import { HTTPException } from "hono/http-exception"
 import { secureHeaders } from "hono/secure-headers"
 import { clerkMiddleware } from "./middleware/auth.js"
 import { articlesRoute } from "./routes/articles.js"
 import { chatRoute } from "./routes/chat.js"
 
+const buildAllowedOrigins = (): string[] => {
+	if (process.env.ALLOWED_ORIGINS) {
+		return process.env.ALLOWED_ORIGINS.split(",")
+	}
+	if (process.env.VERCEL_URL) {
+		return [`https://${process.env.VERCEL_URL}`]
+	}
+	return ["http://localhost:5173"]
+}
+
+const allowedOrigins = buildAllowedOrigins()
+
 const app = new Hono().basePath("/api")
 
+app.use(
+	"*",
+	cors({
+		origin: allowedOrigins,
+		allowMethods: ["GET", "POST", "PATCH", "DELETE"],
+		allowHeaders: ["Content-Type", "Authorization"],
+		maxAge: 86400,
+	}),
+)
 app.use("*", secureHeaders())
 app.use("*", clerkMiddleware())
 

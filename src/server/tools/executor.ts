@@ -2,42 +2,62 @@ import type { ChatAction } from "../../shared/index.js"
 import type Anthropic from "@anthropic-ai/sdk"
 import { match } from "ts-pattern"
 import { articleRepository } from "../repositories/article-repository.js"
-
-type ToolInput = Record<string, unknown>
+import {
+	createArticleInputSchema,
+	deleteArticleInputSchema,
+	getArticleInputSchema,
+	getArticlesInputSchema,
+	navigateInputSchema,
+	updateArticleInputSchema,
+} from "./schemas.js"
 
 export const executeToolUse = async (
 	toolUse: Anthropic.ContentBlockParam & { type: "tool_use" },
 	userId: string,
 ): Promise<ChatAction | null> => {
-	const input = toolUse.input as ToolInput
-
 	return match(toolUse.name)
 		.with("navigate", () => {
-			const to = input.to as string
-			return { type: "navigate" as const, to }
+			const parsed = navigateInputSchema.safeParse(toolUse.input)
+			if (!parsed.success) {
+				console.warn("Invalid navigate input:", parsed.error.message)
+				return null
+			}
+			return { type: "navigate" as const, to: parsed.data.to }
 		})
 		.with("get_articles", () => {
-			// get_articles はアクションを伴わない（テキスト応答のみ）
+			const parsed = getArticlesInputSchema.safeParse(toolUse.input)
+			if (!parsed.success) {
+				console.warn("Invalid get_articles input:", parsed.error.message)
+			}
 			return null
 		})
 		.with("get_article", () => {
-			// get_article はアクションを伴わない（テキスト応答のみ）
+			const parsed = getArticleInputSchema.safeParse(toolUse.input)
+			if (!parsed.success) {
+				console.warn("Invalid get_article input:", parsed.error.message)
+			}
 			return null
 		})
 		.with("create_article", () => {
-			const title = input.title as string
-			const body = input.body as string
+			const parsed = createArticleInputSchema.safeParse(toolUse.input)
+			if (!parsed.success) {
+				console.warn("Invalid create_article input:", parsed.error.message)
+				return null
+			}
 			return {
 				type: "open_editor" as const,
 				to: "/articles/new",
 				mode: "create" as const,
-				data: { title, body },
+				data: { title: parsed.data.title, body: parsed.data.body },
 			}
 		})
 		.with("update_article", () => {
-			const id = input.id as string
-			const title = input.title as string | undefined
-			const body = input.body as string | undefined
+			const parsed = updateArticleInputSchema.safeParse(toolUse.input)
+			if (!parsed.success) {
+				console.warn("Invalid update_article input:", parsed.error.message)
+				return null
+			}
+			const { id, title, body } = parsed.data
 			return {
 				type: "open_editor" as const,
 				to: `/articles/${id}`,
@@ -46,7 +66,12 @@ export const executeToolUse = async (
 			}
 		})
 		.with("delete_article", async () => {
-			const id = input.id as string
+			const parsed = deleteArticleInputSchema.safeParse(toolUse.input)
+			if (!parsed.success) {
+				console.warn("Invalid delete_article input:", parsed.error.message)
+				return null
+			}
+			const { id } = parsed.data
 			const article = await articleRepository.findById(id, userId)
 			const title = article?.title ?? "不明な記事"
 			return {

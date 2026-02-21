@@ -6,7 +6,10 @@ import { Toaster } from "@/components/ui/sonner"
 import { queryClient } from "./lib/query-client"
 import { router } from "./router"
 
-const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ?? ""
+const CLERK_PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+if (!CLERK_PUBLISHABLE_KEY) {
+	throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY environment variable.")
+}
 
 export function App() {
 	return (
