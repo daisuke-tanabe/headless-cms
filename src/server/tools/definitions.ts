@@ -2,20 +2,6 @@ import type Anthropic from "@anthropic-ai/sdk"
 
 export const toolDefinitions: Anthropic.Tool[] = [
   {
-    name: "navigate",
-    description: "指定したページに遷移します。",
-    input_schema: {
-      type: "object" as const,
-      properties: {
-        to: {
-          type: "string",
-          description: "遷移先のパス。例: /dashboard, /articles, /articles/new, /articles/:id",
-        },
-      },
-      required: ["to"],
-    },
-  },
-  {
     name: "get_articles",
     description: "記事の一覧を取得します。",
     input_schema: {

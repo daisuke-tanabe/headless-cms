@@ -7,7 +7,6 @@ import {
   deleteArticleInputSchema,
   getArticleInputSchema,
   getArticlesInputSchema,
-  navigateInputSchema,
   updateArticleInputSchema,
 } from "./schemas.js"
 
@@ -16,14 +15,6 @@ export const executeToolUse = async (
   userId: string,
 ): Promise<ChatAction | null> => {
   return match(toolUse.name)
-    .with("navigate", () => {
-      const parsed = navigateInputSchema.safeParse(toolUse.input)
-      if (!parsed.success) {
-        console.warn("Invalid navigate input:", parsed.error.message)
-        return null
-      }
-      return { type: "navigate" as const, to: parsed.data.to }
-    })
     .with("get_articles", () => {
       const parsed = getArticlesInputSchema.safeParse(toolUse.input)
       if (!parsed.success) {

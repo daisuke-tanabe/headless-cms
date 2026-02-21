@@ -1,13 +1,7 @@
 import { z } from "zod"
 import { MAX_BODY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
 
-const safePathSchema = z
-  .string()
-  .regex(/^\/(?:dashboard|articles(?:\/new|\/[\w-]+)?)$/, "Invalid navigation path")
-
 const articleIdSchema = z.string().uuid()
-
-export const navigateInputSchema = z.object({ to: safePathSchema })
 
 export const getArticlesInputSchema = z.object({
   page: z.number().int().positive().optional(),

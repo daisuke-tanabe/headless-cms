@@ -26,7 +26,6 @@ export type ChatRequest = {
 }
 
 export type ChatAction =
-  | { readonly type: "navigate"; readonly to: string }
   | {
       readonly type: "open_editor"
       readonly to: string

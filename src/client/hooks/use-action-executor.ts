@@ -4,10 +4,6 @@ import { useCallback } from "react"
 import { useNavigate } from "react-router"
 import type { ChatAction } from "~/shared"
 
-const SAFE_PATH_PATTERN = /^\/(?:dashboard|articles(?:\/new|\/[\w-]+)?)$/
-
-const isSafePath = (path: string): boolean => SAFE_PATH_PATTERN.test(path)
-
 export function useActionExecutor() {
   const navigate = useNavigate()
   const addMessage = useChatStore((s) => s.addMessage)
@@ -18,19 +14,7 @@ export function useActionExecutor() {
       if (!action) return
 
       switch (action.type) {
-        case "navigate": {
-          if (!isSafePath(action.to)) {
-            console.warn("Blocked unsafe navigation path:", action.to)
-            break
-          }
-          navigate(action.to)
-          break
-        }
         case "open_editor": {
-          if (!isSafePath(action.to)) {
-            console.warn("Blocked unsafe navigation path:", action.to)
-            break
-          }
           setPendingContent({
             title: action.data.title,
             body: action.data.body,
