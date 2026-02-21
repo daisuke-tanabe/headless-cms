@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { MAX_BODY_LENGTH, MAX_TITLE_LENGTH } from "../../shared"
+import { MAX_BODY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
 
 const articleIdSchema = z.string().uuid()
 

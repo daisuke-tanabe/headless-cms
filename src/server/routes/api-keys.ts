@@ -1,9 +1,9 @@
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
-import { deleteApiKeyParamSchema } from "../../shared"
-import { extractPrefix, generateApiKey, hashApiKey } from "../lib/api-key"
-import { getUserId, requireAuth } from "../middleware/auth"
-import { apiKeyRepository } from "../repositories/api-key-repository"
+import { deleteApiKeyParamSchema } from "../../shared/index.js"
+import { extractPrefix, generateApiKey, hashApiKey } from "../lib/api-key.js"
+import { getUserId, requireAuth } from "../middleware/auth.js"
+import { apiKeyRepository } from "../repositories/api-key-repository.js"
 
 export const apiKeysRoute = new Hono()
   .use("*", requireAuth)

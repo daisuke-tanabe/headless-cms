@@ -1,9 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk"
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
-import { chatRequestSchema } from "../../shared"
-import { getUserId, requireAuth } from "../middleware/auth"
-import { processChat } from "../services/ai-service"
+import { chatRequestSchema } from "../../shared/index.js"
+import { getUserId, requireAuth } from "../middleware/auth.js"
+import { processChat } from "../services/ai-service.js"
 
 export const chatRoute = new Hono()
   .use("*", requireAuth)
