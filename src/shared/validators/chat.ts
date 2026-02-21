@@ -1,8 +1,10 @@
 import { z } from "zod"
 import {
+  MAX_BODY_LENGTH,
   MAX_CHAT_INPUT_LENGTH,
   MAX_HISTORY_CONTENT_LENGTH,
   MAX_HISTORY_LENGTH,
+  MAX_TITLE_LENGTH,
 } from "../constants.js"
 
 const pageContextSchema = z.discriminatedUnion("page", [
@@ -10,11 +12,15 @@ const pageContextSchema = z.discriminatedUnion("page", [
   z.object({ page: z.literal("articles"), pageNum: z.number().int().min(1) }),
   z.object({
     page: z.literal("article_new"),
-    editor: z.object({ title: z.string(), body: z.string() }),
+    editor: z.object({ title: z.string().max(MAX_TITLE_LENGTH), body: z.string().max(MAX_BODY_LENGTH) }),
   }),
   z.object({
     page: z.literal("article_edit"),
-    article: z.object({ id: z.string().uuid(), title: z.string(), body: z.string() }),
+    article: z.object({
+      id: z.string().uuid(),
+      title: z.string().max(MAX_TITLE_LENGTH),
+      body: z.string().max(MAX_BODY_LENGTH),
+    }),
   }),
 ])
 

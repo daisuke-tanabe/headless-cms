@@ -68,7 +68,7 @@ export const articleRepository = {
 
   update: async (id: string, authorId: string, data: UpdateArticleInput) => {
     const updated = await prisma.article.updateMany({
-      where: { id, authorId },
+      where: { id, authorId, deletedAt: null },
       data: {
         ...(data.title !== undefined && { title: data.title }),
         ...(data.body !== undefined && { body: data.body }),
