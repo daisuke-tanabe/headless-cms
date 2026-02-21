@@ -3,20 +3,25 @@
 ## 1. アーキテクチャ概要
 
 AI CMS は、AI（Claude）を活用した記事管理システムである。
-モノレポ構成を採用し、pnpm workspace によるパッケージ管理を行う。
+シングルパッケージ構成を採用し、`src/` 配下にクライアント・サーバー・共有コードを配置する。
 
-### モノレポ構成
+### ディレクトリ構成
 
-| パッケージ | 役割 | 技術 |
+| ディレクトリ | 役割 | 技術 |
 |-----------|------|------|
-| `apps/web` | React SPA（フロントエンド） | React 19, Vite, TanStack Query, Zustand |
-| `apps/api` | API サーバー | Hono, Prisma, Claude API |
-| `packages/shared` | 共有型定義・バリデーション・定数 | Zod |
+| `src/client` | React SPA（フロントエンド） | React 19, Vite, TanStack Query, Zustand |
+| `src/server` | API サーバー | Hono, Prisma, Claude API |
+| `src/shared` | 共有型定義・バリデーション・定数 | Zod |
 
-### pnpm workspace
+### パスエイリアス
 
-`pnpm-workspace.yaml` で `apps/*` と `packages/*` を管理する。
-`@ai-cms/shared` を `workspace:*` で参照し、型定義とバリデーションスキーマをフロント・API 間で共有する。
+| エイリアス | 解決先 | 用途 |
+|---|---|---|
+| `@/*` | `src/client/*` | クライアント内 import |
+| `~/shared` | `src/shared/index.ts` | shared への import |
+| `~/server/*` | `src/server/*` | サーバー型 import（api-client.ts） |
+
+サーバーコード内では相対パスを使用（例: `from "../../shared/index.js"`）。
 
 ---
 
@@ -99,7 +104,7 @@ API 側でルートを定義し、その型をエクスポートする。
 フロント側は `hc<AppType>` でクライアントを生成し、型安全に API を呼び出す。
 
 ```typescript
-// apps/api/src/app.ts - API側
+// src/server/app.ts - API側
 import { Hono } from "hono"
 
 const app = new Hono().basePath("/api")
@@ -112,9 +117,9 @@ export type AppType = typeof routes
 ```
 
 ```typescript
-// apps/web - フロント側
+// src/client/lib/api-client.ts - フロント側
 import { hc } from "hono/client"
-import type { AppType } from "@ai-cms/api/src/app"
+import type { AppType } from "~/server/app"
 
 const client = hc<AppType>("/")
 
@@ -199,8 +204,8 @@ Route Handler → Repository → Prisma Client → PostgreSQL
 ### フロント - API 型安全
 
 ```
-apps/api: export type AppType = typeof routes
-  → apps/web: hc<AppType>(baseURL)
+src/server: export type AppType = typeof routes
+  → src/client: hc<AppType>(baseURL)
   → 型安全なAPI呼び出し（レスポンス型自動推論）
 ```
 
@@ -254,51 +259,48 @@ ChatRequest.context
 
 ```
 ai-cms/
-├── apps/
-│   ├── api/                          # Hono APIサーバー
-│   │   ├── api/
-│   │   │   └── index.ts              # Vercel Serverless エントリポイント
-│   │   ├── prisma/
-│   │   │   └── schema.prisma         # Prismaスキーマ定義
-│   │   ├── src/
-│   │   │   ├── app.ts                # Honoアプリ定義・ルート・AppType export
-│   │   │   ├── index.ts              # ローカル開発用サーバー起動
-│   │   │   ├── lib/                  # ユーティリティ (Prisma Client, Claude SDK等)
-│   │   │   ├── middleware/           # Hono ミドルウェア (認証, soft delete等)
-│   │   │   ├── repositories/         # データアクセス層
-│   │   │   └── routes/               # ルートハンドラ (articles, chat等)
-│   │   ├── package.json
-│   │   └── tsconfig.json
-│   └── web/                          # React SPA フロントエンド
-│       ├── src/
-│       │   ├── app.tsx               # Appコンポーネント (ルーティング設定)
-│       │   ├── main.tsx              # エントリポイント
-│       │   ├── globals.css           # グローバルCSS (Tailwind)
-│       │   ├── components/
-│       │   │   ├── ui/               # shadcn/ui コンポーネント
-│       │   │   └── ...               # 機能別コンポーネント
-│       │   ├── hooks/                # カスタムフック
-│       │   ├── lib/
-│       │   │   ├── utils.ts          # ユーティリティ (cn等)
-│       │   │   └── api-client.ts     # Hono RPCクライアント (hc<AppType>)
-│       │   ├── pages/                # ページコンポーネント
-│       │   └── stores/               # Zustand ストア (editor-store等)
-│       ├── components.json           # shadcn/ui 設定
-│       ├── index.html                # HTMLテンプレート
-│       ├── package.json
-│       ├── vite.config.ts            # Vite設定 (proxy, Tailwind)
-│       └── tsconfig.json
-├── packages/
-│   └── shared/                       # 共有パッケージ
-│       ├── src/
-│       │   ├── index.ts              # エクスポート集約
-│       │   └── constants.ts          # 共有定数
-│       ├── package.json
-│       └── tsconfig.json
-├── docs/                             # プロジェクトドキュメント
-├── biome.json                        # Biome設定 (lint + format)
-├── package.json                      # ルートpackage.json (workspace scripts)
-├── pnpm-workspace.yaml               # pnpm workspace定義
-├── tsconfig.base.json                # TypeScript共通設定
-└── vercel.json                       # Vercelデプロイ設定
+├── api/
+│   ├── index.ts              # Vercel Serverless エントリポイント
+│   └── package.json          # { "type": "module" }
+├── prisma/
+│   └── schema.prisma         # Prismaスキーマ定義
+├── src/
+│   ├── client/               # React SPA フロントエンド
+│   │   ├── app.tsx           # Appコンポーネント (ルーティング設定)
+│   │   ├── main.tsx          # エントリポイント
+│   │   ├── globals.css       # グローバルCSS (Tailwind)
+│   │   ├── router.tsx        # ルーター定義
+│   │   ├── components/
+│   │   │   ├── ui/           # shadcn/ui コンポーネント
+│   │   │   └── ...           # 機能別コンポーネント
+│   │   ├── hooks/            # カスタムフック
+│   │   ├── layouts/          # レイアウトコンポーネント
+│   │   ├── lib/
+│   │   │   ├── utils.ts      # ユーティリティ (cn等)
+│   │   │   └── api-client.ts # Hono RPCクライアント (hc<AppType>)
+│   │   ├── pages/            # ページコンポーネント
+│   │   └── stores/           # Zustand ストア (editor-store等)
+│   ├── server/               # Hono APIサーバー
+│   │   ├── app.ts            # Honoアプリ定義・ルート・AppType export
+│   │   ├── index.ts          # ローカル開発用サーバー起動
+│   │   ├── lib/              # ユーティリティ (Prisma Client, env等)
+│   │   ├── middleware/       # Hono ミドルウェア (認証等)
+│   │   ├── repositories/     # データアクセス層
+│   │   ├── routes/           # ルートハンドラ (articles, chat等)
+│   │   ├── services/         # ビジネスロジック (AI処理等)
+│   │   └── tools/            # Claude Tool定義・実行
+│   └── shared/               # 共有パッケージ
+│       ├── index.ts          # エクスポート集約
+│       ├── constants.ts      # 共有定数
+│       ├── types/            # 型定義
+│       └── validators/       # Zodバリデーションスキーマ
+├── docs/                     # プロジェクトドキュメント
+├── biome.json                # Biome設定 (lint + format)
+├── components.json           # shadcn/ui 設定
+├── index.html                # HTMLテンプレート
+├── package.json              # 統合 package.json
+├── tsconfig.json             # TypeScript設定 (IDE + Vite用)
+├── tsconfig.server.json      # サーバービルド用TypeScript設定
+├── vite.config.ts            # Vite設定 (proxy, alias, Tailwind)
+└── vercel.json               # Vercelデプロイ設定
 ```
