@@ -51,7 +51,7 @@
     "onlyBuiltDependencies": ["@biomejs/biome", "@prisma/client", "esbuild", "prisma"]
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.4.4",
     "@tailwindcss/vite": "4.2.0",
     "@types/node": "22.19.11",
     "@types/react": "19.2.14",
