@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @ai-cms/api db:generate && pnpm build",
+  "buildCommand": "pnpm --filter @ai-cms/api db:generate && pnpm --filter @ai-cms/api build && pnpm --filter @ai-cms/web build",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
