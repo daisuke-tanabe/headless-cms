@@ -18,8 +18,8 @@ importers:
         specifier: 5.61.1
         version: 5.61.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hono/clerk-auth':
-        specifier: 2.0.1
-        version: 2.0.1(@clerk/backend@2.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(hono@4.12.1)
+        specifier: 3.1.0
+        version: 3.1.0(hono@4.12.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hono/node-server':
         specifier: 1.19.9
         version: 1.19.9(hono@4.12.1)
@@ -477,12 +477,11 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@hono/clerk-auth@2.0.1':
-    resolution: {integrity: sha512-tc59vpU022NgM4AHHI+r0FIext6slHEXsZaRcMNfllTnN2gkcNmSNCrAH04lLmGr9Lfb/RmpATefgW+6/cnuNA==}
+  '@hono/clerk-auth@3.1.0':
+    resolution: {integrity: sha512-kkC6WiCaRwud7sQGSU0zgJJEI1CHPsnM0oK3jmVtozQn7rHMeqITFn4SU+ehnrXdHJBryYJsGheMJwQuhusDgw==}
     engines: {node: '>=16.x.x'}
     peerDependencies:
-      '@clerk/backend': ^1.0.0
-      hono: '>=3.*'
+      hono: '>=3.0.0'
 
   '@hono/node-server@1.19.9':
     resolution: {integrity: sha512-vHL6w3ecZsky+8P5MD+eFfaGTyCeOHUIFYMGpQGbrBTSmNNoxv0if69rEZ5giu36weC5saFuznL411gRX7bJDw==}
@@ -2517,10 +2516,14 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@hono/clerk-auth@2.0.1(@clerk/backend@2.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(hono@4.12.1)':
+  '@hono/clerk-auth@3.1.0(hono@4.12.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@clerk/backend': 2.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@clerk/shared': 3.47.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       hono: 4.12.1
+    transitivePeerDependencies:
+      - react
+      - react-dom
 
   '@hono/node-server@1.19.9(hono@4.12.1)':
     dependencies:
