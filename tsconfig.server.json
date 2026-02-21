@@ -3,10 +3,7 @@
   "compilerOptions": {
     "lib": ["ES2022"],
     "jsx": "react-jsx",
-    "noEmit": false,
-    "outDir": "./dist",
-    "declaration": false,
-    "declarationMap": false,
+    "noEmit": true,
     "paths": {}
   },
   "include": ["src/server", "src/shared"]

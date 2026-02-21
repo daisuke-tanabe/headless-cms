@@ -1,9 +1,9 @@
 import Anthropic from "@anthropic-ai/sdk"
-import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index.js"
-import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
-import { AI_MAX_TOKENS, AI_MODEL, DEFAULT_RESPONSE } from "../lib/constants.js"
-import { toolDefinitions } from "../tools/definitions.js"
-import { executeToolUse } from "../tools/executor.js"
+import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index"
+import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index"
+import { AI_MAX_TOKENS, AI_MODEL, DEFAULT_RESPONSE } from "../lib/constants"
+import { toolDefinitions } from "../tools/definitions"
+import { executeToolUse } from "../tools/executor"
 
 // TODO: ANTHROPIC_API_KEY 未設定のため実行時エラーになる
 const anthropic = new Anthropic()

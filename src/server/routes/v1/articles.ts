@@ -1,9 +1,9 @@
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { z } from "zod"
-import { paginationSchema } from "../../../shared/index.js"
-import { getUserId } from "../../middleware/auth.js"
-import { articleRepository } from "../../repositories/article-repository.js"
+import { paginationSchema } from "../../../shared/index"
+import { getUserId } from "../../middleware/auth"
+import { articleRepository } from "../../repositories/article-repository"
 
 const slugParamSchema = z.object({
   slug: z.string().min(1),

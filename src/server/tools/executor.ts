@@ -1,14 +1,14 @@
 import type Anthropic from "@anthropic-ai/sdk"
 import { match } from "ts-pattern"
-import type { ChatAction } from "../../shared/index.js"
-import { articleRepository } from "../repositories/article-repository.js"
+import type { ChatAction } from "../../shared/index"
+import { articleRepository } from "../repositories/article-repository"
 import {
   createArticleInputSchema,
   deleteArticleInputSchema,
   getArticleInputSchema,
   getArticlesInputSchema,
   updateArticleInputSchema,
-} from "./schemas.js"
+} from "./schemas"
 
 export const executeToolUse = async (
   toolUse: Anthropic.ContentBlockParam & { type: "tool_use" },

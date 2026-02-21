@@ -1,7 +1,7 @@
 import type { MiddlewareHandler } from "hono"
 import { HTTPException } from "hono/http-exception"
-import { hashApiKey } from "../lib/api-key.js"
-import { apiKeyRepository } from "../repositories/api-key-repository.js"
+import { hashApiKey } from "../lib/api-key"
+import { apiKeyRepository } from "../repositories/api-key-repository"
 
 export const requireApiKey: MiddlewareHandler = async (c, next) => {
   const authHeader = c.req.header("Authorization")
