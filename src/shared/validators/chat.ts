@@ -12,7 +12,10 @@ const pageContextSchema = z.discriminatedUnion("page", [
   z.object({ page: z.literal("articles"), pageNum: z.number().int().min(1) }),
   z.object({
     page: z.literal("article_new"),
-    editor: z.object({ title: z.string().max(MAX_TITLE_LENGTH), body: z.string().max(MAX_BODY_LENGTH) }),
+    editor: z.object({
+      title: z.string().max(MAX_TITLE_LENGTH),
+      body: z.string().max(MAX_BODY_LENGTH),
+    }),
   }),
   z.object({
     page: z.literal("article_edit"),

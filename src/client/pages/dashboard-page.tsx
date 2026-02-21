@@ -1,4 +1,5 @@
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
+import { PageContainer } from "@/components/page-container"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticleCount } from "@/hooks/use-articles"
@@ -15,7 +16,7 @@ export function DashboardPage() {
   const count = data?.data.count ?? 0
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <PageContainer>
       <PageBreadcrumb items={[{ label: "ダッシュボード" }]} />
 
       <h1 className="text-lg font-semibold mb-8">
@@ -86,6 +87,6 @@ export function DashboardPage() {
           </div>
         </div>
       ) : null}
-    </div>
+    </PageContainer>
   )
 }

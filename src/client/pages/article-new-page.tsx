@@ -1,5 +1,6 @@
 import { ArticleEditor } from "@/components/article-editor"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
+import { PageContainer } from "@/components/page-container"
 import { useCreateArticle } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
@@ -27,7 +28,7 @@ export function ArticleNewPage() {
   }, [pendingContent, clearPendingContent])
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <PageContainer>
       <PageBreadcrumb
         items={[
           { label: "ダッシュボード", to: "/dashboard" },
@@ -52,6 +53,6 @@ export function ArticleNewPage() {
           navigate(`/articles/${result.data.id}`)
         }}
       />
-    </div>
+    </PageContainer>
   )
 }

@@ -1,27 +1,13 @@
+import { ArticlePagination } from "@/components/article-pagination"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
+import { PageContainer } from "@/components/page-container"
 import { Button } from "@/components/ui/button"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticles } from "@/hooks/use-articles"
+import { formatDate } from "@/lib/format"
 import { AlertCircle, ChevronRight, FileText, Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { Link } from "react-router"
-
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  })
-}
 
 export function ArticleListPage() {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1))
@@ -30,7 +16,7 @@ export function ArticleListPage() {
   const totalPages = data?.meta?.totalPages ?? 1
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <PageContainer>
       <PageBreadcrumb items={[{ label: "ダッシュボード", to: "/dashboard" }, { label: "記事" }]} />
 
       <div className="flex items-center justify-between mb-6">
@@ -95,68 +81,7 @@ export function ArticleListPage() {
         </div>
       )}
 
-      {totalPages > 1 ? (
-        <div className="mt-6">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  aria-disabled={page <= 1}
-                  className={page <= 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                />
-              </PaginationItem>
-
-              {Array.from({ length: totalPages }).map((_, i) => {
-                const pageNum = i + 1
-                if (
-                  totalPages <= 5 ||
-                  pageNum === 1 ||
-                  pageNum === totalPages ||
-                  Math.abs(pageNum - page) <= 1
-                ) {
-                  return (
-                    <PaginationItem key={pageNum}>
-                      <PaginationLink
-                        isActive={pageNum === page}
-                        onClick={() => setPage(pageNum)}
-                        className="cursor-pointer"
-                      >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
-                  )
-                }
-                if (pageNum === 2 && page > 3) {
-                  return (
-                    <PaginationItem key="ellipsis-start">
-                      <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>
-                    </PaginationItem>
-                  )
-                }
-                if (pageNum === totalPages - 1 && page < totalPages - 2) {
-                  return (
-                    <PaginationItem key="ellipsis-end">
-                      <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>
-                    </PaginationItem>
-                  )
-                }
-                return null
-              })}
-
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  aria-disabled={page >= totalPages}
-                  className={
-                    page >= totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"
-                  }
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      ) : null}
-    </div>
+      <ArticlePagination page={page} totalPages={totalPages} onPageChange={setPage} />
+    </PageContainer>
   )
 }

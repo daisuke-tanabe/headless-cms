@@ -55,11 +55,19 @@ export function useSendMessage() {
             context,
           },
         })
+
+        if (!res.ok) {
+          const errorData = await res.json()
+          const errorMessage = "error" in errorData ? errorData.error : "エラーが発生しました。"
+          addMessage({ type: "text", role: "assistant", content: errorMessage })
+          return null
+        }
+
         const data = await res.json()
 
         addMessage({ type: "text", role: "assistant", content: data.message })
 
-        if ("action" in data && data.action) {
+        if (data.action) {
           executeAction(data.action)
         }
 

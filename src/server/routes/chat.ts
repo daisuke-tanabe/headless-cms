@@ -17,12 +17,12 @@ export const chatRoute = new Hono()
     } catch (error) {
       if (error instanceof Anthropic.RateLimitError) {
         return c.json(
-          { message: "リクエストが集中しています。しばらくお待ちください。", action: null },
+          { error: "リクエストが集中しています。しばらくお待ちください。", action: null },
           503,
         )
       }
 
       console.error("Chat error:", error instanceof Error ? error.message : "Unknown error")
-      return c.json({ message: "AIの処理中にエラーが発生しました。", action: null }, 503)
+      return c.json({ error: "AIの処理中にエラーが発生しました。", action: null }, 503)
     }
   })

@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk"
 import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index.js"
 import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
+import { AI_MAX_TOKENS, AI_MODEL, DEFAULT_RESPONSE } from "../lib/constants.js"
 import { toolDefinitions } from "../tools/definitions.js"
 import { executeToolUse } from "../tools/executor.js"
 
@@ -72,8 +73,7 @@ export const processChat = async (request: ChatRequest, userId: string): Promise
   const systemPrompt = buildSystemPrompt(request.context)
 
   const trimmedHistory = request.history
-    .filter((h) => !h.content.trimStart().startsWith("[システム]"))
-    .filter((h) => h.role === "user")
+    .filter((h) => h.role === "user" && !h.content.trimStart().startsWith("[システム]"))
     .slice(-MAX_HISTORY_LENGTH)
   const messages: Anthropic.MessageParam[] = [
     ...trimmedHistory.map(
@@ -87,8 +87,8 @@ export const processChat = async (request: ChatRequest, userId: string): Promise
   ]
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1024,
+    model: AI_MODEL,
+    max_tokens: AI_MAX_TOKENS,
     system: systemPrompt,
     tools: toolDefinitions,
     messages,
@@ -110,7 +110,7 @@ export const processChat = async (request: ChatRequest, userId: string): Promise
   }
 
   return {
-    message: messageText || "承知しました。",
+    message: messageText || DEFAULT_RESPONSE,
     action,
   }
 }

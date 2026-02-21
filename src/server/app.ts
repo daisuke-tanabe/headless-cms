@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import { cors } from "hono/cors"
 import { HTTPException } from "hono/http-exception"
 import { secureHeaders } from "hono/secure-headers"
+import { CORS_MAX_AGE, DEFAULT_DEV_ORIGIN } from "./lib/constants.js"
 import { clerkMiddleware } from "./middleware/auth.js"
 import { articlesRoute } from "./routes/articles.js"
 import { chatRoute } from "./routes/chat.js"
@@ -13,7 +14,7 @@ const buildAllowedOrigins = (): string[] => {
   if (process.env.VERCEL_URL) {
     return [`https://${process.env.VERCEL_URL}`]
   }
-  return ["http://localhost:5173"]
+  return [DEFAULT_DEV_ORIGIN]
 }
 
 const allowedOrigins = buildAllowedOrigins()
@@ -26,7 +27,7 @@ app.use(
     origin: allowedOrigins,
     allowMethods: ["GET", "POST", "PATCH", "DELETE"],
     allowHeaders: ["Content-Type", "Authorization"],
-    maxAge: 86400,
+    maxAge: CORS_MAX_AGE,
   }),
 )
 app.use("*", secureHeaders())

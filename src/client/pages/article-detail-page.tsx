@@ -1,5 +1,6 @@
-import { ArticleEditor } from "@/components/article-editor"
+import { ArticleEditView } from "@/components/article-edit-view"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
+import { PageContainer } from "@/components/page-container"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +14,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useArticle, useDeleteArticle, useUpdateArticle } from "@/hooks/use-articles"
+import { useArticle, useDeleteArticle } from "@/hooks/use-articles"
+import { formatDate } from "@/lib/format"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
 import { ArrowLeft, FileX, Pencil, Trash2 } from "lucide-react"
@@ -24,7 +26,6 @@ export function ArticleDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { data, isLoading } = useArticle(id ?? "")
-  const updateArticle = useUpdateArticle()
   const deleteArticle = useDeleteArticle()
   const { pendingContent, clearPendingContent } = useEditorStore()
   const addMessage = useChatStore((s) => s.addMessage)
@@ -47,18 +48,18 @@ export function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <PageContainer>
         <Skeleton className="h-4 w-32 mb-6" />
         <Skeleton className="h-6 w-2/3 mb-2" />
         <Skeleton className="h-4 w-24 mb-8" />
         <Skeleton className="h-48 w-full" />
-      </div>
+      </PageContainer>
     )
   }
 
   if (!data?.data) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-8">
+      <PageContainer>
         <PageBreadcrumb
           items={[
             { label: "ダッシュボード", to: "/dashboard" },
@@ -79,7 +80,7 @@ export function ArticleDetailPage() {
             </Button>
           </Link>
         </div>
-      </div>
+      </PageContainer>
     )
   }
 
@@ -97,46 +98,17 @@ export function ArticleDetailPage() {
 
   if (isEditing) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <PageBreadcrumb
-          items={[
-            { label: "ダッシュボード", to: "/dashboard" },
-            { label: "記事", to: "/articles" },
-            { label: article.title, to: `/articles/${id}` },
-            { label: "編集" },
-          ]}
-        />
-
-        <h1 className="text-lg font-semibold mb-6">記事を編集</h1>
-
-        <ArticleEditor
-          defaultValues={editDefaults ?? { title: article.title, body: article.body }}
-          isSubmitting={updateArticle.isPending}
-          submitLabel="更新"
-          onSubmit={async (formData) => {
-            const result = await updateArticle.mutateAsync({ id, data: formData })
-            addMessage({
-              type: "text",
-              role: "assistant",
-              content: `[システム] 記事を更新しました（ID: ${id}、タイトル: ${result.data.title}）`,
-            })
-            setIsEditing(false)
-          }}
-        />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mt-3 text-[13px] text-muted-foreground"
-          onClick={() => setIsEditing(false)}
-        >
-          キャンセル
-        </Button>
-      </div>
+      <ArticleEditView
+        article={{ id, title: article.title, body: article.body }}
+        editDefaults={editDefaults}
+        onCancel={() => setIsEditing(false)}
+        onSaved={() => setIsEditing(false)}
+      />
     )
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <PageContainer>
       <PageBreadcrumb
         items={[
           { label: "ダッシュボード", to: "/dashboard" },
@@ -148,13 +120,7 @@ export function ArticleDetailPage() {
       <article>
         <div className="mb-8">
           <h1 className="text-lg font-semibold mb-1">{article.title}</h1>
-          <p className="text-xs text-muted-foreground">
-            {new Date(article.createdAt).toLocaleDateString("ja-JP", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
-          </p>
+          <p className="text-xs text-muted-foreground">{formatDate(article.createdAt)}</p>
         </div>
 
         <div className="border-t pt-6 mb-8">
@@ -205,6 +171,6 @@ export function ArticleDetailPage() {
           </AlertDialog>
         </div>
       </article>
-    </div>
+    </PageContainer>
   )
 }
