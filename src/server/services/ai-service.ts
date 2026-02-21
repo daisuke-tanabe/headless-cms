@@ -37,6 +37,7 @@ const truncate = (value: string, max: number): string =>
 
 const sanitizeForPrompt = (value: string): string =>
   value
+    // biome-ignore lint/suspicious/noControlCharactersInRegex: intentional control character stripping for security
     .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g, "")
     .replace(/</g, "\uff1c")
     .replace(/>/g, "\uff1e")

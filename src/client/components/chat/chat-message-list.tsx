@@ -68,6 +68,7 @@ export function ChatMessageList({ messages, isLoading = false }: ChatMessageList
     <ScrollArea className="flex-1">
       <div className="p-4 space-y-3">
         {visibleMessages.map((message, index) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: messages have no stable ID; list is append-only
           <ChatMessageItem key={`msg-${index}`} message={message} />
         ))}
         {isLoading ? <TypingIndicator /> : null}

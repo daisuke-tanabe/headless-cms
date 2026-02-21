@@ -43,6 +43,7 @@ export function ArticleListPage() {
       ) : isLoading ? (
         <div className="border rounded-lg divide-y">
           {Array.from({ length: 5 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton list
             <div key={`skeleton-${i}`} className="px-4 py-3">
               <Skeleton className="h-4 w-1/2 mb-2" />
               <Skeleton className="h-3 w-24" />
