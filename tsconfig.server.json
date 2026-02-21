@@ -4,7 +4,7 @@
     "lib": ["ES2022"],
     "jsx": "react-jsx",
     "noEmit": false,
-    "outDir": "./dist/server",
+    "outDir": "./dist",
     "declaration": false,
     "declarationMap": false,
     "paths": {}
