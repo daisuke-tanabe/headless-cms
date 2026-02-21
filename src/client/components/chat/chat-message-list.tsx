@@ -13,24 +13,26 @@ type ChatMessageListProps = {
 const examplePrompts = [
   "「AIの最新トレンド」という記事を作成して",
   "記事一覧を見せて",
-  "最新の記事を編集して、タイトルを変更して",
+  "最新の記事のタイトルを変更して",
 ]
 
 function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full text-center px-4 gap-4">
-      <MessageSquare className="h-10 w-10 text-muted-foreground/40" />
-      <div>
-        <p className="text-sm font-medium mb-1">AI アシスタントに話しかけてみましょう</p>
-        <p className="text-xs text-muted-foreground">例えばこんなことができます:</p>
+    <div className="flex flex-col items-center justify-center h-full text-center px-6 gap-4">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary">
+        <MessageSquare className="h-4 w-4 text-muted-foreground" />
       </div>
-      <div className="space-y-2 w-full max-w-[240px]">
+      <div className="space-y-1">
+        <p className="text-[13px] font-medium">AI アシスタント</p>
+        <p className="text-xs text-muted-foreground">こんなことができます</p>
+      </div>
+      <div className="space-y-1.5 w-full max-w-[220px]">
         {examplePrompts.map((prompt) => (
           <p
             key={prompt}
-            className="text-xs text-muted-foreground bg-muted rounded-md px-3 py-2 text-left"
+            className="text-xs text-muted-foreground bg-secondary rounded-md px-3 py-2 text-left leading-relaxed"
           >
-            "{prompt}"
+            {prompt}
           </p>
         ))}
       </div>
@@ -64,7 +66,7 @@ export function ChatMessageList({ messages, isLoading = false }: ChatMessageList
 
   return (
     <ScrollArea className="flex-1">
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-3">
         {visibleMessages.map((message, index) => (
           <ChatMessageItem key={`msg-${index}`} message={message} />
         ))}
@@ -81,8 +83,10 @@ function ChatMessageItem({ message }: { readonly message: ChatMessage }) {
     return (
       <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
         <div
-          className={`max-w-[85%] sm:max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-            isUser ? "bg-primary text-primary-foreground" : "bg-muted"
+          className={`max-w-[85%] sm:max-w-[80%] text-[13px] leading-relaxed ${
+            isUser
+              ? "bg-foreground text-background rounded-2xl rounded-br-sm px-3.5 py-2"
+              : "bg-secondary text-foreground rounded-2xl rounded-bl-sm px-3.5 py-2"
           }`}
         >
           {message.content}

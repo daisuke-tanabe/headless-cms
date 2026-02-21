@@ -19,8 +19,8 @@ type PageBreadcrumbProps = {
 
 export function PageBreadcrumb({ items }: PageBreadcrumbProps) {
   return (
-    <Breadcrumb className="mb-4">
-      <BreadcrumbList>
+    <Breadcrumb className="mb-6">
+      <BreadcrumbList className="text-xs">
         {items.map((item, index) => {
           const isLast = index === items.length - 1
           return (
@@ -30,7 +30,12 @@ export function PageBreadcrumb({ items }: PageBreadcrumbProps) {
                 <BreadcrumbPage>{item.label}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild>
-                  <Link to={item.to}>{item.label}</Link>
+                  <Link
+                    to={item.to}
+                    className="text-muted-foreground hover:text-foreground transition-colors duration-150"
+                  >
+                    {item.label}
+                  </Link>
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>

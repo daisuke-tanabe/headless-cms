@@ -7,38 +7,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useChatStore } from "@/stores/chat-store"
 import { SignOutButton, useAuth } from "@clerk/clerk-react"
-import { Menu, MessageSquare, Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import { Menu, MessageSquare } from "lucide-react"
 import { Link, Outlet, useLocation } from "react-router"
 
 const navItems = [
-  { to: "/dashboard", label: "トップ", match: "/dashboard" },
-  { to: "/articles", label: "記事一覧", match: "/articles" },
+  { to: "/dashboard", label: "ダッシュボード", match: "/dashboard" },
+  { to: "/articles", label: "記事", match: "/articles" },
 ] as const
-
-function ThemeToggle() {
-  const { setTheme, resolvedTheme } = useTheme()
-
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-        >
-          <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span className="sr-only">テーマ切替</span>
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>テーマ切替</TooltipContent>
-    </Tooltip>
-  )
-}
 
 export function RootLayout() {
   const { isSignedIn } = useAuth()
@@ -49,56 +26,70 @@ export function RootLayout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex items-center justify-between h-14 px-4">
-          <Link to="/" className="font-bold text-lg">
-            AI CMS
-          </Link>
-          {isSignedIn ? (
-            <nav className="flex items-center gap-2">
-              {/* Desktop nav */}
-              <div className="hidden md:flex items-center gap-2">
+      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
+        <div className="max-w-3xl mx-auto flex items-center justify-between h-12 px-4">
+          <div className="flex items-center gap-6">
+            <Link to="/" className="text-sm font-semibold text-foreground">
+              AI CMS
+            </Link>
+
+            {isSignedIn ? (
+              <nav className="hidden md:flex items-center gap-1">
                 {navItems.map((item) => (
-                  <Link key={item.to} to={item.to}>
-                    <Button variant={isActive(item.match) ? "secondary" : "ghost"} size="sm">
-                      {item.label}
-                    </Button>
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={`px-3 py-1.5 text-[13px] rounded-md transition-colors duration-150 ${
+                      isActive(item.match)
+                        ? "text-foreground font-medium bg-secondary"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {item.label}
                   </Link>
                 ))}
+              </nav>
+            ) : null}
+          </div>
+
+          {isSignedIn ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleSidebar}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground rounded-md border border-border hover:border-foreground/20 transition-all duration-150"
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">AI</span>
+              </button>
+
+              <div className="hidden md:block">
                 <SignOutButton>
-                  <Button variant="ghost" size="sm">
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground rounded-md transition-colors duration-150"
+                  >
                     ログアウト
-                  </Button>
+                  </button>
                 </SignOutButton>
               </div>
 
-              <ThemeToggle />
-
-              {/* AI button - always visible */}
-              <Button variant="outline" size="sm" onClick={toggleSidebar}>
-                <MessageSquare className="h-4 w-4 mr-1" />
-                AI
-              </Button>
-
-              {/* Mobile hamburger menu */}
               <div className="md:hidden">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <Menu className="h-5 w-5" />
-                          <span className="sr-only">メニュー</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>メニュー</TooltipContent>
-                    </Tooltip>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Menu className="h-4 w-4" />
+                      <span className="sr-only">メニュー</span>
+                    </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuContent align="end" className="w-44">
                     {navItems.map((item) => (
                       <DropdownMenuItem key={item.to} asChild>
-                        <Link to={item.to} className="w-full">
-                          {isActive(item.match) ? `● ${item.label}` : item.label}
+                        <Link
+                          to={item.to}
+                          className={`w-full ${isActive(item.match) ? "font-medium" : ""}`}
+                        >
+                          {item.label}
                         </Link>
                       </DropdownMenuItem>
                     ))}
@@ -111,15 +102,15 @@ export function RootLayout() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-            </nav>
-          ) : (
-            <ThemeToggle />
-          )}
+            </div>
+          ) : null}
         </div>
       </header>
+
       <main className="flex-1">
         <Outlet />
       </main>
+
       {isSignedIn ? <ChatSidebar /> : null}
     </div>
   )

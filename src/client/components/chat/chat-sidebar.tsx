@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useSendMessage } from "@/hooks/use-chat"
@@ -14,14 +13,18 @@ function ChatContent() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="font-semibold text-sm">AI アシスタント</h2>
+      <div className="flex items-center justify-between px-4 h-12 border-b">
+        <h2 className="text-[13px] font-medium">AI アシスタント</h2>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-              <X className="h-4 w-4" />
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              className="h-7 w-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors duration-150"
+            >
+              <X className="h-3.5 w-3.5" />
               <span className="sr-only">閉じる</span>
-            </Button>
+            </button>
           </TooltipTrigger>
           <TooltipContent>閉じる</TooltipContent>
         </Tooltip>
@@ -53,7 +56,7 @@ function DesktopChatSidebar() {
   if (!isOpen) return null
 
   return (
-    <div className="fixed right-0 top-14 bottom-0 w-80 border-l bg-background z-50">
+    <div className="fixed right-0 top-12 bottom-0 w-80 border-l bg-background z-50">
       <ChatContent />
     </div>
   )

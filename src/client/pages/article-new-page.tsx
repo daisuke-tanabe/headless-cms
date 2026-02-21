@@ -27,16 +27,17 @@ export function ArticleNewPage() {
   }, [pendingContent, clearPendingContent])
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="max-w-3xl mx-auto px-4 py-8">
       <PageBreadcrumb
         items={[
-          { label: "トップ", to: "/dashboard" },
-          { label: "記事一覧", to: "/articles" },
-          { label: "記事作成" },
+          { label: "ダッシュボード", to: "/dashboard" },
+          { label: "記事", to: "/articles" },
+          { label: "新規作成" },
         ]}
       />
 
-      <h1 className="text-2xl font-bold mb-6">記事作成</h1>
+      <h1 className="text-lg font-semibold mb-6">記事を作成</h1>
+
       <ArticleEditor
         defaultValues={defaultValues}
         isSubmitting={createArticle.isPending}

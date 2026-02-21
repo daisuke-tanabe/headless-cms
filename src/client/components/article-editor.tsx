@@ -51,39 +51,43 @@ export function ArticleEditor({
   const bodyLength = watch("body")?.length ?? 0
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="title">タイトル</Label>
-          <span className="text-xs text-muted-foreground">
+          <Label htmlFor="title" className="text-[13px]">
+            タイトル
+          </Label>
+          <span className="text-[10px] text-muted-foreground tabular-nums">
             {titleLength}/{MAX_TITLE_LENGTH}
           </span>
         </div>
         <Input id="title" placeholder="タイトルを入力" {...register("title")} />
-        {errors.title ? <p className="text-sm text-destructive">{errors.title.message}</p> : null}
+        {errors.title ? <p className="text-xs text-destructive">{errors.title.message}</p> : null}
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label htmlFor="body">本文</Label>
-          <span className="text-xs text-muted-foreground">
+          <Label htmlFor="body" className="text-[13px]">
+            本文
+          </Label>
+          <span className="text-[10px] text-muted-foreground tabular-nums">
             {bodyLength}/{MAX_BODY_LENGTH}
           </span>
         </div>
         <Textarea
           id="body"
           placeholder="本文を入力"
-          className="min-h-[200px] sm:min-h-[300px]"
+          className="min-h-[200px] sm:min-h-[300px] leading-relaxed"
           rows={10}
           {...register("body")}
         />
-        {errors.body ? <p className="text-sm text-destructive">{errors.body.message}</p> : null}
+        {errors.body ? <p className="text-xs text-destructive">{errors.body.message}</p> : null}
       </div>
 
-      <Button type="submit" disabled={isSubmitting}>
+      <Button type="submit" size="sm" disabled={isSubmitting} className="h-8 text-[13px]">
         {isSubmitting ? (
           <>
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
             保存中...
           </>
         ) : (

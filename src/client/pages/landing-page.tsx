@@ -1,24 +1,23 @@
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { SignInButton, useAuth } from "@clerk/clerk-react"
-import { MessageSquare, Pencil, Sparkles, Trash2 } from "lucide-react"
+import { ArrowRight, MessageSquare, Pencil, Zap } from "lucide-react"
 import { Navigate } from "react-router"
 
 const features = [
   {
     icon: MessageSquare,
-    title: "チャットで指示",
-    description: "自然な会話で記事の操作を依頼できます",
+    label: "チャットで指示",
+    description: "自然言語で記事の作成・編集・削除を依頼",
   },
   {
     icon: Pencil,
-    title: "記事を自動作成",
-    description: "AIがタイトルと本文を生成して提案します",
+    label: "AIが自動生成",
+    description: "タイトルと本文をAIが生成し、承認後に公開",
   },
   {
-    icon: Trash2,
-    title: "編集・削除も簡単",
-    description: "チャットから記事の編集・削除が可能です",
+    icon: Zap,
+    label: "即座に反映",
+    description: "面倒なUI操作不要。チャット一つで完結",
   },
 ] as const
 
@@ -30,35 +29,40 @@ export function LandingPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-16">
-      <div className="max-w-2xl mx-auto text-center space-y-10">
-        <div className="space-y-6">
-          <Badge variant="secondary" className="text-sm px-3 py-1">
-            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-            AIでCMS操作を簡単に
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight">AI CMS</h1>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-lg mx-auto">
-            AIチャットでCMS操作を代行。記事の作成・編集・削除をチャットで指示するだけで完了します。
+    <div className="flex flex-1 items-center justify-center px-4">
+      <div className="max-w-lg w-full text-center space-y-10 py-20">
+        <div className="space-y-4">
+          <h1 className="text-[28px] sm:text-[32px] font-semibold tracking-tight leading-tight text-foreground">
+            AIチャットで
+            <br />
+            記事を管理する
+          </h1>
+          <p className="text-[15px] text-muted-foreground leading-relaxed max-w-sm mx-auto">
+            チャットで指示するだけで、記事の作成・編集・削除が完了します。
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-3 gap-4 text-left">
-          {features.map((feature) => (
-            <div key={feature.title} className="rounded-lg border bg-card p-4 space-y-2">
-              <feature.icon className="h-5 w-5 text-muted-foreground" />
-              <p className="font-medium text-sm">{feature.title}</p>
-              <p className="text-xs text-muted-foreground">{feature.description}</p>
-            </div>
-          ))}
-        </div>
+        <SignInButton mode="modal">
+          <Button className="group h-10 px-6 text-[13px] font-medium">
+            ログインして始める
+            <ArrowRight className="ml-2 h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+          </Button>
+        </SignInButton>
 
-        <div className="flex justify-center">
-          <SignInButton mode="modal">
-            <Button size="lg" className="text-base px-8 py-6">
-              ログインして始める
-            </Button>
-          </SignInButton>
+        <div className="pt-4 border-t">
+          <div className="grid gap-4 text-left">
+            {features.map((f) => (
+              <div key={f.label} className="flex items-start gap-3">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary">
+                  <f.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-medium text-foreground">{f.label}</p>
+                  <p className="text-[13px] text-muted-foreground">{f.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

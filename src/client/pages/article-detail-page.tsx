@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useArticle, useDeleteArticle, useUpdateArticle } from "@/hooks/use-articles"
 import { useChatStore } from "@/stores/chat-store"
 import { useEditorStore } from "@/stores/editor-store"
-import { FileX } from "lucide-react"
+import { ArrowLeft, FileX, Pencil, Trash2 } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 
@@ -47,37 +47,36 @@ export function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl space-y-4">
-        <Skeleton className="h-5 w-48" />
-        <Skeleton className="h-10 w-3/4" />
-        <Skeleton className="h-5 w-32" />
-        <Skeleton className="h-64 w-full" />
-        <div className="flex gap-2">
-          <Skeleton className="h-10 w-20" />
-          <Skeleton className="h-10 w-20" />
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        <Skeleton className="h-4 w-32 mb-6" />
+        <Skeleton className="h-6 w-2/3 mb-2" />
+        <Skeleton className="h-4 w-24 mb-8" />
+        <Skeleton className="h-48 w-full" />
       </div>
     )
   }
 
   if (!data?.data) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="max-w-3xl mx-auto px-4 py-8">
         <PageBreadcrumb
           items={[
-            { label: "トップ", to: "/dashboard" },
-            { label: "記事一覧", to: "/articles" },
-            { label: "記事が見つかりません" },
+            { label: "ダッシュボード", to: "/dashboard" },
+            { label: "記事", to: "/articles" },
+            { label: "見つかりません" },
           ]}
         />
-        <div className="text-center py-16">
-          <FileX className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h2 className="text-lg font-semibold mb-2">記事が見つかりません</h2>
-          <p className="text-muted-foreground mb-6">
+        <div className="text-center py-20">
+          <FileX className="h-8 w-8 mx-auto text-muted-foreground/30 mb-4" />
+          <p className="text-sm font-medium mb-1">記事が見つかりません</p>
+          <p className="text-[13px] text-muted-foreground mb-6">
             この記事は削除されたか、存在しない可能性があります。
           </p>
           <Link to="/articles">
-            <Button variant="outline">記事一覧に戻る</Button>
+            <Button variant="outline" size="sm" className="h-8 text-[13px]">
+              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
+              記事一覧に戻る
+            </Button>
           </Link>
         </div>
       </div>
@@ -98,17 +97,18 @@ export function ArticleDetailPage() {
 
   if (isEditing) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="max-w-3xl mx-auto px-4 py-8">
         <PageBreadcrumb
           items={[
-            { label: "トップ", to: "/dashboard" },
-            { label: "記事一覧", to: "/articles" },
+            { label: "ダッシュボード", to: "/dashboard" },
+            { label: "記事", to: "/articles" },
             { label: article.title, to: `/articles/${id}` },
             { label: "編集" },
           ]}
         />
 
-        <h1 className="text-2xl font-bold mb-6">記事編集</h1>
+        <h1 className="text-lg font-semibold mb-6">記事を編集</h1>
+
         <ArticleEditor
           defaultValues={editDefaults ?? { title: article.title, body: article.body }}
           isSubmitting={updateArticle.isPending}
@@ -123,7 +123,12 @@ export function ArticleDetailPage() {
             setIsEditing(false)
           }}
         />
-        <Button variant="ghost" className="mt-4" onClick={() => setIsEditing(false)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mt-3 text-[13px] text-muted-foreground"
+          onClick={() => setIsEditing(false)}
+        >
           キャンセル
         </Button>
       </div>
@@ -131,49 +136,75 @@ export function ArticleDetailPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="max-w-3xl mx-auto px-4 py-8">
       <PageBreadcrumb
         items={[
-          { label: "トップ", to: "/dashboard" },
-          { label: "記事一覧", to: "/articles" },
+          { label: "ダッシュボード", to: "/dashboard" },
+          { label: "記事", to: "/articles" },
           { label: article.title },
         ]}
       />
 
-      <h1 className="text-2xl font-bold mb-4">{article.title}</h1>
-      <p className="text-sm text-muted-foreground mb-6">
-        {new Date(article.createdAt).toLocaleDateString("ja-JP")}
-      </p>
-      <div className="prose max-w-none mb-8">
-        <p className="whitespace-pre-wrap">{article.body}</p>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-2">
-        <Button onClick={() => setIsEditing(true)}>編集</Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" disabled={deleteArticle.isPending}>
-              削除
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>記事を削除しますか？</AlertDialogTitle>
-              <AlertDialogDescription>
-                「{article.title}」を削除します。この操作は取り消せません。
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>キャンセル</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+      <article>
+        <div className="mb-8">
+          <h1 className="text-lg font-semibold mb-1">{article.title}</h1>
+          <p className="text-xs text-muted-foreground">
+            {new Date(article.createdAt).toLocaleDateString("ja-JP", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </p>
+        </div>
+
+        <div className="border-t pt-6 mb-8">
+          <div className="text-[14px] leading-[1.8] text-foreground/90">
+            <p className="whitespace-pre-wrap">{article.body}</p>
+          </div>
+        </div>
+
+        <div className="border-t pt-6 flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 text-[13px]"
+            onClick={() => setIsEditing(true)}
+          >
+            <Pencil className="h-3.5 w-3.5 mr-1.5" />
+            編集
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 text-[13px] text-destructive hover:text-destructive hover:bg-destructive/10"
+                disabled={deleteArticle.isPending}
               >
-                削除する
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </div>
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                削除
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>記事を削除しますか？</AlertDialogTitle>
+                <AlertDialogDescription>
+                  「{article.title}」を削除します。この操作は取り消せません。
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>キャンセル</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-destructive text-white hover:bg-destructive/90"
+                >
+                  削除する
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </article>
     </div>
   )
 }

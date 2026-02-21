@@ -1,6 +1,5 @@
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Pagination,
   PaginationContent,
@@ -11,7 +10,7 @@ import {
 } from "@/components/ui/pagination"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticles } from "@/hooks/use-articles"
-import { AlertCircle, FileText, Plus } from "lucide-react"
+import { AlertCircle, ChevronRight, FileText, Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { Link } from "react-router"
 
@@ -19,7 +18,7 @@ function formatDate(dateStr: string) {
   const date = new Date(dateStr)
   return date.toLocaleDateString("ja-JP", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   })
 }
@@ -31,77 +30,73 @@ export function ArticleListPage() {
   const totalPages = data?.meta?.totalPages ?? 1
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <PageBreadcrumb items={[{ label: "トップ", to: "/dashboard" }, { label: "記事一覧" }]} />
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <PageBreadcrumb items={[{ label: "ダッシュボード", to: "/dashboard" }, { label: "記事" }]} />
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">記事一覧</h1>
+        <h1 className="text-lg font-semibold">記事</h1>
         <Link to="/articles/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">新規作成</span>
-            <span className="sm:hidden">作成</span>
+          <Button size="sm" className="h-8 text-[13px]">
+            <Plus className="h-3.5 w-3.5 mr-1.5" />
+            新規作成
           </Button>
         </Link>
       </div>
 
       {isError ? (
-        <div className="text-center py-16">
-          <AlertCircle className="h-12 w-12 mx-auto text-destructive/60 mb-4" />
-          <h2 className="text-lg font-semibold mb-2">記事の読み込みに失敗しました</h2>
-          <p className="text-muted-foreground mb-6">
-            ネットワーク接続を確認して、もう一度お試しください。
+        <div className="text-center py-20">
+          <AlertCircle className="h-8 w-8 mx-auto text-muted-foreground/30 mb-4" />
+          <p className="text-sm font-medium mb-1">読み込みに失敗しました</p>
+          <p className="text-[13px] text-muted-foreground mb-4">
+            ネットワーク接続を確認してください
           </p>
-          <Button variant="outline" onClick={() => refetch()}>
+          <Button size="sm" variant="outline" className="h-8 text-[13px]" onClick={() => refetch()}>
             再試行
           </Button>
         </div>
       ) : isLoading ? (
-        <div className="space-y-4">
+        <div className="border rounded-lg divide-y">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Card key={`skeleton-${i}`}>
-              <CardHeader className="pb-2">
-                <Skeleton className="h-6 w-2/3" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-4 w-32" />
-              </CardContent>
-            </Card>
+            <div key={`skeleton-${i}`} className="px-4 py-3">
+              <Skeleton className="h-4 w-1/2 mb-2" />
+              <Skeleton className="h-3 w-24" />
+            </div>
           ))}
         </div>
       ) : data?.data.length === 0 ? (
-        <div className="text-center py-16">
-          <FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-          <h2 className="text-lg font-semibold mb-2">最初の記事を作成しましょう</h2>
-          <p className="text-muted-foreground mb-6">記事を作成して、AI CMS を使い始めましょう。</p>
+        <div className="text-center py-20 border border-dashed rounded-lg">
+          <FileText className="h-8 w-8 mx-auto text-muted-foreground/30 mb-4" />
+          <p className="text-sm font-medium mb-1">記事がありません</p>
+          <p className="text-[13px] text-muted-foreground mb-4">最初の記事を作成しましょう</p>
           <Link to="/articles/new">
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              記事を作成する
+            <Button size="sm" className="h-8 text-[13px]">
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              作成する
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="border rounded-lg divide-y">
           {data?.data.map((article) => (
-            <Link key={article.id} to={`/articles/${article.id}`} className="block">
-              <Card className="hover:bg-accent/50 hover:shadow-sm transition-all">
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-base sm:text-lg">{article.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    {formatDate(article.createdAt)}
-                  </p>
-                </CardContent>
-              </Card>
+            <Link
+              key={article.id}
+              to={`/articles/${article.id}`}
+              className="flex items-center justify-between px-4 py-3 hover:bg-secondary/50 transition-colors duration-150 group"
+            >
+              <div className="min-w-0">
+                <p className="text-[13px] font-medium truncate">{article.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {formatDate(article.createdAt)}
+                </p>
+              </div>
+              <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-muted-foreground transition-colors duration-150 flex-shrink-0 ml-3" />
             </Link>
           ))}
         </div>
       )}
 
       {totalPages > 1 ? (
-        <div className="mt-8">
+        <div className="mt-6">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
