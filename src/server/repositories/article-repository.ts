@@ -67,26 +67,23 @@ export const articleRepository = {
 	},
 
 	update: async (id: string, authorId: string, data: UpdateArticleInput) => {
-		const article = await prisma.article.findFirst({ where: { id, authorId } })
-		if (!article) {
-			return null
-		}
-
-		return prisma.article.update({
-			where: { id },
+		const updated = await prisma.article.updateMany({
+			where: { id, authorId },
 			data: {
 				...(data.title !== undefined && { title: data.title }),
 				...(data.body !== undefined && { body: data.body }),
 			},
 		})
+		if (updated.count === 0) return null
+		return prisma.article.findFirst({ where: { id, authorId } })
 	},
 
 	softDelete: async (id: string, authorId: string) => {
-		const article = await prisma.article.findFirst({ where: { id, authorId } })
-		if (!article) {
-			return null
-		}
-
-		return prisma.article.delete({ where: { id } })
+		const deleted = await prisma.article.updateMany({
+			where: { id, authorId, deletedAt: null },
+			data: { deletedAt: new Date() },
+		})
+		if (deleted.count === 0) return null
+		return { id }
 	},
 } as const

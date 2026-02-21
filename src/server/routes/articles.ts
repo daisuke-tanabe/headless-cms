@@ -21,7 +21,7 @@ export const articlesRoute = new Hono()
 				},
 			})
 		} catch (error) {
-			console.error("Articles findAll error:", error)
+			console.error("Articles findAll error:", error instanceof Error ? error.message : "Unknown error")
 			return c.json({ error: "Failed to fetch articles" }, 500)
 		}
 	})

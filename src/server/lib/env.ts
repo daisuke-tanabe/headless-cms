@@ -12,16 +12,9 @@ const parseEnv = () => {
 	const result = envSchema.safeParse(process.env)
 	if (!result.success) {
 		const formatted = result.error.format()
-		if (process.env.NODE_ENV === "production") {
-			throw new Error(
-				`Missing required environment variables: ${JSON.stringify(formatted)}`,
-			)
-		}
-		console.warn(
-			"Missing required environment variables:",
-			formatted,
+		throw new Error(
+			`Missing required environment variables:\n${JSON.stringify(formatted, null, 2)}`,
 		)
-		return process.env as unknown as z.infer<typeof envSchema>
 	}
 	return result.data
 }

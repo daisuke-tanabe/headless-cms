@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { MAX_CHAT_INPUT_LENGTH } from "../constants.js"
+import { MAX_CHAT_INPUT_LENGTH, MAX_HISTORY_CONTENT_LENGTH, MAX_HISTORY_LENGTH } from "../constants.js"
 
 const pageContextSchema = z.discriminatedUnion("page", [
 	z.object({ page: z.literal("dashboard") }),
@@ -22,9 +22,9 @@ export const chatRequestSchema = z.object({
 	history: z.array(
 		z.object({
 			role: z.enum(["user", "assistant"]),
-			content: z.string(),
+			content: z.string().max(MAX_HISTORY_CONTENT_LENGTH),
 		}),
-	),
+	).max(MAX_HISTORY_LENGTH),
 	context: pageContextSchema,
 })
 

@@ -1,4 +1,5 @@
 import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index.js"
+import { MAX_HISTORY_LENGTH } from "../../shared/index.js"
 import Anthropic from "@anthropic-ai/sdk"
 import { toolDefinitions } from "../tools/definitions.js"
 import { executeToolUse } from "../tools/executor.js"
@@ -43,8 +44,9 @@ export const processChat = async (
 ): Promise<ChatResponse> => {
 	const systemPrompt = buildSystemPrompt(request.context)
 
+	const trimmedHistory = request.history.slice(-MAX_HISTORY_LENGTH)
 	const messages: Anthropic.MessageParam[] = [
-		...request.history.map(
+		...trimmedHistory.map(
 			(h) =>
 				({
 					role: h.role,
