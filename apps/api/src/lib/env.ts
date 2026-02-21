@@ -8,13 +8,19 @@ const envSchema = z.object({
 	ANTHROPIC_API_KEY: z.string().min(1),
 })
 
-// TODO: 環境変数未設定のため、実行時にバリデーションエラーになる
-// 後続フェーズで環境変数を設定後に有効化
 const parseEnv = () => {
 	const result = envSchema.safeParse(process.env)
 	if (!result.success) {
-		console.error("Missing required environment variables:", result.error.format())
-		// MVP段階では起動を妨げないようwarningのみ
+		const formatted = result.error.format()
+		if (process.env.NODE_ENV === "production") {
+			throw new Error(
+				`Missing required environment variables: ${JSON.stringify(formatted)}`,
+			)
+		}
+		console.warn(
+			"Missing required environment variables:",
+			formatted,
+		)
 		return process.env as unknown as z.infer<typeof envSchema>
 	}
 	return result.data

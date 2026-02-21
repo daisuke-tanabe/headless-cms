@@ -4,7 +4,7 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "pnpm --filter \"./apps/*\" --parallel run dev",
-    "build": "pnpm --filter ./apps/* run build",
+    "build": "pnpm --filter \"./apps/*\" run build",
     "typecheck": "pnpm -r run typecheck",
     "lint": "biome check .",
     "format": "biome format . --write"
