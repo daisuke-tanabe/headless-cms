@@ -14,25 +14,27 @@ model Article {
   slug      String    @unique
   title     String
   body      String
-  orgId     String
-  authorId  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  orgId     String    @map("org_id")
+  authorId  String    @map("author_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@index([orgId])
   @@index([deletedAt])
+  @@map("articles")
 }
 
 model ApiKey {
   id         String    @id @default(uuid(7))
   prefix     String
-  hashedKey  String    @unique
-  orgId      String
-  userId     String
-  lastUsedAt DateTime?
-  createdAt  DateTime  @default(now())
+  hashedKey  String    @unique @map("hashed_key")
+  orgId      String    @map("org_id")
+  userId     String    @map("user_id")
+  lastUsedAt DateTime? @map("last_used_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
 
   @@index([orgId])
   @@index([hashedKey])
+  @@map("api_keys")
 }
