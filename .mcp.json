@@ -13,7 +13,8 @@
       "args": ["shadcn@latest", "mcp"]
     },
     "supabase": {
-      "url": "https://mcp.supabase.com/mcp?project_ref=oevfpesmulmsibtosaqw"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.supabase.com/mcp?project_ref=oevfpesmulmsibtosaqw"]
     }
   }
 }
