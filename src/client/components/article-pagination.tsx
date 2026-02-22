@@ -1,3 +1,4 @@
+import type { ReactNode } from "react"
 import {
   Pagination,
   PaginationContent,
@@ -13,8 +14,50 @@ interface ArticlePaginationProps {
   onPageChange: (page: number) => void
 }
 
+type PageItem = {
+  readonly key: string | number
+  readonly content: ReactNode
+}
+
+function buildPageItems(
+  page: number,
+  totalPages: number,
+  onPageChange: (page: number) => void,
+): readonly PageItem[] {
+  const items: PageItem[] = []
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages <= 5 || i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
+      items.push({
+        key: i,
+        content: (
+          <PaginationLink
+            isActive={i === page}
+            onClick={() => onPageChange(i)}
+            className="cursor-pointer"
+          >
+            {i}
+          </PaginationLink>
+        ),
+      })
+    } else if (i === 2 && page > 3) {
+      items.push({
+        key: "ellipsis-start",
+        content: <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>,
+      })
+    } else if (i === totalPages - 1 && page < totalPages - 2) {
+      items.push({
+        key: "ellipsis-end",
+        content: <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>,
+      })
+    }
+  }
+  return items
+}
+
 export function ArticlePagination({ page, totalPages, onPageChange }: ArticlePaginationProps) {
   if (totalPages <= 1) return null
+
+  const pageItems = buildPageItems(page, totalPages, onPageChange)
 
   return (
     <div className="mt-6">
@@ -28,42 +71,9 @@ export function ArticlePagination({ page, totalPages, onPageChange }: ArticlePag
             />
           </PaginationItem>
 
-          {Array.from({ length: totalPages }).map((_, i) => {
-            const pageNum = i + 1
-            if (
-              totalPages <= 5 ||
-              pageNum === 1 ||
-              pageNum === totalPages ||
-              Math.abs(pageNum - page) <= 1
-            ) {
-              return (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink
-                    isActive={pageNum === page}
-                    onClick={() => onPageChange(pageNum)}
-                    className="cursor-pointer"
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              )
-            }
-            if (pageNum === 2 && page > 3) {
-              return (
-                <PaginationItem key="ellipsis-start">
-                  <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>
-                </PaginationItem>
-              )
-            }
-            if (pageNum === totalPages - 1 && page < totalPages - 2) {
-              return (
-                <PaginationItem key="ellipsis-end">
-                  <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>
-                </PaginationItem>
-              )
-            }
-            return null
-          })}
+          {pageItems.map((item) => (
+            <PaginationItem key={item.key}>{item.content}</PaginationItem>
+          ))}
 
           <PaginationItem>
             <PaginationNext

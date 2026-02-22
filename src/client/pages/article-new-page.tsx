@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
 import { EditorShell } from "@/components/article-editor-layout"
@@ -15,20 +15,13 @@ export function ArticleNewPage() {
   const createArticle = useCreateArticle()
   const { pendingContent, clearPendingContent } = useEditorStore()
   const addMessage = useChatStore((s) => s.addMessage)
-  const [defaultValues, setDefaultValues] = useState<{
-    title?: string
-    body?: string
-  }>()
-
-  useEffect(() => {
+  const [defaultValues] = useState<{ title?: string; body?: string } | undefined>(() => {
     if (pendingContent) {
-      setDefaultValues({
-        title: pendingContent.title,
-        body: pendingContent.body,
-      })
       clearPendingContent()
+      return { title: pendingContent.title, body: pendingContent.body }
     }
-  }, [pendingContent, clearPendingContent])
+    return undefined
+  })
 
   return (
     <EditorShell

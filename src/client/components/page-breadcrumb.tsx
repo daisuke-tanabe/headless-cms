@@ -9,7 +9,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 
-type BreadcrumbSegment = {
+export type BreadcrumbSegment = {
   readonly label: string
   readonly to?: string
 }

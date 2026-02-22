@@ -2,14 +2,10 @@ import { MessageSquare, X } from "lucide-react"
 import { type ReactNode, useState } from "react"
 import { Link } from "react-router"
 import { ChatPanel } from "@/components/chat/chat-sidebar"
+import type { BreadcrumbSegment } from "@/components/page-breadcrumb"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useIsMobile } from "@/hooks/use-mobile"
-
-type BreadcrumbSegment = {
-  readonly label: string
-  readonly to?: string
-}
 
 type EditorShellProps = {
   readonly children: ReactNode

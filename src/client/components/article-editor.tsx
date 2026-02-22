@@ -33,7 +33,7 @@ export function ArticleEditor({
   })
 
   useEffect(() => {
-    if (defaultValues?.title || defaultValues?.body) {
+    if (defaultValues !== undefined) {
       reset({
         title: defaultValues.title ?? "",
         body: defaultValues.body ?? "",

@@ -37,15 +37,18 @@ export const useChatStore = create<ChatStore>((set) => ({
 
   updateLastApproval: (status) =>
     set((state) => {
-      const messages = [...state.messages]
-      for (let i = messages.length - 1; i >= 0; i--) {
-        const msg = messages[i]
+      let idx = -1
+      for (let i = state.messages.length - 1; i >= 0; i--) {
+        const msg = state.messages[i]
         if (msg?.type === "approval" && msg.status === "pending") {
-          messages[i] = { ...msg, status }
+          idx = i
           break
         }
       }
-      return { messages }
+      if (idx === -1) return state
+      return {
+        messages: state.messages.map((m, i) => (i === idx ? { ...m, status } : m)),
+      }
     }),
 
   setLoading: (loading) => set({ isLoading: loading }),

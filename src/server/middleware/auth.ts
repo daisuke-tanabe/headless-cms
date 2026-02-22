@@ -11,15 +11,6 @@ type AuthEnv = {
   }
 }
 
-export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
-  const auth = getAuth(c)
-  if (!auth?.userId) {
-    throw new HTTPException(401, { message: "Unauthorized" })
-  }
-  c.set("userId", auth.userId)
-  await next()
-})
-
 export const requireOrg = createMiddleware<AuthEnv>(async (c, next) => {
   const auth = getAuth(c)
   if (!auth?.userId) {

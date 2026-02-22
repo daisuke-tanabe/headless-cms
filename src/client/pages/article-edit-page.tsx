@@ -1,5 +1,5 @@
 import { FileX, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useParams } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
 import { EditorShell } from "@/components/article-editor-layout"
@@ -25,20 +25,23 @@ export function ArticleEditPage() {
 
   const article = data?.data
 
+  const initialized = useRef(false)
   useEffect(() => {
-    if (pendingContent && article) {
+    if (!article || initialized.current) return
+    initialized.current = true
+    if (pendingContent) {
       setDefaultValues({
         title: pendingContent.title ?? article.title,
         body: pendingContent.body ?? article.body,
       })
       clearPendingContent()
-    } else if (article && !defaultValues) {
+    } else {
       setDefaultValues({
         title: article.title,
         body: article.body,
       })
     }
-  }, [pendingContent, article, clearPendingContent, defaultValues])
+  }, [article, pendingContent, clearPendingContent])
 
   if (!id) return null
 

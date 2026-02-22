@@ -1,19 +1,9 @@
+import { Prisma } from "@prisma/client"
 import { nanoid } from "nanoid"
 import type { CreateArticleInput, UpdateArticleInput } from "../../shared/index.js"
 import { prisma } from "../lib/prisma.js"
 
 const MAX_SLUG_RETRIES = 3
-
-const generateUniqueSlug = async (): Promise<string> => {
-  for (let i = 0; i < MAX_SLUG_RETRIES; i++) {
-    const slug = nanoid(8)
-    const existing = await prisma.article.findUnique({ where: { slug } })
-    if (!existing) {
-      return slug
-    }
-  }
-  throw new Error("Failed to generate unique slug after retries")
-}
 
 export const articleRepository = {
   findAll: async (orgId: string, page: number, limit: number) => {
@@ -55,28 +45,42 @@ export const articleRepository = {
   },
 
   create: async (orgId: string, authorId: string, data: CreateArticleInput) => {
-    const slug = await generateUniqueSlug()
-    return prisma.article.create({
-      data: {
-        slug,
-        title: data.title,
-        body: data.body,
-        orgId,
-        authorId,
-      },
-    })
+    for (let i = 0; i < MAX_SLUG_RETRIES; i++) {
+      try {
+        return await prisma.article.create({
+          data: {
+            slug: nanoid(8),
+            title: data.title,
+            body: data.body,
+            orgId,
+            authorId,
+          },
+        })
+      } catch (e) {
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+          continue
+        }
+        throw e
+      }
+    }
+    throw new Error("Failed to generate unique slug after retries")
   },
 
   update: async (id: string, orgId: string, data: UpdateArticleInput) => {
-    const updated = await prisma.article.updateMany({
-      where: { id, orgId, deletedAt: null },
-      data: {
-        ...(data.title !== undefined && { title: data.title }),
-        ...(data.body !== undefined && { body: data.body }),
-      },
-    })
-    if (updated.count === 0) return null
-    return prisma.article.findFirst({ where: { id, orgId } })
+    try {
+      return await prisma.article.update({
+        where: { id, orgId, deletedAt: null },
+        data: {
+          ...(data.title !== undefined && { title: data.title }),
+          ...(data.body !== undefined && { body: data.body }),
+        },
+      })
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {
+        return null
+      }
+      throw e
+    }
   },
 
   findBySlug: async (slug: string, orgId: string) => {
