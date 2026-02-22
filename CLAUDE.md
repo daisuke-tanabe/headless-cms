@@ -32,6 +32,41 @@ src/
 
 サーバーコード内では相対パスを使用（例: `from "../../shared/index.js"`）
 
+## コードメトリクス設定
+
+`/code-metrics` スキルが参照するプロジェクト固有の設定。
+
+| 設定 | 値 |
+|------|-----|
+| ソースディレクトリ | `src` |
+| 対象拡張子 (glob) | `*.ts`, `*.tsx` |
+| 対象拡張子 (comma) | `ts,tsx` |
+| 除外パス | `components/ui/` |
+| 依存関係ツール | `madge` |
+
+### 凝集度の除外パターン
+
+Module Cohesion 分析で誤検知を避けるためスキップするパターン:
+
+- **Factory function + `ReturnType` type pair** (DI pattern)
+- **Component + Props type** (React)
+- **Zod schema + `z.infer` type**
+- **Barrel files** (`index.ts` re-exports)
+- **Constant files** (constants for the same domain)
+
+### レイヤーアーキテクチャルール
+
+| Source | Must NOT Import | Exception | Severity |
+|--------|----------------|-----------|----------|
+| `src/client/**` | `src/server/**` | `~/server/app` (RPC type-only) | CRITICAL |
+| `src/client/**` | `@prisma/client` | -- | CRITICAL |
+| `src/server/**` | `react`, `react-dom` | -- | CRITICAL |
+| `src/shared/**` | `src/client/**`, `src/server/**` | -- | CRITICAL |
+| `src/server/routes/**` | `@prisma/client` | -- | HIGH |
+| `src/server/services/**` | `src/server/routes/**` | -- | HIGH |
+
+CRITICAL 違反はマージをブロック。HIGH 違反は次リリースまでに対処。
+
 ## 開発コマンド
 
 ```bash

@@ -29,6 +29,23 @@ When the user specifies a mode, run only the layers listed. Default to `full` if
 
 ---
 
+## Project Configuration
+
+Command templates below use `<placeholder>` tokens for project-specific values. Before executing, resolve each placeholder using the table below.
+
+**Resolution order:** Look for a code-metrics configuration section in CLAUDE.md first. If the section exists, substitute each token with the corresponding setting. If absent, apply the Fallback rule.
+
+| Placeholder | What to look for in CLAUDE.md | Expansion Format | Fallback |
+|-------------|------------------------------|-----------------|----------|
+| `<src_dir>` | Source directory | as-is | Detect from project structure (`src/`, `lib/`, `app/`, or `.`) |
+| `<ext_glob>` | Target file extensions (glob form) | `-name '*.ext1' -o -name '*.ext2'` | Detect from project config (e.g. `tsconfig.json` -> `*.ts *.tsx`) |
+| `<ext_include>` | Target file extensions (glob form) | `--include='*.ext1' --include='*.ext2'` | Same detection as `<ext_glob>` |
+| `<ext_comma>` | Target file extensions (comma form) | as-is | Same detection as `<ext_glob>`, comma-separated without `*.` |
+| `<exclude_path>` | Excluded paths | as-is | Omit the exclusion filter |
+| `<dep_tool>` | Dependency analysis tool | as-is | Check installed tools (`madge`, `dependency-cruiser`); skip circular-dep analysis if none found |
+
+---
+
 ## Layer 1: Physical Metrics
 
 Measures raw code characteristics per file.
@@ -37,25 +54,25 @@ Measures raw code characteristics per file.
 
 ```bash
 # Lines of code per file (exclude blank lines and node_modules)
-find src -name '*.ts' -o -name '*.tsx' | xargs wc -l | sort -rn | head -30
+find <src_dir> <ext_glob> | xargs wc -l | sort -rn | head -30
 
 # Function count per file
-grep -rn 'function \|=> {' src --include='*.ts' --include='*.tsx' | \
+grep -rn 'function \|=> {' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
 # Export count per file
-grep -rn '^export ' src --include='*.ts' --include='*.tsx' | \
+grep -rn '^export ' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
 # Nesting depth (proxy: count leading whitespace levels)
-grep -rn '^\s\{12,\}' src --include='*.ts' --include='*.tsx' | \
+grep -rn '^\s\{12,\}' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
 # Function parameter count (functions with 4+ params)
-grep -rPn '\(([^)]*,){3,}[^)]*\)' src --include='*.ts' --include='*.tsx' | head -20
+grep -rPn '\(([^)]*,){3,}[^)]*\)' <src_dir> <ext_include> | head -20
 
 # Import count per file
-grep -rn '^import ' src --include='*.ts' --include='*.tsx' | \
+grep -rn '^import ' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 ```
 
@@ -82,48 +99,22 @@ Measures module dependencies and architectural integrity.
 
 ```bash
 # Circular dependency detection
-npx madge --circular --extensions ts,tsx src
+npx <dep_tool> --circular --extensions <ext_comma> <src_dir>
 
 # Full dependency graph as JSON (for fan-in/fan-out analysis)
-npx madge --json --extensions ts,tsx src
+npx <dep_tool> --json --extensions <ext_comma> <src_dir>
 
-# Layer violation detection (see rules table below)
-# client -> server (forbidden)
-grep -rn "from ['\"].*src/server" src/client --include='*.ts' --include='*.tsx'
-grep -rn "from ['\"]~/server" src/client --include='*.ts' --include='*.tsx' | grep -v "~/server/app"
-
-# client -> prisma (forbidden)
-grep -rn "@prisma/client" src/client --include='*.ts' --include='*.tsx'
-
-# server -> react (forbidden)
-grep -rn "from ['\"]react" src/server --include='*.ts' --include='*.tsx'
-
-# shared -> client or server (forbidden)
-grep -rn "from ['\"].*src/client\|from ['\"].*src/server\|from ['\"]@/\|from ['\"]~/server" src/shared --include='*.ts' --include='*.tsx'
-
-# routes -> prisma (forbidden, use services)
-grep -rn "@prisma/client" src/server/routes --include='*.ts' --include='*.tsx'
-
-# services -> routes (forbidden, wrong direction)
-grep -rn "from ['\"].*routes" src/server/services --include='*.ts' --include='*.tsx'
+# Layer violation detection
+# If CLAUDE.md defines layer architecture rules (import constraints between modules),
+# for each rule:
+#   grep -rn "<must_not_import_pattern>" <source_path> <ext_include>
+#   If the rule has exceptions, pipe through: | grep -v "<exception_pattern>"
+# If no layer rules are defined, skip this step.
 ```
-
-### Layer Violation Rules (Project-Specific)
-
-| Source | Must NOT Import | Exception | Severity |
-|--------|----------------|-----------|----------|
-| `src/client/**` | `src/server/**` | `~/server/app` (RPC type-only) | CRITICAL |
-| `src/client/**` | `@prisma/client` | -- | CRITICAL |
-| `src/server/**` | `react`, `react-dom` | -- | CRITICAL |
-| `src/shared/**` | `src/client/**`, `src/server/**` | -- | CRITICAL |
-| `src/server/routes/**` | `@prisma/client` | -- | HIGH |
-| `src/server/services/**` | `src/server/routes/**` | -- | HIGH |
-
-Any violation is a FAIL. CRITICAL violations block merging. HIGH violations must be addressed before next release.
 
 ### Fan-In / Fan-Out Analysis
 
-From the `madge --json` output:
+From the `<dep_tool> --json` output:
 - **Fan-out** = number of modules a file imports (direct dependencies)
 - **Fan-in** = number of modules that import a file (reverse dependencies)
 - **God module** = file with highest `fan-in x fan-out` product
@@ -135,8 +126,8 @@ Detects files that export symbols belonging to multiple unrelated domains/respon
 #### Collection Command
 
 ```bash
-# 2件以上の export を持つファイルとその公開シンボルを一覧
-for f in $(find src -name '*.ts' -o -name '*.tsx' | grep -v 'components/ui/'); do
+# List files with 2+ exports and their public symbols
+for f in $(find <src_dir> <ext_glob> | grep -v '<exclude_path>'); do
   count=$(grep -c '^export ' "$f" 2>/dev/null || echo 0)
   if [ "$count" -gt 1 ]; then
     echo "=== $f ($count exports) ==="
@@ -148,20 +139,14 @@ done
 
 #### Evaluation Criteria
 
-- All exports belong to the same domain → **OK**
-- Matches a known cohesive pattern (see exclusions below) → **OK** (skip)
-- 2 domains mixed → **WARN**
-- 3+ domains mixed → **CRITICAL**
+- All exports belong to the same domain -> **OK**
+- Matches a known cohesive pattern (see exclusions below) -> **OK** (skip)
+- 2 domains mixed -> **WARN**
+- 3+ domains mixed -> **CRITICAL**
 
 #### Exclusion Patterns (Known Cohesive Exports)
 
-The following patterns are inherently cohesive and should NOT be flagged:
-
-- **Factory function + `ReturnType` type pair** (DI pattern)
-- **Component + Props type**
-- **Zod schema + `z.infer` type**
-- **Barrel files** (`index.ts` re-exports)
-- **Constant files** (constants for the same domain)
+If CLAUDE.md defines cohesion exclusion patterns (under the code-metrics configuration section), apply them -- matching files are inherently cohesive and should NOT be flagged. If absent, apply only universal patterns: barrel files (re-export-only modules) and constant-only files.
 
 ### Thresholds
 
@@ -240,9 +225,9 @@ Human-readable assessment of the top hotspot files. Only collected in `full` mod
 | Module Cohesion | Do all public symbols belong to the same domain/responsibility? Are there mixed concerns (e.g., UI + API, auth + routing)? |
 
 4. Tag each finding with a severity:
-   - `[INFO]` — Minor observation, no action needed
-   - `[WARN]` — Should be addressed in next refactoring cycle
-   - `[CRITICAL]` — Violates core architecture, fix immediately
+   - `[INFO]` -- Minor observation, no action needed
+   - `[WARN]` -- Should be addressed in next refactoring cycle
+   - `[CRITICAL]` -- Violates core architecture, fix immediately
 
 ---
 
@@ -272,7 +257,7 @@ Calculate after collecting raw metrics. Normalize each component to 0-10 scale.
 Present results using this template:
 
 ```
-## Code Metrics Report — {mode} mode
+## Code Metrics Report -- {mode} mode
 
 ### Composite Scores
 
@@ -320,9 +305,9 @@ Top files exceeding thresholds:
 
 ### ACTION ITEMS (prioritized)
 
-1. [CRITICAL] {description} — {file}
-2. [HIGH] {description} — {file}
-3. [MEDIUM] {description} — {file}
+1. [CRITICAL] {description} -- {file}
+2. [HIGH] {description} -- {file}
+3. [MEDIUM] {description} -- {file}
 ```
 
 ---
