@@ -1,7 +1,7 @@
-import { OrganizationSwitcher, SignOutButton, useAuth } from "@clerk/clerk-react"
-import { Menu } from "lucide-react"
+import { OrganizationSwitcher, useAuth, useClerk, useUser } from "@clerk/clerk-react"
+import { LogOut, UserRoundCog } from "lucide-react"
 import { Link, Outlet, useLocation } from "react-router"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,87 +24,78 @@ export function RootLayout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
-        <div className="max-w-3xl mx-auto flex items-center justify-between h-12 px-4">
-          <div className="flex items-center gap-6">
+      {isSignedIn ? (
+        <AuthenticatedHeader isActive={isActive} />
+      ) : (
+        <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-lg">
+          <div className="max-w-3xl mx-auto flex items-center h-12 px-4">
             <Link to="/" className="text-sm font-semibold text-foreground">
               AI CMS
             </Link>
-
-            {isSignedIn ? (
-              <nav className="hidden md:flex items-center gap-1">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.to}
-                    to={item.to}
-                    className={`px-3 py-1.5 text-[13px] rounded-md transition-colors duration-150 ${
-                      isActive(item.match)
-                        ? "text-foreground font-medium bg-secondary"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
-            ) : null}
           </div>
-
-          {isSignedIn ? (
-            <div className="flex items-center gap-2">
-              <OrganizationSwitcher
-                hidePersonal={true}
-                afterSelectOrganizationUrl="/dashboard"
-                afterCreateOrganizationUrl="/dashboard"
-              />
-
-              <div className="hidden md:block">
-                <SignOutButton>
-                  <button
-                    type="button"
-                    className="px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground rounded-md transition-colors duration-150"
-                  >
-                    ログアウト
-                  </button>
-                </SignOutButton>
-              </div>
-
-              <div className="md:hidden">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <Menu className="h-4 w-4" />
-                      <span className="sr-only">メニュー</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-44">
-                    {navItems.map((item) => (
-                      <DropdownMenuItem key={item.to} asChild>
-                        <Link
-                          to={item.to}
-                          className={`w-full ${isActive(item.match) ? "font-medium" : ""}`}
-                        >
-                          {item.label}
-                        </Link>
-                      </DropdownMenuItem>
-                    ))}
-                    <DropdownMenuSeparator />
-                    <SignOutButton>
-                      <DropdownMenuItem className="w-full cursor-pointer">
-                        ログアウト
-                      </DropdownMenuItem>
-                    </SignOutButton>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-          ) : null}
-        </div>
-      </header>
+        </header>
+      )}
 
       <main className="flex-1">
         <Outlet />
       </main>
     </div>
+  )
+}
+
+function AuthenticatedHeader({ isActive }: { isActive: (match: string) => boolean }) {
+  const { user } = useUser()
+  const clerk = useClerk()
+
+  const initials = user?.firstName?.charAt(0) ?? "U"
+
+  return (
+    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-lg">
+      {/* Upper bar */}
+      <div className="flex items-center justify-between h-12 px-4 sm:px-6 border-b">
+        <OrganizationSwitcher
+          hidePersonal={true}
+          afterSelectOrganizationUrl="/dashboard"
+          afterCreateOrganizationUrl="/dashboard"
+        />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Avatar size="sm">
+              <AvatarImage src={user?.imageUrl} alt={user?.firstName ?? ""} />
+              <AvatarFallback>{initials}</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem onClick={() => clerk.openUserProfile()}>
+              <UserRoundCog className="mr-2 h-4 w-4" />
+              Manage Account
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => clerk.signOut()}>
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Lower nav bar */}
+      <nav className="flex items-center gap-1 h-10 px-4 sm:px-6 border-b">
+        {navItems.map((item) => (
+          <Link
+            key={item.to}
+            to={item.to}
+            className={`px-3 py-1.5 text-[13px] rounded-md transition-colors duration-150 ${
+              isActive(item.match)
+                ? "text-foreground font-medium bg-secondary"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
+    </header>
   )
 }
