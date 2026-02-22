@@ -119,6 +119,40 @@ From the `<dep_tool> --json` output:
 - **Fan-in** = number of modules that import a file (reverse dependencies)
 - **God module** = file with highest `fan-in x fan-out` product
 
+### Coupling Weight
+
+Measures how many symbols each file imports per dependency. Distinguishes lightweight connections (1-2 symbols) from heavyweight ones (many symbols from a single source).
+
+#### Collection Command
+
+```bash
+# Per-dependency import breadth (runtime imports only)
+grep -rn "^import " <src_dir> <ext_include> | grep -v "import type " | \
+  sed -n 's/.*{\([^}]*\)}.*/\1/p' | \
+  awk -F',' '{print NF}' | \
+  awk '{sum+=$1; if($1>max)max=$1} END {print "files:", NR, "mean:", (NR?sum/NR:0), "max:", max}'
+
+# Top files by total coupling weight (sum of all imported symbols)
+for f in $(find <src_dir> <ext_glob>); do
+  w=$(grep "^import " "$f" 2>/dev/null | grep -v "import type " | \
+    sed -n 's/.*{\([^}]*\)}.*/\1/p' | awk -F',' '{s+=NF} END {print s+0}')
+  [ "$w" -gt 0 ] && echo "$w $f"
+done | sort -rn | head -20
+
+# Heaviest single dependencies (most symbols from one source)
+grep -rPn "^import \{[^}]+\} from " <src_dir> <ext_include> | grep -v "import type " | \
+  while IFS= read -r line; do
+    symbols=$(echo "$line" | sed -n 's/.*{\([^}]*\)}.*/\1/p' | awk -F',' '{print NF}')
+    [ "$symbols" -gt 5 ] && echo "$symbols  $line"
+  done | sort -rn | head -20
+```
+
+#### Evaluation
+
+- **Per-dependency weight**: Count of named symbols in each import statement (excluding type-only imports)
+- **Total module weight**: Sum of all per-dependency weights for a file
+- **Type-only imports** (`import type { ... }`) are excluded -- they create no runtime coupling
+
 ### Module Cohesion
 
 Detects files that export symbols belonging to multiple unrelated domains/responsibilities.
@@ -158,6 +192,8 @@ If CLAUDE.md defines cohesion exclusion patterns (under the code-metrics configu
 | Fan-in (dependents per file) | < 10 | 10-15 | > 15 |
 | God module (fan-in x fan-out) | < 50 | 50-100 | > 100 |
 | Module Cohesion violations | 0 | 1-2 | > 2 |
+| Coupling weight (per dep) | < 5 | 5-10 | > 10 |
+| Coupling weight (per file total) | < 30 | 30-60 | > 60 |
 
 ---
 
@@ -225,9 +261,9 @@ Human-readable assessment of the top hotspot files. Only collected in `full` mod
 | Module Cohesion | Do all public symbols belong to the same domain/responsibility? Are there mixed concerns (e.g., UI + API, auth + routing)? |
 
 4. Tag each finding with a severity:
-   - `[INFO]` -- Minor observation, no action needed
-   - `[WARN]` -- Should be addressed in next refactoring cycle
-   - `[CRITICAL]` -- Violates core architecture, fix immediately
+    - `[INFO]` -- Minor observation, no action needed
+    - `[WARN]` -- Should be addressed in next refactoring cycle
+    - `[CRITICAL]` -- Violates core architecture, fix immediately
 
 ---
 
@@ -238,7 +274,7 @@ Calculate after collecting raw metrics. Normalize each component to 0-10 scale.
 | Score | Formula | Meaning |
 |-------|---------|---------|
 | **Hotspot Index** | `complexity x churn x centrality` | Files most likely to cause future issues. Higher = more urgent. |
-| **Architectural Drift** | `violations x 2 + cycles x 3 + god_modules + cohesion_violations` | Degree of architecture degradation. 0 = clean. |
+| **Architectural Drift** | `violations x 2 + cycles x 3 + god_modules + cohesion_violations + coupling_weight_violations` | Degree of architecture degradation. 0 = clean. |
 | **Cognitive Load Index** | `nesting x params x func_length` | How hard the code is to understand. Higher = harder. |
 
 ### Score Interpretation
@@ -289,6 +325,9 @@ Top files exceeding thresholds:
 **Module Cohesion Violations**: {count} found
 {list of files with mixed-domain exports and severity}
 
+**Coupling Weight Violations**: {count} found
+{list of files with heavy dependencies and their weight}
+
 ### Layer 3: Evolution Metrics
 
 **Hotspot Files** (high churn + high complexity):
@@ -309,13 +348,3 @@ Top files exceeding thresholds:
 2. [HIGH] {description} -- {file}
 3. [MEDIUM] {description} -- {file}
 ```
-
----
-
-## Integration with Other Skills
-
-| Skill/Command | Relationship |
-|---------------|-------------|
-| `/code-review` | Metrics provides **quantitative** data; code-review provides **qualitative** assessment. Run metrics first for context. |
-| `/refactor-clean` | Use `hotspots` mode to identify **what** to refactor, then use refactor-clean to execute. |
-| `/verify` | Verify checks pass/fail gates; metrics measures **quality trends** over time. |
