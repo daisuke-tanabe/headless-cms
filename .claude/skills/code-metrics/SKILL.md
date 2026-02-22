@@ -33,7 +33,12 @@ When the user specifies a mode, run only the layers listed. Default to `full` if
 
 Command templates below use `<placeholder>` tokens for project-specific values. Before executing, resolve each placeholder using the table below.
 
-**Resolution order:** Look for a code-metrics configuration section in CLAUDE.md first. If the section exists, substitute each token with the corresponding setting. If absent, apply the Fallback rule.
+**Resolution order:**
+1. Look for a code-metrics configuration section in CLAUDE.md
+2. If the section exists, substitute each token with the corresponding setting -- done
+3. If absent, run auto-detection for each placeholder using the Fallback column
+4. Present detected values to the user via AskUserQuestion for confirmation
+5. On confirmation, append the configuration section to CLAUDE.md (see template below), then proceed with analysis
 
 | Placeholder | What to look for in CLAUDE.md | Expansion Format | Fallback |
 |-------------|------------------------------|-----------------|----------|
@@ -43,6 +48,30 @@ Command templates below use `<placeholder>` tokens for project-specific values. 
 | `<ext_comma>` | Target file extensions (comma form) | as-is | Same detection as `<ext_glob>`, comma-separated without `*.` |
 | `<exclude_path>` | Excluded paths | as-is | Omit the exclusion filter |
 | `<dep_tool>` | Dependency analysis tool | as-is | Check installed tools (`madge`, `dependency-cruiser`); skip circular-dep analysis if none found |
+
+### Configuration Persistence
+
+When writing detected configuration to CLAUDE.md, use this template:
+
+```markdown
+## Code Metrics Configuration
+
+Project-specific settings referenced by the `/code-metrics` skill.
+
+| Setting | Value |
+|---------|-------|
+| Source directory | `{src_dir}` |
+| Target extensions (glob) | {ext_glob_display} |
+| Target extensions (comma) | `{ext_comma}` |
+| Exclude path | `{exclude_path}` |
+| Dependency tool | `{dep_tool}` |
+```
+
+**Rules:**
+- Insert as a new `##` section in CLAUDE.md (after the development/DB commands section, before any unrelated sections)
+- If a placeholder could not be detected and the user did not provide a value, omit that row
+- Use the user-confirmed values, not the raw auto-detected values
+- After writing, re-read CLAUDE.md to verify the section was added correctly
 
 ---
 
