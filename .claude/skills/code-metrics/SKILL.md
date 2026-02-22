@@ -74,6 +74,14 @@ grep -rPn '\(([^)]*,){3,}[^)]*\)' <src_dir> <ext_include> | head -20
 # Import count per file
 grep -rn '^import ' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
+
+# Cyclomatic complexity proxy (branching keyword count per file)
+for f in $(find <src_dir> <ext_glob>); do
+  count=$(grep -c -E '\bif\b|\belse\b|\bfor\b|\bwhile\b|\bswitch\b|\bcase\b|\bcatch\b|\?\?|&&|\|\|' "$f" 2>/dev/null || echo 0)
+  [ "$count" -gt 0 ] && echo "$count $f"
+done | sort -rn | head -20
+# NOTE: File-level proxy. For files scoring high, drill into per-function
+# analysis by reading the file and counting branches per function body.
 ```
 
 ### Thresholds
@@ -230,6 +238,27 @@ for f in $(git log --since="180 days ago" --name-only --format="" | sort -u | he
 done
 ```
 
+### Temporal Coupling
+
+Detects files that frequently change together in the same commit, revealing hidden coupling not visible in import graphs.
+
+#### Collection Command
+
+```bash
+# Temporal coupling: file pairs committed together in last 90 days
+git log --since="90 days ago" --name-only --format="COMMIT_SEP" -- <src_dir> | \
+  awk '/^COMMIT_SEP$/{for(i in f) for(j in f) if(i<j) p[i" <-> "j]++; delete f; next} NF{f[$0]=1} END{for(k in p) if(p[k]>=5) print p[k], k}' | \
+  sort -rn | head -20
+```
+
+#### Evaluation
+
+- **Co-change count >= 5**: Files changed together 5+ times in 90 days
+- Pairs within the same module/feature are expected -- flag only cross-module pairs
+- Cross-layer pairs (e.g., a route + a UI component) indicate leaking abstractions
+- High temporal coupling + no import relationship = hidden dependency (CRITICAL)
+- High temporal coupling + direct import = expected but review coupling weight
+
 ### Thresholds
 
 | Metric | OK | WARN | CRITICAL |
@@ -238,6 +267,8 @@ done
 | Change frequency (commits/90d) | < 15 | 15-30 | > 30 |
 | Bug-fix ratio | < 20% | 20-40% | > 40% |
 | Author concentration | < 70% | 70-90% | > 90% |
+| Temporal coupling (cross-module) | 0 | 1-3 | > 3 |
+| Temporal coupling (co-change count) | < 5 | 5-10 | > 10 |
 
 ---
 
@@ -269,13 +300,17 @@ Human-readable assessment of the top hotspot files. Only collected in `full` mod
 
 ## Composite Scores (0-10)
 
-Calculate after collecting raw metrics. Normalize each component to 0-10 scale.
+Calculate after collecting raw metrics.
+
+**Normalization**: For each component, normalize to a 0-10 scale:
+`component_norm = (file_value / max_value_in_codebase) * 10`, clamped to [0, 10].
+If the codebase maximum is 0 for a component, set all normalized values to 0.
 
 | Score | Formula | Meaning |
 |-------|---------|---------|
-| **Hotspot Index** | `complexity x churn x centrality` | Files most likely to cause future issues. Higher = more urgent. |
-| **Architectural Drift** | `violations x 2 + cycles x 3 + god_modules + cohesion_violations + coupling_weight_violations` | Degree of architecture degradation. 0 = clean. |
-| **Cognitive Load Index** | `nesting x params x func_length` | How hard the code is to understand. Higher = harder. |
+| **Hotspot Index** | `complexity_norm * 0.4 + churn_norm * 0.35 + centrality_norm * 0.25` | Files most likely to cause future issues. Higher = more urgent. |
+| **Architectural Drift** | `violations * 2 + cycles * 3 + god_modules + cohesion_violations + coupling_weight_violations` | Degree of architecture degradation. 0 = clean. |
+| **Cognitive Load Index** | `(complexity_norm * 3 + nesting_norm * 2 + params_norm + func_length_norm * 2) / 8` | How hard the code is to understand. Higher = harder. |
 
 ### Score Interpretation
 
@@ -335,6 +370,12 @@ Top files exceeding thresholds:
 | File | Churn | Frequency | Bug-Fix % | Author Conc. | Hotspot Score |
 |------|-------|-----------|-----------|-------------|---------------|
 | ... | ... | ... | ... | ... | ... |
+
+**Temporal Coupling** (cross-module co-changes):
+
+| File A | File B | Co-changes | Relationship |
+|--------|--------|------------|--------------|
+| ... | ... | ... | import / hidden / same-module |
 
 ### Layer 4: Semantic Analysis (full mode only)
 
