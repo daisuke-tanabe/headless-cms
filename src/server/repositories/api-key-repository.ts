@@ -1,8 +1,8 @@
-import { prisma } from "../lib/prisma.js"
+import type { Database } from "../lib/prisma.js"
 
-export const apiKeyRepository = {
+export const createApiKeyRepository = (db: Database) => ({
   findAll: async (orgId: string) => {
-    return prisma.apiKey.findMany({
+    return db.apiKey.findMany({
       where: { orgId },
       orderBy: { createdAt: "desc" },
       select: {
@@ -15,7 +15,7 @@ export const apiKeyRepository = {
   },
 
   create: async (orgId: string, userId: string, hashedKey: string, prefix: string) => {
-    return prisma.apiKey.create({
+    return db.apiKey.create({
       data: { orgId, userId, hashedKey, prefix },
       select: {
         id: true,
@@ -27,7 +27,7 @@ export const apiKeyRepository = {
   },
 
   deleteKey: async (id: string, orgId: string) => {
-    const deleted = await prisma.apiKey.deleteMany({
+    const deleted = await db.apiKey.deleteMany({
       where: { id, orgId },
     })
     if (deleted.count === 0) return null
@@ -35,7 +35,7 @@ export const apiKeyRepository = {
   },
 
   findByHash: async (hashedKey: string) => {
-    return prisma.apiKey.findUnique({
+    return db.apiKey.findUnique({
       where: { hashedKey },
       select: {
         id: true,
@@ -47,9 +47,11 @@ export const apiKeyRepository = {
   },
 
   updateLastUsed: async (id: string) => {
-    return prisma.apiKey.update({
+    return db.apiKey.update({
       where: { id },
       data: { lastUsedAt: new Date() },
     })
   },
-} as const
+})
+
+export type ApiKeyRepository = ReturnType<typeof createApiKeyRepository>

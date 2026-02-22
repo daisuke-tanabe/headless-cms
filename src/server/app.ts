@@ -1,14 +1,30 @@
+import Anthropic from "@anthropic-ai/sdk"
 import { Hono } from "hono"
 import { cors } from "hono/cors"
 import { HTTPException } from "hono/http-exception"
 import { secureHeaders } from "hono/secure-headers"
 import { CORS_MAX_AGE, DEFAULT_DEV_ORIGIN } from "./lib/constants.js"
-import { requireApiKey } from "./middleware/api-key-auth.js"
+import { prisma } from "./lib/prisma.js"
+import { createRequireApiKey } from "./middleware/api-key-auth.js"
 import { clerkMiddleware } from "./middleware/auth.js"
-import { apiKeysRoute } from "./routes/api-keys.js"
-import { articlesRoute } from "./routes/articles.js"
-import { chatRoute } from "./routes/chat.js"
-import { v1ArticlesRoute } from "./routes/v1/articles.js"
+import { createApiKeyRepository } from "./repositories/api-key-repository.js"
+import { createArticleRepository } from "./repositories/article-repository.js"
+import { createApiKeysRoute } from "./routes/api-keys.js"
+import { createArticlesRoute } from "./routes/articles.js"
+import { createChatRoute } from "./routes/chat.js"
+import { createV1ArticlesRoute } from "./routes/v1/articles.js"
+import { createProcessChat } from "./services/ai-service.js"
+import { createToolExecutor } from "./tools/executor.js"
+
+// --- Dependency injection ---
+
+const articleRepo = createArticleRepository(prisma)
+const apiKeyRepo = createApiKeyRepository(prisma)
+
+const executeToolUse = createToolExecutor({ articleRepo })
+const processChat = createProcessChat({ anthropic: new Anthropic(), executeToolUse })
+
+// --- App setup ---
 
 const buildAllowedOrigins = (): string[] => {
   if (process.env.ALLOWED_ORIGINS) {
@@ -49,17 +65,17 @@ app.use(
     maxAge: CORS_MAX_AGE,
   }),
 )
-app.use("/v1/*", requireApiKey)
+app.use("/v1/*", createRequireApiKey(apiKeyRepo))
 
 const routes = app
   // Public endpoint — no auth required
   .get("/health", (c) => {
     return c.json({ status: "ok" })
   })
-  .route("/articles", articlesRoute)
-  .route("/chat", chatRoute)
-  .route("/api-keys", apiKeysRoute)
-  .route("/v1/articles", v1ArticlesRoute)
+  .route("/articles", createArticlesRoute(articleRepo))
+  .route("/chat", createChatRoute(processChat))
+  .route("/api-keys", createApiKeysRoute(apiKeyRepo))
+  .route("/v1/articles", createV1ArticlesRoute(articleRepo))
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

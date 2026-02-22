@@ -3,11 +3,10 @@ import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { chatRequestSchema } from "../../shared/index.js"
 import { getOrgId, requireOrg } from "../middleware/auth.js"
-import { processChat } from "../services/ai-service.js"
+import type { ProcessChat } from "../services/ai-service.js"
 
-export const chatRoute = new Hono()
-  .use("*", requireOrg)
-  .post("/", zValidator("json", chatRequestSchema), async (c) => {
+export const createChatRoute = (processChat: ProcessChat) =>
+  new Hono().use("*", requireOrg).post("/", zValidator("json", chatRequestSchema), async (c) => {
     const orgId = getOrgId(c)
     const request = c.req.valid("json")
 

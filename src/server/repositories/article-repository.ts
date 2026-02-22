@@ -1,15 +1,15 @@
 import { Prisma } from "@prisma/client"
 import { nanoid } from "nanoid"
 import type { CreateArticleInput, UpdateArticleInput } from "../../shared/index.js"
-import { prisma } from "../lib/prisma.js"
+import type { Database } from "../lib/prisma.js"
 
 const MAX_SLUG_RETRIES = 3
 
-export const articleRepository = {
+export const createArticleRepository = (db: Database) => ({
   findAll: async (orgId: string, page: number, limit: number) => {
     const skip = (page - 1) * limit
     const [articles, total] = await Promise.all([
-      prisma.article.findMany({
+      db.article.findMany({
         where: { orgId },
         orderBy: { createdAt: "desc" },
         skip,
@@ -22,7 +22,7 @@ export const articleRepository = {
           updatedAt: true,
         },
       }),
-      prisma.article.count({ where: { orgId } }),
+      db.article.count({ where: { orgId } }),
     ])
 
     return {
@@ -35,19 +35,19 @@ export const articleRepository = {
   },
 
   findById: async (id: string, orgId: string) => {
-    return prisma.article.findFirst({
+    return db.article.findFirst({
       where: { id, orgId },
     })
   },
 
   count: async (orgId: string) => {
-    return prisma.article.count({ where: { orgId } })
+    return db.article.count({ where: { orgId } })
   },
 
   create: async (orgId: string, authorId: string, data: CreateArticleInput) => {
     for (let i = 0; i < MAX_SLUG_RETRIES; i++) {
       try {
-        return await prisma.article.create({
+        return await db.article.create({
           data: {
             slug: nanoid(8),
             title: data.title,
@@ -68,7 +68,7 @@ export const articleRepository = {
 
   update: async (id: string, orgId: string, data: UpdateArticleInput) => {
     try {
-      return await prisma.article.update({
+      return await db.article.update({
         where: { id, orgId, deletedAt: null },
         data: {
           ...(data.title !== undefined && { title: data.title }),
@@ -84,17 +84,19 @@ export const articleRepository = {
   },
 
   findBySlug: async (slug: string, orgId: string) => {
-    return prisma.article.findFirst({
+    return db.article.findFirst({
       where: { slug, orgId, deletedAt: null },
     })
   },
 
   softDelete: async (id: string, orgId: string) => {
-    const deleted = await prisma.article.updateMany({
+    const deleted = await db.article.updateMany({
       where: { id, orgId, deletedAt: null },
       data: { deletedAt: new Date() },
     })
     if (deleted.count === 0) return null
     return { id }
   },
-} as const
+})
+
+export type ArticleRepository = ReturnType<typeof createArticleRepository>

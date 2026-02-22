@@ -2,37 +2,14 @@ import { useCallback } from "react"
 import { useLocation } from "react-router"
 import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
+import { buildPageContext } from "@/lib/page-context"
 import { useChatStore } from "@/stores/chat-store"
-import type { PageContext } from "~/shared"
 import { useActionExecutor } from "./use-action-executor"
-
-const usePageContext = (): PageContext => {
-  const location = useLocation()
-  const path = location.pathname
-
-  if (path === "/dashboard") {
-    return { page: "dashboard" }
-  }
-
-  if (path === "/articles/new") {
-    return { page: "article_new", editor: { title: "", body: "" } }
-  }
-
-  if (path.startsWith("/articles/") && path !== "/articles") {
-    const id = path.split("/").pop() ?? ""
-    return { page: "article_edit", article: { id, title: "", body: "" } }
-  }
-
-  if (path === "/articles") {
-    return { page: "articles", pageNum: 1 }
-  }
-
-  return { page: "dashboard" }
-}
 
 export function useSendMessage() {
   const { messages, addMessage, setLoading } = useChatStore()
-  const context = usePageContext()
+  const location = useLocation()
+  const context = buildPageContext(location.pathname)
   const executeAction = useActionExecutor()
 
   return useCallback(

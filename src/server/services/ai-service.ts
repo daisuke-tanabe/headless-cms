@@ -1,12 +1,14 @@
-import Anthropic from "@anthropic-ai/sdk"
+import type Anthropic from "@anthropic-ai/sdk"
 import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index.js"
 import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
 import { AI_MAX_TOKENS, AI_MODEL, DEFAULT_RESPONSE } from "../lib/constants.js"
 import { toolDefinitions } from "../tools/definitions.js"
-import { executeToolUse } from "../tools/executor.js"
+import type { ToolExecutor } from "../tools/executor.js"
 
-// TODO: ANTHROPIC_API_KEY 未設定のため実行時エラーになる
-const anthropic = new Anthropic()
+type AIServiceDeps = {
+  readonly anthropic: Anthropic
+  readonly executeToolUse: ToolExecutor
+}
 
 const buildSystemPrompt = (context: PageContext): string => {
   const contextDescription = buildContextDescription(context)
@@ -66,48 +68,52 @@ const buildContextDescription = (context: PageContext): string => {
   }
 }
 
-export const processChat = async (request: ChatRequest, orgId: string): Promise<ChatResponse> => {
-  const systemPrompt = buildSystemPrompt(request.context)
+export const createProcessChat =
+  (deps: AIServiceDeps) =>
+  async (request: ChatRequest, orgId: string): Promise<ChatResponse> => {
+    const systemPrompt = buildSystemPrompt(request.context)
 
-  const trimmedHistory = request.history
-    .filter((h) => h.role === "user" && !h.content.trimStart().startsWith("[システム]"))
-    .slice(-MAX_HISTORY_LENGTH)
-  const messages: Anthropic.MessageParam[] = [
-    ...trimmedHistory.map(
-      (h) =>
-        ({
-          role: h.role,
-          content: sanitizeForPrompt(h.content),
-        }) satisfies Anthropic.MessageParam,
-    ),
-    { role: "user", content: sanitizeForPrompt(request.message) },
-  ]
+    const trimmedHistory = request.history
+      .filter((h) => h.role === "user" && !h.content.trimStart().startsWith("[システム]"))
+      .slice(-MAX_HISTORY_LENGTH)
+    const messages: Anthropic.MessageParam[] = [
+      ...trimmedHistory.map(
+        (h) =>
+          ({
+            role: h.role,
+            content: sanitizeForPrompt(h.content),
+          }) satisfies Anthropic.MessageParam,
+      ),
+      { role: "user", content: sanitizeForPrompt(request.message) },
+    ]
 
-  const response = await anthropic.messages.create({
-    model: AI_MODEL,
-    max_tokens: AI_MAX_TOKENS,
-    system: systemPrompt,
-    tools: toolDefinitions,
-    messages,
-  })
+    const response = await deps.anthropic.messages.create({
+      model: AI_MODEL,
+      max_tokens: AI_MAX_TOKENS,
+      system: systemPrompt,
+      tools: toolDefinitions,
+      messages,
+    })
 
-  // テキスト応答を抽出
-  const textBlock = response.content.find((block) => block.type === "text")
-  const messageText = textBlock?.type === "text" ? textBlock.text : ""
+    // テキスト応答を抽出
+    const textBlock = response.content.find((block) => block.type === "text")
+    const messageText = textBlock?.type === "text" ? textBlock.text : ""
 
-  // tool_use ブロックを抽出（single-turn: 最初の1つのみ処理）
-  const toolUseBlock = response.content.find((block) => block.type === "tool_use")
+    // tool_use ブロックを抽出（single-turn: 最初の1つのみ処理）
+    const toolUseBlock = response.content.find((block) => block.type === "tool_use")
 
-  let action: ChatAction | null = null
-  if (toolUseBlock?.type === "tool_use") {
-    action = await executeToolUse(
-      toolUseBlock as Anthropic.ContentBlockParam & { type: "tool_use" },
-      orgId,
-    )
+    let action: ChatAction | null = null
+    if (toolUseBlock?.type === "tool_use") {
+      action = await deps.executeToolUse(
+        toolUseBlock as Anthropic.ContentBlockParam & { type: "tool_use" },
+        orgId,
+      )
+    }
+
+    return {
+      message: messageText || DEFAULT_RESPONSE,
+      action,
+    }
   }
 
-  return {
-    message: messageText || DEFAULT_RESPONSE,
-    action,
-  }
-}
+export type ProcessChat = ReturnType<typeof createProcessChat>
