@@ -69,7 +69,7 @@ const buildContextDescription = (context: PageContext): string => {
   }
 }
 
-export const processChat = async (request: ChatRequest, userId: string): Promise<ChatResponse> => {
+export const processChat = async (request: ChatRequest, orgId: string): Promise<ChatResponse> => {
   const systemPrompt = buildSystemPrompt(request.context)
 
   const trimmedHistory = request.history
@@ -105,7 +105,7 @@ export const processChat = async (request: ChatRequest, userId: string): Promise
   if (toolUseBlock?.type === "tool_use") {
     action = await executeToolUse(
       toolUseBlock as Anthropic.ContentBlockParam & { type: "tool_use" },
-      userId,
+      orgId,
     )
   }
 

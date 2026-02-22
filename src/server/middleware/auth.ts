@@ -1,22 +1,42 @@
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth"
-import type { Context, MiddlewareHandler } from "hono"
+import { createMiddleware } from "hono/factory"
 import { HTTPException } from "hono/http-exception"
 
 export { clerkMiddleware }
 
-export const requireAuth: MiddlewareHandler = async (c, next) => {
+type AuthEnv = {
+  Variables: {
+    userId: string
+    orgId: string
+  }
+}
+
+export const requireAuth = createMiddleware<AuthEnv>(async (c, next) => {
   const auth = getAuth(c)
   if (!auth?.userId) {
     throw new HTTPException(401, { message: "Unauthorized" })
   }
-  c.set("userId" as never, auth.userId)
+  c.set("userId", auth.userId)
   await next()
-}
+})
 
-export const getUserId = (c: Context): string => {
-  const userId = c.get("userId" as never) as string | undefined
-  if (!userId) {
+export const requireOrg = createMiddleware<AuthEnv>(async (c, next) => {
+  const auth = getAuth(c)
+  if (!auth?.userId) {
     throw new HTTPException(401, { message: "Unauthorized" })
   }
-  return userId
+  if (!auth.orgId) {
+    throw new HTTPException(403, { message: "Organization required" })
+  }
+  c.set("userId", auth.userId)
+  c.set("orgId", auth.orgId)
+  await next()
+})
+
+export const getUserId = (c: { get: (key: "userId") => string }): string => {
+  return c.get("userId")
+}
+
+export const getOrgId = (c: { get: (key: "orgId") => string }): string => {
+  return c.get("orgId")
 }

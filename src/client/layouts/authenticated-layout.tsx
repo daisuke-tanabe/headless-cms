@@ -1,7 +1,9 @@
 import { useAuth } from "@clerk/clerk-react"
 import { Navigate, Outlet } from "react-router"
+import { OrgRequiredPage } from "@/components/org-required-page"
 import { PageContainer } from "@/components/page-container"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useOrgSwitch } from "@/hooks/use-org-switch"
 
 function AuthLoadingSkeleton() {
   return (
@@ -18,7 +20,8 @@ function AuthLoadingSkeleton() {
 }
 
 export function AuthenticatedLayout() {
-  const { isSignedIn, isLoaded } = useAuth()
+  const { isSignedIn, isLoaded, orgId } = useAuth()
+  useOrgSwitch()
 
   if (!isLoaded) {
     return <AuthLoadingSkeleton />
@@ -26,6 +29,10 @@ export function AuthenticatedLayout() {
 
   if (!isSignedIn) {
     return <Navigate to="/" replace />
+  }
+
+  if (!orgId) {
+    return <OrgRequiredPage />
   }
 
   return <Outlet />

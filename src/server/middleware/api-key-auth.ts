@@ -1,9 +1,16 @@
-import type { MiddlewareHandler } from "hono"
+import { createMiddleware } from "hono/factory"
 import { HTTPException } from "hono/http-exception"
 import { hashApiKey } from "../lib/api-key.js"
 import { apiKeyRepository } from "../repositories/api-key-repository.js"
 
-export const requireApiKey: MiddlewareHandler = async (c, next) => {
+type ApiKeyAuthEnv = {
+  Variables: {
+    userId: string
+    orgId: string
+  }
+}
+
+export const requireApiKey = createMiddleware<ApiKeyAuthEnv>(async (c, next) => {
   const authHeader = c.req.header("Authorization")
   if (!authHeader?.startsWith("Bearer ")) {
     throw new HTTPException(401, { message: "Missing or invalid Authorization header" })
@@ -21,7 +28,8 @@ export const requireApiKey: MiddlewareHandler = async (c, next) => {
     throw new HTTPException(401, { message: "Invalid API key" })
   }
 
-  c.set("userId" as never, apiKey.userId)
+  c.set("orgId", apiKey.orgId)
+  c.set("userId", apiKey.userId)
 
   // Update lastUsedAt in background (don't block the response)
   apiKeyRepository.updateLastUsed(apiKey.id).catch((err) => {
@@ -32,4 +40,4 @@ export const requireApiKey: MiddlewareHandler = async (c, next) => {
   })
 
   await next()
-}
+})

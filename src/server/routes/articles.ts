@@ -2,18 +2,18 @@ import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { z } from "zod"
 import { createArticleSchema, paginationSchema, updateArticleSchema } from "../../shared/index.js"
-import { getUserId, requireAuth } from "../middleware/auth.js"
+import { getOrgId, getUserId, requireOrg } from "../middleware/auth.js"
 import { articleRepository } from "../repositories/article-repository.js"
 
 const idParamSchema = z.object({ id: z.string().uuid() })
 
 export const articlesRoute = new Hono()
-  .use("*", requireAuth)
+  .use("*", requireOrg)
   .get("/", zValidator("query", paginationSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const { page, limit } = c.req.valid("query")
     try {
-      const result = await articleRepository.findAll(userId, page, limit)
+      const result = await articleRepository.findAll(orgId, page, limit)
       return c.json({
         data: result.articles,
         meta: {
@@ -32,14 +32,14 @@ export const articlesRoute = new Hono()
     }
   })
   .get("/count", async (c) => {
-    const userId = getUserId(c)
-    const count = await articleRepository.count(userId)
+    const orgId = getOrgId(c)
+    const count = await articleRepository.count(orgId)
     return c.json({ data: { count } })
   })
   .get("/:id", zValidator("param", idParamSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const { id } = c.req.valid("param")
-    const article = await articleRepository.findById(id, userId)
+    const article = await articleRepository.findById(id, orgId)
 
     if (!article) {
       return c.json({ error: "Not Found" }, 404)
@@ -48,9 +48,10 @@ export const articlesRoute = new Hono()
     return c.json({ data: article })
   })
   .post("/", zValidator("json", createArticleSchema), async (c) => {
+    const orgId = getOrgId(c)
     const userId = getUserId(c)
     const data = c.req.valid("json")
-    const article = await articleRepository.create(userId, data)
+    const article = await articleRepository.create(orgId, userId, data)
     return c.json({ data: article }, 201)
   })
   .patch(
@@ -58,10 +59,10 @@ export const articlesRoute = new Hono()
     zValidator("param", idParamSchema),
     zValidator("json", updateArticleSchema),
     async (c) => {
-      const userId = getUserId(c)
+      const orgId = getOrgId(c)
       const { id } = c.req.valid("param")
       const data = c.req.valid("json")
-      const article = await articleRepository.update(id, userId, data)
+      const article = await articleRepository.update(id, orgId, data)
 
       if (!article) {
         return c.json({ error: "Not Found" }, 404)
@@ -71,9 +72,9 @@ export const articlesRoute = new Hono()
     },
   )
   .delete("/:id", zValidator("param", idParamSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const { id } = c.req.valid("param")
-    const article = await articleRepository.softDelete(id, userId)
+    const article = await articleRepository.softDelete(id, orgId)
 
     if (!article) {
       return c.json({ error: "Not Found" }, 404)

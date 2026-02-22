@@ -16,11 +16,11 @@ const generateUniqueSlug = async (): Promise<string> => {
 }
 
 export const articleRepository = {
-  findAll: async (authorId: string, page: number, limit: number) => {
+  findAll: async (orgId: string, page: number, limit: number) => {
     const skip = (page - 1) * limit
     const [articles, total] = await Promise.all([
       prisma.article.findMany({
-        where: { authorId },
+        where: { orgId },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
@@ -32,7 +32,7 @@ export const articleRepository = {
           updatedAt: true,
         },
       }),
-      prisma.article.count({ where: { authorId } }),
+      prisma.article.count({ where: { orgId } }),
     ])
 
     return {
@@ -44,49 +44,50 @@ export const articleRepository = {
     }
   },
 
-  findById: async (id: string, authorId: string) => {
+  findById: async (id: string, orgId: string) => {
     return prisma.article.findFirst({
-      where: { id, authorId },
+      where: { id, orgId },
     })
   },
 
-  count: async (authorId: string) => {
-    return prisma.article.count({ where: { authorId } })
+  count: async (orgId: string) => {
+    return prisma.article.count({ where: { orgId } })
   },
 
-  create: async (authorId: string, data: CreateArticleInput) => {
+  create: async (orgId: string, authorId: string, data: CreateArticleInput) => {
     const slug = await generateUniqueSlug()
     return prisma.article.create({
       data: {
         slug,
         title: data.title,
         body: data.body,
+        orgId,
         authorId,
       },
     })
   },
 
-  update: async (id: string, authorId: string, data: UpdateArticleInput) => {
+  update: async (id: string, orgId: string, data: UpdateArticleInput) => {
     const updated = await prisma.article.updateMany({
-      where: { id, authorId, deletedAt: null },
+      where: { id, orgId, deletedAt: null },
       data: {
         ...(data.title !== undefined && { title: data.title }),
         ...(data.body !== undefined && { body: data.body }),
       },
     })
     if (updated.count === 0) return null
-    return prisma.article.findFirst({ where: { id, authorId } })
+    return prisma.article.findFirst({ where: { id, orgId } })
   },
 
-  findBySlug: async (slug: string, authorId: string) => {
+  findBySlug: async (slug: string, orgId: string) => {
     return prisma.article.findFirst({
-      where: { slug, authorId, deletedAt: null },
+      where: { slug, orgId, deletedAt: null },
     })
   },
 
-  softDelete: async (id: string, authorId: string) => {
+  softDelete: async (id: string, orgId: string) => {
     const deleted = await prisma.article.updateMany({
-      where: { id, authorId, deletedAt: null },
+      where: { id, orgId, deletedAt: null },
       data: { deletedAt: new Date() },
     })
     if (deleted.count === 0) return null

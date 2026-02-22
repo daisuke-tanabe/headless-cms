@@ -1,9 +1,9 @@
 import { prisma } from "../lib/prisma.js"
 
 export const apiKeyRepository = {
-  findAll: async (userId: string) => {
+  findAll: async (orgId: string) => {
     return prisma.apiKey.findMany({
-      where: { userId },
+      where: { orgId },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -14,9 +14,9 @@ export const apiKeyRepository = {
     })
   },
 
-  create: async (userId: string, hashedKey: string, prefix: string) => {
+  create: async (orgId: string, userId: string, hashedKey: string, prefix: string) => {
     return prisma.apiKey.create({
-      data: { userId, hashedKey, prefix },
+      data: { orgId, userId, hashedKey, prefix },
       select: {
         id: true,
         prefix: true,
@@ -26,9 +26,9 @@ export const apiKeyRepository = {
     })
   },
 
-  deleteKey: async (id: string, userId: string) => {
+  deleteKey: async (id: string, orgId: string) => {
     const deleted = await prisma.apiKey.deleteMany({
-      where: { id, userId },
+      where: { id, orgId },
     })
     if (deleted.count === 0) return null
     return { id }
@@ -39,6 +39,7 @@ export const apiKeyRepository = {
       where: { hashedKey },
       select: {
         id: true,
+        orgId: true,
         userId: true,
         lastUsedAt: true,
       },

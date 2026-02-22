@@ -2,17 +2,17 @@ import Anthropic from "@anthropic-ai/sdk"
 import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { chatRequestSchema } from "../../shared/index.js"
-import { getUserId, requireAuth } from "../middleware/auth.js"
+import { getOrgId, requireOrg } from "../middleware/auth.js"
 import { processChat } from "../services/ai-service.js"
 
 export const chatRoute = new Hono()
-  .use("*", requireAuth)
+  .use("*", requireOrg)
   .post("/", zValidator("json", chatRequestSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const request = c.req.valid("json")
 
     try {
-      const response = await processChat(request, userId)
+      const response = await processChat(request, orgId)
       return c.json(response)
     } catch (error) {
       if (error instanceof Anthropic.RateLimitError) {

@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { z } from "zod"
 import { paginationSchema } from "../../../shared/index.js"
-import { getUserId } from "../../middleware/auth.js"
+import { getOrgId } from "../../middleware/auth.js"
 import { articleRepository } from "../../repositories/article-repository.js"
 
 const slugParamSchema = z.object({
@@ -11,10 +11,10 @@ const slugParamSchema = z.object({
 
 export const v1ArticlesRoute = new Hono()
   .get("/", zValidator("query", paginationSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const { page, limit } = c.req.valid("query")
     try {
-      const result = await articleRepository.findAll(userId, page, limit)
+      const result = await articleRepository.findAll(orgId, page, limit)
       return c.json({
         data: result.articles,
         meta: {
@@ -33,9 +33,9 @@ export const v1ArticlesRoute = new Hono()
     }
   })
   .get("/:slug", zValidator("param", slugParamSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const { slug } = c.req.valid("param")
-    const article = await articleRepository.findBySlug(slug, userId)
+    const article = await articleRepository.findBySlug(slug, orgId)
 
     if (!article) {
       return c.json({ error: "Not Found" }, 404)

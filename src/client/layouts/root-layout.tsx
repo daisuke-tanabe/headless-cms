@@ -1,4 +1,4 @@
-import { SignOutButton, useAuth } from "@clerk/clerk-react"
+import { OrganizationSwitcher, SignOutButton, useAuth } from "@clerk/clerk-react"
 import { Menu } from "lucide-react"
 import { Link, Outlet, useLocation } from "react-router"
 import { Button } from "@/components/ui/button"
@@ -52,6 +52,12 @@ export function RootLayout() {
 
           {isSignedIn ? (
             <div className="flex items-center gap-2">
+              <OrganizationSwitcher
+                hidePersonal={true}
+                afterSelectOrganizationUrl="/dashboard"
+                afterCreateOrganizationUrl="/dashboard"
+              />
+
               <div className="hidden md:block">
                 <SignOutButton>
                   <button

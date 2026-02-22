@@ -1,9 +1,10 @@
 import { useAuth } from "@clerk/clerk-react"
 import { Navigate, Outlet } from "react-router"
+import { OrgRequiredPage } from "@/components/org-required-page"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function EditorLayout() {
-  const { isSignedIn, isLoaded } = useAuth()
+  const { isSignedIn, isLoaded, orgId } = useAuth()
 
   if (!isLoaded) {
     return (
@@ -15,6 +16,10 @@ export function EditorLayout() {
 
   if (!isSignedIn) {
     return <Navigate to="/" replace />
+  }
+
+  if (!orgId) {
+    return <OrgRequiredPage />
   }
 
   return <Outlet />

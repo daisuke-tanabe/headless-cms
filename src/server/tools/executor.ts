@@ -12,7 +12,7 @@ import {
 
 export const executeToolUse = async (
   toolUse: Anthropic.ContentBlockParam & { type: "tool_use" },
-  userId: string,
+  orgId: string,
 ): Promise<ChatAction | null> => {
   return match(toolUse.name)
     .with("get_articles", () => {
@@ -63,7 +63,7 @@ export const executeToolUse = async (
         return null
       }
       const { id } = parsed.data
-      const article = await articleRepository.findById(id, userId)
+      const article = await articleRepository.findById(id, orgId)
       const title = article?.title ?? "不明な記事"
       return {
         type: "delete_article" as const,

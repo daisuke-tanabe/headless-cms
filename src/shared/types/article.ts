@@ -3,6 +3,7 @@ export type Article = {
   readonly slug: string
   readonly title: string
   readonly body: string
+  readonly orgId: string
   readonly authorId: string
   readonly createdAt: string
   readonly updatedAt: string

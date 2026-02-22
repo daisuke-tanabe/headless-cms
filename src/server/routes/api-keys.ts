@@ -2,15 +2,15 @@ import { zValidator } from "@hono/zod-validator"
 import { Hono } from "hono"
 import { deleteApiKeyParamSchema } from "../../shared/index.js"
 import { extractPrefix, generateApiKey, hashApiKey } from "../lib/api-key.js"
-import { getUserId, requireAuth } from "../middleware/auth.js"
+import { getOrgId, getUserId, requireOrg } from "../middleware/auth.js"
 import { apiKeyRepository } from "../repositories/api-key-repository.js"
 
 export const apiKeysRoute = new Hono()
-  .use("*", requireAuth)
+  .use("*", requireOrg)
   .get("/", async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     try {
-      const keys = await apiKeyRepository.findAll(userId)
+      const keys = await apiKeyRepository.findAll(orgId)
       return c.json({ data: keys })
     } catch (error) {
       console.error(
@@ -21,12 +21,13 @@ export const apiKeysRoute = new Hono()
     }
   })
   .post("/", async (c) => {
+    const orgId = getOrgId(c)
     const userId = getUserId(c)
     try {
       const rawKey = generateApiKey()
       const hashedKey = hashApiKey(rawKey)
       const prefix = extractPrefix(rawKey)
-      const apiKey = await apiKeyRepository.create(userId, hashedKey, prefix)
+      const apiKey = await apiKeyRepository.create(orgId, userId, hashedKey, prefix)
       return c.json({ data: { ...apiKey, key: rawKey } }, 201)
     } catch (error) {
       console.error(
@@ -37,10 +38,10 @@ export const apiKeysRoute = new Hono()
     }
   })
   .delete("/:id", zValidator("param", deleteApiKeyParamSchema), async (c) => {
-    const userId = getUserId(c)
+    const orgId = getOrgId(c)
     const { id } = c.req.valid("param")
     try {
-      const result = await apiKeyRepository.deleteKey(id, userId)
+      const result = await apiKeyRepository.deleteKey(id, orgId)
       if (!result) {
         return c.json({ error: "Not Found" }, 404)
       }
