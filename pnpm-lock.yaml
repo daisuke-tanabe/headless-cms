@@ -11,9 +11,6 @@ importers:
       '@anthropic-ai/sdk':
         specifier: 0.78.0
         version: 0.78.0(zod@3.25.76)
-      '@clerk/backend':
-        specifier: 2.32.0
-        version: 2.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/clerk-react':
         specifier: 5.61.1
         version: 5.61.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -68,9 +65,6 @@ importers:
       react-router:
         specifier: 7.13.0
         version: 7.13.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      remeda:
-        specifier: 2.33.6
-        version: 2.33.6
       sonner:
         specifier: 2.0.7
         version: 2.0.7(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -2003,9 +1997,6 @@ packages:
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
-
-  remeda@2.33.6:
-    resolution: {integrity: sha512-tazDGH7s75kUPGBKLvhgBEHMgW+TdDFhjUAMdQj57IoWz6HsGa5D2RX5yDUz6IIqiRRvZiaEHzCzWdTeixc/Kg==}
 
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
@@ -3996,8 +3987,6 @@ snapshots:
   react@19.2.4: {}
 
   readdirp@4.1.2: {}
-
-  remeda@2.33.6: {}
 
   require-directory@2.1.1: {}
 

@@ -1,6 +1,6 @@
 import type { ChatAction, ChatMessage } from "~/shared"
 
-export type ActionHandlers = {
+type ActionHandlers = {
   readonly navigate: (to: string) => void
   readonly addMessage: (message: ChatMessage) => void
   readonly setPendingContent: (content: { readonly title?: string; readonly body?: string }) => void
