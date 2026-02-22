@@ -128,6 +128,41 @@ From the `madge --json` output:
 - **Fan-in** = number of modules that import a file (reverse dependencies)
 - **God module** = file with highest `fan-in x fan-out` product
 
+### Module Cohesion
+
+Detects files that export symbols belonging to multiple unrelated domains/responsibilities.
+
+#### Collection Command
+
+```bash
+# 2件以上の export を持つファイルとその公開シンボルを一覧
+for f in $(find src -name '*.ts' -o -name '*.tsx' | grep -v 'components/ui/'); do
+  count=$(grep -c '^export ' "$f" 2>/dev/null || echo 0)
+  if [ "$count" -gt 1 ]; then
+    echo "=== $f ($count exports) ==="
+    grep '^export ' "$f"
+    echo ""
+  fi
+done
+```
+
+#### Evaluation Criteria
+
+- All exports belong to the same domain → **OK**
+- Matches a known cohesive pattern (see exclusions below) → **OK** (skip)
+- 2 domains mixed → **WARN**
+- 3+ domains mixed → **CRITICAL**
+
+#### Exclusion Patterns (Known Cohesive Exports)
+
+The following patterns are inherently cohesive and should NOT be flagged:
+
+- **Factory function + `ReturnType` type pair** (DI pattern)
+- **Component + Props type**
+- **Zod schema + `z.infer` type**
+- **Barrel files** (`index.ts` re-exports)
+- **Constant files** (constants for the same domain)
+
 ### Thresholds
 
 | Metric | OK | WARN | CRITICAL |
@@ -137,6 +172,7 @@ From the `madge --json` output:
 | Fan-out (imports per file) | < 8 | 8-12 | > 12 |
 | Fan-in (dependents per file) | < 10 | 10-15 | > 15 |
 | God module (fan-in x fan-out) | < 50 | 50-100 | > 100 |
+| Module Cohesion violations | 0 | 1-2 | > 2 |
 
 ---
 
@@ -201,6 +237,7 @@ Human-readable assessment of the top hotspot files. Only collected in `full` mod
 | Dependency Direction | Do dependencies point inward (toward domain)? |
 | Domain Leakage | Does infrastructure detail leak into business logic? |
 | Side Effect Spread | Are side effects (I/O, mutations) contained or scattered? |
+| Module Cohesion | Do all public symbols belong to the same domain/responsibility? Are there mixed concerns (e.g., UI + API, auth + routing)? |
 
 4. Tag each finding with a severity:
    - `[INFO]` — Minor observation, no action needed
@@ -216,7 +253,7 @@ Calculate after collecting raw metrics. Normalize each component to 0-10 scale.
 | Score | Formula | Meaning |
 |-------|---------|---------|
 | **Hotspot Index** | `complexity x churn x centrality` | Files most likely to cause future issues. Higher = more urgent. |
-| **Architectural Drift** | `violations x 2 + cycles x 3 + god_modules` | Degree of architecture degradation. 0 = clean. |
+| **Architectural Drift** | `violations x 2 + cycles x 3 + god_modules + cohesion_violations` | Degree of architecture degradation. 0 = clean. |
 | **Cognitive Load Index** | `nesting x params x func_length` | How hard the code is to understand. Higher = harder. |
 
 ### Score Interpretation
@@ -263,6 +300,9 @@ Top files exceeding thresholds:
 
 **God Modules** (fan-in x fan-out > 100):
 {list if any}
+
+**Module Cohesion Violations**: {count} found
+{list of files with mixed-domain exports and severity}
 
 ### Layer 3: Evolution Metrics
 
