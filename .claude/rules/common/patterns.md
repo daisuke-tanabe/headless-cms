@@ -22,6 +22,17 @@ Encapsulate data access behind a consistent interface:
 - Business logic depends on the abstract interface, not the storage mechanism
 - Enables easy swapping of data sources and simplifies testing with mocks
 
+### Star Topology (Extension Independence)
+
+Modules at the same layer must not depend on each other directly. Each module communicates only through the core (composition root, host, or shared interface):
+- Routes do not import other routes
+- Services do not import other services
+- Stores do not import other stores
+- Tools do not import other tools
+- All wiring happens in the composition root via dependency injection
+
+This keeps the dependency graph as a hub-and-spoke shape, avoiding N² coupling and cascading breakage.
+
 ### API Response Format
 
 Use a consistent envelope for all API responses:
