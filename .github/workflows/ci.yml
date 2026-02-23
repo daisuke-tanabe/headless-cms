@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: read
+  id-token: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm build
+
+  review-on-ci-failure:
+    needs: check
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: "renovate[bot]"
+          track_progress: true
+          use_sticky_comment: true
+          prompt: |
+            Always respond in Japanese.
+
+            CI (lint, typecheck, build) has failed.
+            Analyze the failure and report using the format below.
+
+            ## CI Failure Analysis
+
+            ### Summary
+            - **Failed step**: (lint / typecheck / build)
+            - **Error count**: N
+
+            ### Errors
+            | # | File | Line | Error |
+            |---|------|------|-------|
+            | 1 | `path/to/file.ts` | 42 | error message |
+
+            ### Root Cause
+            (Brief explanation of why this error occurred)
+
+            ### Suggested Fix
+            (Concrete fix steps with code blocks)
+
+            Rules:
+            - This is an analysis-only report. Do not modify any code.
+            - Strictly follow the heading levels and table format above.
+          claude_args: |
+            --model claude-haiku-4-5
+            --allowedTools "Read,Glob,Grep,WebFetch"
+
+  review:
+    needs: check
+    if: github.actor != 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          use_sticky_comment: true
+          prompt: |
+            Always respond in Japanese.
+
+  renovate-minor:
+    needs: check
+    if: >
+      github.actor == 'renovate[bot]' &&
+      contains(toJSON(github.event.pull_request.labels.*.name), 'renovate-minor')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: "renovate[bot]"
+          track_progress: true
+          use_sticky_comment: true
+          prompt: |
+            Always respond in Japanese.
+
+            This is a Renovate minor dependency update.
+            CI (lint, typecheck, build) has already passed.
+            - Check CHANGELOG for breaking changes
+            - If no issues found, approve the PR with `gh pr review --approve`
+            - If issues found, do NOT approve. Report details in a comment.
+          claude_args: |
+            --model claude-haiku-4-5
+            --allowedTools "Read,Glob,Grep,WebFetch,Bash"
+
+  renovate-major:
+    needs: check
+    if: >
+      github.actor == 'renovate[bot]' &&
+      contains(toJSON(github.event.pull_request.labels.*.name), 'renovate-major')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: "renovate[bot]"
+          track_progress: true
+          use_sticky_comment: true
+          prompt: |
+            Always respond in Japanese.
+
+            This is a Renovate major dependency update. Potential breaking changes.
+            CI (lint, typecheck, build) has already passed.
+            - Check CHANGELOG/release notes for breaking changes
+            - Identify affected code in this project
+            - Determine if migration steps are needed
+            - Report details in a comment if any issues found
+          claude_args: |
+            --model claude-haiku-4-5
+            --allowedTools "Read,Glob,Grep,WebFetch"

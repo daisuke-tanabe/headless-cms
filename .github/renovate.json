@@ -1,5 +1,15 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>daisuke-tanabe/renovate-config"],
-  "baseBranchPatterns": ["main"]
+  "baseBranchPatterns": ["main"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major"],
+      "labels": ["renovate-major"]
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "labels": ["renovate-minor"]
+    }
+  ]
 }
