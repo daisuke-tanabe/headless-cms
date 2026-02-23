@@ -16,7 +16,7 @@ export function useArticles(page: number) {
     queryKey: articleKeys.list(page),
     queryFn: async () => {
       const res = await apiClient.api.articles.$get({
-        query: { page, limit: 20 },
+        query: { page: String(page), limit: "20" },
       })
       if (!res.ok) throw res
       return res.json()
