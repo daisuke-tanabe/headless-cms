@@ -79,7 +79,7 @@ const routes = app
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
-    return err.getResponse()
+    return c.json({ error: err.message }, err.status)
   }
   console.error("Unhandled error:", err instanceof Error ? err.message : "Unknown error")
   return c.json({ error: "Internal Server Error" }, 500)
