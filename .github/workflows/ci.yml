@@ -18,7 +18,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -34,7 +34,7 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
       - uses: anthropics/claude-code-action@v1
@@ -78,7 +78,7 @@ jobs:
     if: github.actor != 'renovate[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
       - uses: anthropics/claude-code-action@v1
@@ -96,7 +96,7 @@ jobs:
       contains(toJSON(github.event.pull_request.labels.*.name), 'renovate-minor')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
       - uses: anthropics/claude-code-action@v1
@@ -124,7 +124,7 @@ jobs:
       contains(toJSON(github.event.pull_request.labels.*.name), 'renovate-major')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 1
       - uses: anthropics/claude-code-action@v1
