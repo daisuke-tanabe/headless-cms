@@ -1,5 +1,5 @@
 import { FileX, Loader2 } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 import { AsyncBoundary } from "@/components/async-boundary"
 import { EntryEditorShell } from "@/components/entry-editor-layout"
@@ -27,13 +27,15 @@ function EntryNewContent({ contentTypeId }: { contentTypeId: string }) {
   const setExtras = usePageContextStore((s) => s.setExtras)
   const clearExtras = usePageContextStore((s) => s.clearExtras)
 
+  const pendingContentRef = useRef(pendingContent)
+
   const [defaultValues] = useState<Record<string, unknown> | undefined>(() => {
-    if (pendingContent) {
-      clearPendingContent()
-      return pendingContent
-    }
-    return undefined
+    return pendingContentRef.current ?? undefined
   })
+
+  useEffect(() => {
+    if (pendingContentRef.current) clearPendingContent()
+  }, [clearPendingContent])
 
   useEffect(() => {
     if (contentType) {
@@ -125,15 +127,17 @@ function EntryEditContent({ contentTypeId, entryId }: { contentTypeId: string; e
   const setExtras = usePageContextStore((s) => s.setExtras)
   const clearExtras = usePageContextStore((s) => s.clearExtras)
 
+  const pendingContentRef = useRef(pendingContent)
+
   const [defaultValues] = useState<Record<string, unknown> | undefined>(() => {
     if (!entry) return undefined
     const base = entry.data as Record<string, unknown>
-    if (pendingContent) {
-      clearPendingContent()
-      return { ...base, ...pendingContent }
-    }
-    return base
+    return pendingContentRef.current ? { ...base, ...pendingContentRef.current } : base
   })
+
+  useEffect(() => {
+    if (pendingContentRef.current) clearPendingContent()
+  }, [clearPendingContent])
 
   useEffect(() => {
     if (contentType && entry) {
