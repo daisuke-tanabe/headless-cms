@@ -7,10 +7,7 @@ import { getOrgId, getUserId, requireOrg } from "../middleware/auth.js"
 import type { ApiKeyRepository } from "../repositories/api-key-repository.js"
 
 const handleError = (c: Context, error: unknown, action: "fetch" | "create" | "delete") => {
-  console.error(
-    `ApiKeys ${action} error:`,
-    error instanceof Error ? error.message : "Unknown error",
-  )
+  console.error(`ApiKeys ${action} error:`, error)
   return c.json({ error: `Failed to ${action}` }, 500)
 }
 
