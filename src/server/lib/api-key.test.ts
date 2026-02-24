@@ -30,6 +30,31 @@ describe("generateApiKey", () => {
     const suffix = key.slice(API_KEY_PREFIX.length)
     expect(suffix).toMatch(/^[A-Za-z0-9]+$/)
   })
+
+  // rejection sampling によりモジュラスバイアスが除去されていることを確認する。
+  // 厳密な統計検定ではなく、先頭8文字 (A〜H) の出現率が均一に近いかを確認するレベル。
+  it("should not have significant bias toward the first 8 characters (A-H)", () => {
+    const BASE62_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    const BIASED_CHARS = new Set("ABCDEFGH") // rejection sampling なしで高頻度になる文字
+    const SAMPLE_COUNT = 1000
+
+    let biasedCount = 0
+    let totalChars = 0
+
+    for (let i = 0; i < SAMPLE_COUNT; i++) {
+      const suffix = generateApiKey().slice(API_KEY_PREFIX.length)
+      for (const char of suffix) {
+        totalChars++
+        if (BIASED_CHARS.has(char)) biasedCount++
+      }
+    }
+
+    const biasedRate = biasedCount / totalChars
+    // 期待値: 8/62 ≈ 0.129。許容範囲: ±0.03（バイアスがあれば ~5/256 * 8 ≈ 0.156 になる）
+    const EXPECTED_RATE = BIASED_CHARS.size / BASE62_CHARS.length
+    expect(biasedRate).toBeGreaterThan(EXPECTED_RATE - 0.03)
+    expect(biasedRate).toBeLessThan(EXPECTED_RATE + 0.03)
+  })
 })
 
 describe("hashApiKey", () => {

@@ -99,6 +99,7 @@ export function useUpdateArticle() {
     onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: articleKeys.detail(variables.id) })
       queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+      // count（記事件数）は更新で変わらないため invalidate 不要
       toast.success("記事を更新しました", {
         description: `「${result.data.title}」を更新しました。`,
       })
