@@ -10,7 +10,7 @@ export const buildPageContext = (pathname: string): PageContext =>
     }))
     .with("/articles", () => ({ page: "articles" as const, pageNum: 1 }))
     .when(
-      (p) => p.startsWith("/articles/"),
+      (p) => /^\/articles\/[^/]+$/.test(p) && p !== "/articles/new",
       (p) => ({
         page: "article_edit" as const,
         article: { id: p.split("/").pop() ?? "", title: "", body: "" },

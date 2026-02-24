@@ -12,16 +12,16 @@ type ChatStore = {
   readonly clearMessages: () => void
 }
 
-const trimHistory = (messages: readonly ChatMessage[]): readonly ChatMessage[] => {
+const trimHistory = (messages: readonly ChatMessage[]): ChatMessage[] => {
   const textMessages = messages.filter((m) => m.type === "text")
   const maxMessages = MAX_CONVERSATION_ROUNDS * 2
 
   if (textMessages.length <= maxMessages) {
-    return messages
+    return messages.slice()
   }
 
   const oldestTextToKeep = textMessages[textMessages.length - maxMessages]
-  if (!oldestTextToKeep) return messages
+  if (!oldestTextToKeep) return messages.slice()
 
   const oldestIndex = messages.indexOf(oldestTextToKeep)
   return messages.slice(oldestIndex)
@@ -34,7 +34,7 @@ export const useChatStore = create<ChatStore>()(
 
     addMessage: (message) =>
       set((draft) => {
-        draft.messages = trimHistory([...draft.messages, message]) as ChatMessage[]
+        draft.messages = trimHistory([...draft.messages, message])
       }),
 
     updateLastApproval: (status) =>
