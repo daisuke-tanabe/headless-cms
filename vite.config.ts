@@ -27,6 +27,18 @@ export default defineConfig({
     environment: "node",
     coverage: {
       provider: "v8",
+      include: [
+        "src/client/lib/**",
+        "src/server/lib/**",
+        "src/shared/constants.ts",
+        "src/shared/validators/**",
+      ],
+      exclude: [
+        "src/client/lib/api-client.ts", // browser fetch singleton（hono/client）
+        "src/client/lib/query-client.ts", // QueryClient singleton（副作用モジュール）
+        "src/server/lib/constants.ts", // 純粋定数のみ（ロジックなし）
+        "src/server/lib/prisma.ts", // DB singleton（要 DB 接続、UT 不可）
+      ],
       thresholds: {
         statements: 100,
         functions: 100,
