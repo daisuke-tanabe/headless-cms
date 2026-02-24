@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { immer } from "zustand/middleware/immer"
 import type { ChatMessage } from "~/shared"
 import { MAX_CONVERSATION_ROUNDS } from "~/shared"
 
@@ -26,32 +27,29 @@ const trimHistory = (messages: readonly ChatMessage[]): readonly ChatMessage[] =
   return messages.slice(oldestIndex)
 }
 
-export const useChatStore = create<ChatStore>((set) => ({
-  messages: [],
-  isLoading: false,
+export const useChatStore = create<ChatStore>()(
+  immer((set) => ({
+    messages: [],
+    isLoading: false,
 
-  addMessage: (message) =>
-    set((state) => ({
-      messages: trimHistory([...state.messages, message]),
-    })),
+    addMessage: (message) =>
+      set((draft) => {
+        draft.messages = trimHistory([...draft.messages, message]) as ChatMessage[]
+      }),
 
-  updateLastApproval: (status) =>
-    set((state) => {
-      let idx = -1
-      for (let i = state.messages.length - 1; i >= 0; i--) {
-        const msg = state.messages[i]
-        if (msg?.type === "approval" && msg.status === "pending") {
-          idx = i
-          break
+    updateLastApproval: (status) =>
+      set((draft) => {
+        for (let i = draft.messages.length - 1; i >= 0; i--) {
+          const msg = draft.messages[i]
+          if (msg?.type === "approval" && msg.status === "pending") {
+            msg.status = status
+            break
+          }
         }
-      }
-      if (idx === -1) return state
-      return {
-        messages: state.messages.map((m, i) => (i === idx ? { ...m, status } : m)),
-      }
-    }),
+      }),
 
-  setLoading: (loading) => set({ isLoading: loading }),
+    setLoading: (loading) => set({ isLoading: loading }),
 
-  clearMessages: () => set({ messages: [] }),
-}))
+    clearMessages: () => set({ messages: [] }),
+  })),
+)
