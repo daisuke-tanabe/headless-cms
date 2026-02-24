@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { Link, useParams } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
 import { EditorShell } from "@/components/article-editor-layout"
+import { AsyncBoundary } from "@/components/async-boundary"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useArticle, useUpdateArticle } from "@/hooks/use-articles"
@@ -11,9 +12,9 @@ import { useEditorStore } from "@/stores/editor-store"
 
 const FORM_ID = "article-edit-form"
 
-export function ArticleEditPage() {
-  const { id } = useParams<{ id: string }>()
-  const { data, isLoading } = useArticle(id ?? "")
+function ArticleEditContent({ id }: { id: string }) {
+  const { data } = useArticle(id)
+  const article = data?.data
   const updateArticle = useUpdateArticle()
   const { pendingContent, clearPendingContent } = useEditorStore()
   const addMessage = useChatStore((s) => s.addMessage)
@@ -22,8 +23,6 @@ export function ArticleEditPage() {
     title?: string
     body?: string
   }>()
-
-  const article = data?.data
 
   const initialized = useRef(false)
   useEffect(() => {
@@ -42,23 +41,6 @@ export function ArticleEditPage() {
       })
     }
   }, [article, pendingContent, clearPendingContent])
-
-  if (!id) return null
-
-  if (isLoading) {
-    return (
-      <EditorShell
-        breadcrumbItems={[{ label: "記事", to: "/articles" }, { label: "読み込み中..." }]}
-        actionButton={<Skeleton className="h-8 w-16" />}
-        closePath="/articles"
-      >
-        <div className="max-w-3xl mx-auto px-6 md:px-12 py-8">
-          <Skeleton className="h-8 w-2/3 mb-4" />
-          <Skeleton className="h-48 w-full" />
-        </div>
-      </EditorShell>
-    )
-  }
 
   if (!article) {
     return (
@@ -123,5 +105,30 @@ export function ArticleEditPage() {
         }}
       />
     </EditorShell>
+  )
+}
+
+export function ArticleEditPage() {
+  const { id } = useParams<{ id: string }>()
+
+  if (!id) return null
+
+  return (
+    <AsyncBoundary
+      fallback={
+        <EditorShell
+          breadcrumbItems={[{ label: "記事", to: "/articles" }, { label: "読み込み中..." }]}
+          actionButton={<Skeleton className="h-8 w-16" />}
+          closePath="/articles"
+        >
+          <div className="max-w-3xl mx-auto px-6 md:px-12 py-8">
+            <Skeleton className="h-8 w-2/3 mb-4" />
+            <Skeleton className="h-48 w-full" />
+          </div>
+        </EditorShell>
+      }
+    >
+      <ArticleEditContent id={id} />
+    </AsyncBoundary>
   )
 }

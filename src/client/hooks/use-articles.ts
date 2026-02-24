@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 
@@ -12,7 +12,7 @@ const articleKeys = {
 }
 
 export function useArticles(page: number) {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: articleKeys.list(page),
     queryFn: async () => {
       const res = await apiClient.api.articles.$get({
@@ -25,21 +25,21 @@ export function useArticles(page: number) {
 }
 
 export function useArticle(id: string) {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: articleKeys.detail(id),
     queryFn: async () => {
       const res = await apiClient.api.articles[":id"].$get({
         param: { id },
       })
+      if (res.status === 404) return null
       if (!res.ok) throw res
       return res.json()
     },
-    enabled: !!id,
   })
 }
 
 export function useArticleCount() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: articleKeys.count(),
     queryFn: async () => {
       const res = await apiClient.api.articles.count.$get()

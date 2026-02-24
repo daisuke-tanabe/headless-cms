@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 
@@ -8,7 +8,7 @@ const apiKeyKeys = {
 }
 
 export function useApiKeys() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: apiKeyKeys.list(),
     queryFn: async () => {
       const res = await apiClient.api["api-keys"].$get()
