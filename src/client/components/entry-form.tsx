@@ -41,7 +41,14 @@ export function EntryForm({
   return (
     <form
       id={formId}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit((raw) => {
+        const clean = Object.fromEntries(
+          Object.entries(raw).filter(
+            ([, v]) => v !== "" && v !== null && !(typeof v === "number" && Number.isNaN(v)),
+          ),
+        )
+        onSubmit(clean)
+      })}
       className="flex flex-col flex-1 max-w-3xl mx-auto w-full px-6 md:px-12 py-8 gap-6"
     >
       <fieldset disabled={isSubmitting} className="flex flex-col gap-6">
