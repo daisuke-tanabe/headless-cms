@@ -1,5 +1,6 @@
-import { AlertCircle, Check, Copy, Key, Plus, Trash2 } from "lucide-react"
+import { Check, Copy, Key, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
+import { AsyncBoundary } from "@/components/async-boundary"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageContainer } from "@/components/page-container"
 import {
@@ -26,8 +27,74 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useApiKeys, useCreateApiKey, useDeleteApiKey } from "@/hooks/use-api-keys"
 import { formatDate } from "@/lib/format"
 
+function ApiKeysContent({ onDelete }: { onDelete: (id: string) => void }) {
+  const { data } = useApiKeys()
+
+  if (data.data.length === 0) {
+    return (
+      <div className="text-center py-12 border border-dashed rounded-lg">
+        <Key className="h-8 w-8 mx-auto text-muted-foreground/30 mb-4" />
+        <p className="text-sm font-medium mb-1">APIキーがありません</p>
+        <p className="text-[13px] text-muted-foreground mb-4">
+          APIキーを作成して外部アプリと連携しましょう
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="border rounded-lg divide-y">
+      {data.data.map((apiKey) => (
+        <div key={apiKey.id} className="flex items-center justify-between px-4 py-3">
+          <div className="min-w-0">
+            <p className="text-[13px] font-mono">
+              {apiKey.prefix}
+              {"..."}
+            </p>
+            <div className="flex items-center gap-3 mt-0.5">
+              <p className="text-xs text-muted-foreground">作成: {formatDate(apiKey.createdAt)}</p>
+              {apiKey.lastUsedAt ? (
+                <p className="text-xs text-muted-foreground">
+                  最終使用: {formatDate(apiKey.lastUsedAt)}
+                </p>
+              ) : (
+                <p className="text-xs text-muted-foreground">未使用</p>
+              )}
+            </div>
+          </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span className="sr-only">削除</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>APIキーを削除しますか？</AlertDialogTitle>
+                <AlertDialogDescription>
+                  このAPIキーを使用しているアプリケーションは動作しなくなります。この操作は取り消せません。
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="h-8 text-[13px]">キャンセル</AlertDialogCancel>
+                <AlertDialogAction className="h-8 text-[13px]" onClick={() => onDelete(apiKey.id)}>
+                  削除する
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function SettingsPage() {
-  const { data, isLoading, isError, refetch } = useApiKeys()
   const createApiKey = useCreateApiKey()
   const deleteApiKey = useDeleteApiKey()
 
@@ -78,104 +145,21 @@ export function SettingsPage() {
           </Button>
         </div>
 
-        {isError ? (
-          <div className="text-center py-12">
-            <AlertCircle className="h-8 w-8 mx-auto text-muted-foreground/30 mb-4" />
-            <p className="text-sm font-medium mb-1">読み込みに失敗しました</p>
-            <p className="text-[13px] text-muted-foreground mb-4">
-              ネットワーク接続を確認してください
-            </p>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 text-[13px]"
-              onClick={() => refetch()}
-            >
-              再試行
-            </Button>
-          </div>
-        ) : isLoading ? (
-          <div className="border rounded-lg divide-y">
-            {Array.from({ length: 3 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton list
-              <div key={`skeleton-${i}`} className="px-4 py-3">
-                <Skeleton className="h-4 w-48 mb-2" />
-                <Skeleton className="h-3 w-24" />
-              </div>
-            ))}
-          </div>
-        ) : data?.data.length === 0 ? (
-          <div className="text-center py-12 border border-dashed rounded-lg">
-            <Key className="h-8 w-8 mx-auto text-muted-foreground/30 mb-4" />
-            <p className="text-sm font-medium mb-1">APIキーがありません</p>
-            <p className="text-[13px] text-muted-foreground mb-4">
-              APIキーを作成して外部アプリと連携しましょう
-            </p>
-            <Button
-              size="sm"
-              className="h-8 text-[13px]"
-              onClick={handleCreate}
-              disabled={createApiKey.isPending}
-            >
-              <Plus className="h-3.5 w-3.5 mr-1.5" />
-              作成する
-            </Button>
-          </div>
-        ) : (
-          <div className="border rounded-lg divide-y">
-            {data?.data.map((apiKey) => (
-              <div key={apiKey.id} className="flex items-center justify-between px-4 py-3">
-                <div className="min-w-0">
-                  <p className="text-[13px] font-mono">
-                    {apiKey.prefix}
-                    {"..."}
-                  </p>
-                  <div className="flex items-center gap-3 mt-0.5">
-                    <p className="text-xs text-muted-foreground">
-                      作成: {formatDate(apiKey.createdAt)}
-                    </p>
-                    {apiKey.lastUsedAt ? (
-                      <p className="text-xs text-muted-foreground">
-                        最終使用: {formatDate(apiKey.lastUsedAt)}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">未使用</p>
-                    )}
-                  </div>
+        <AsyncBoundary
+          fallback={
+            <div className="border rounded-lg divide-y">
+              {Array.from({ length: 3 }).map((_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton list
+                <div key={`skeleton-${i}`} className="px-4 py-3">
+                  <Skeleton className="h-4 w-48 mb-2" />
+                  <Skeleton className="h-3 w-24" />
                 </div>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span className="sr-only">削除</span>
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>APIキーを削除しますか？</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        このAPIキーを使用しているアプリケーションは動作しなくなります。この操作は取り消せません。
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="h-8 text-[13px]">キャンセル</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="h-8 text-[13px]"
-                        onClick={() => deleteApiKey.mutate(apiKey.id)}
-                      >
-                        削除する
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          }
+        >
+          <ApiKeysContent onDelete={(id) => deleteApiKey.mutate(id)} />
+        </AsyncBoundary>
       </section>
 
       {/* Created Key Dialog */}
