@@ -152,7 +152,7 @@ export const createContentTypesRoute = (deps: Deps) =>
       const contentType = await deps.contentTypeRepo.findById(id, orgId)
       if (!contentType) return c.json({ error: "Not Found" }, 404)
       const entry = await deps.entryRepo.findById(entryId, orgId)
-      if (!entry) return c.json({ error: "Not Found" }, 404)
+      if (!entry || entry.contentTypeId !== id) return c.json({ error: "Not Found" }, 404)
       return c.json({ data: entry })
     })
     .post(

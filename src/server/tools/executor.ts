@@ -64,10 +64,9 @@ export const createToolExecutor =
         if (!data) return null
         const { id } = data
         const entry = await deps.entryRepo.findById(id, orgId)
-        const label = entry
-          ? String((entry.data as Record<string, unknown>)?.title ?? entry.slug)
-          : id
-        const contentTypeId = entry?.contentTypeId ?? ""
+        if (!entry) return null
+        const label = String((entry.data as Record<string, unknown>)?.title ?? entry.slug)
+        const { contentTypeId } = entry
         return {
           type: "delete_entry" as const,
           data: { id, label, contentTypeId },

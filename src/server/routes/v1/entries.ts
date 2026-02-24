@@ -47,7 +47,7 @@ export const createV1EntriesRoute = (deps: Deps) =>
       const contentType = await deps.contentTypeRepo.findBySlug(contentTypeSlug, orgId)
       if (!contentType) return c.json({ error: "Not Found" }, 404)
 
-      const entry = await deps.entryRepo.findBySlug(slug, orgId)
+      const entry = await deps.entryRepo.findBySlug(slug, contentType.id, orgId)
       if (!entry) return c.json({ error: "Not Found" }, 404)
 
       return c.json({ data: entry })

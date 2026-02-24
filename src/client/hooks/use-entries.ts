@@ -21,13 +21,15 @@ const invalidateListsAndCount = (queryClient: QueryClient, contentTypeId: string
   queryClient.invalidateQueries({ queryKey: entryKeys.count(contentTypeId) })
 }
 
+const DEFAULT_ENTRIES_PAGE_LIMIT = 20
+
 export function useEntries(contentTypeId: string, page: number) {
   return useSuspenseQuery({
     queryKey: entryKeys.list(contentTypeId, page),
     queryFn: async () => {
       const res = await apiClient.api["content-types"][":id"].entries.$get({
         param: { id: contentTypeId },
-        query: { page: String(page), limit: "20" },
+        query: { page: String(page), limit: String(DEFAULT_ENTRIES_PAGE_LIMIT) },
       })
       if (!res.ok) throw res
       return res.json()

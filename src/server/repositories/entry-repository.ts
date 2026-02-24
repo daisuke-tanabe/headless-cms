@@ -8,9 +8,10 @@ const MAX_SLUG_RETRIES = 3
 export const createEntryRepository = (db: Database) => ({
   findAll: async (contentTypeId: string, orgId: string, page: number, limit: number) => {
     const skip = (page - 1) * limit
+    const where = { contentTypeId, orgId, deletedAt: null }
     const [entries, total] = await Promise.all([
       db.entry.findMany({
-        where: { contentTypeId, orgId },
+        where,
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
@@ -22,7 +23,7 @@ export const createEntryRepository = (db: Database) => ({
           updatedAt: true,
         },
       }),
-      db.entry.count({ where: { contentTypeId, orgId } }),
+      db.entry.count({ where }),
     ])
 
     return {
@@ -36,18 +37,18 @@ export const createEntryRepository = (db: Database) => ({
 
   findById: async (id: string, orgId: string) => {
     return db.entry.findFirst({
-      where: { id, orgId },
+      where: { id, orgId, deletedAt: null },
     })
   },
 
-  findBySlug: async (slug: string, orgId: string) => {
+  findBySlug: async (slug: string, contentTypeId: string, orgId: string) => {
     return db.entry.findFirst({
-      where: { slug, orgId },
+      where: { slug, contentTypeId, orgId, deletedAt: null },
     })
   },
 
   count: async (contentTypeId: string, orgId: string) => {
-    return db.entry.count({ where: { contentTypeId, orgId } })
+    return db.entry.count({ where: { contentTypeId, orgId, deletedAt: null } })
   },
 
   create: async (
