@@ -1,6 +1,6 @@
 import { QueryErrorResetBoundary } from "@tanstack/react-query"
 import { AlertCircle } from "lucide-react"
-import { Component, type ReactNode, Suspense } from "react"
+import { Component, type ErrorInfo, type ReactNode, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 
 type ErrorFallbackProps = {
@@ -42,15 +42,21 @@ class InnerErrorBoundary extends Component<BoundaryProps, BoundaryState> {
     return { error }
   }
 
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[AsyncBoundary] Error caught:", error, info.componentStack)
+  }
+
   render() {
     if (this.state.error !== null) {
       const reset = () => {
         this.props.onReset()
         this.setState({ error: null })
       }
-      return this.props.renderError
-        ? this.props.renderError({ error: this.state.error, reset })
-        : DefaultErrorFallback({ error: this.state.error, reset })
+      return this.props.renderError ? (
+        this.props.renderError({ error: this.state.error, reset })
+      ) : (
+        <DefaultErrorFallback error={this.state.error} reset={reset} />
+      )
     }
     return this.props.children
   }

@@ -1,5 +1,6 @@
 import { ChevronRight, FileText, Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
+import { useTransition } from "react"
 import { Link } from "react-router"
 import { ArticlePagination } from "@/components/article-pagination"
 import { AsyncBoundary } from "@/components/async-boundary"
@@ -65,6 +66,13 @@ function ArticleListContent({
 
 export function ArticleListPage() {
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1))
+  const [isPending, startTransition] = useTransition()
+
+  const handlePageChange = (newPage: number) => {
+    startTransition(() => {
+      setPage(newPage)
+    })
+  }
 
   return (
     <PageContainer>
@@ -80,21 +88,23 @@ export function ArticleListPage() {
         </Link>
       </div>
 
-      <AsyncBoundary
-        fallback={
-          <div className="border rounded-lg divide-y">
-            {Array.from({ length: 5 }).map((_, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton list
-              <div key={`skeleton-${i}`} className="px-4 py-3">
-                <Skeleton className="h-4 w-1/2 mb-2" />
-                <Skeleton className="h-3 w-24" />
-              </div>
-            ))}
-          </div>
-        }
-      >
-        <ArticleListContent page={page} onPageChange={setPage} />
-      </AsyncBoundary>
+      <div className={isPending ? "opacity-50 transition-opacity duration-150" : undefined}>
+        <AsyncBoundary
+          fallback={
+            <div className="border rounded-lg divide-y">
+              {Array.from({ length: 5 }).map((_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton list
+                <div key={`skeleton-${i}`} className="px-4 py-3">
+                  <Skeleton className="h-4 w-1/2 mb-2" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              ))}
+            </div>
+          }
+        >
+          <ArticleListContent page={page} onPageChange={handlePageChange} />
+        </AsyncBoundary>
+      </div>
     </PageContainer>
   )
 }
