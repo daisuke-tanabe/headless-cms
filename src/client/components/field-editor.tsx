@@ -1,6 +1,16 @@
 import { Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
@@ -38,6 +48,7 @@ const FIELD_TYPE_LABELS: Record<string, string> = {
 
 export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
   const [isAdding, setIsAdding] = useState(false)
+  const [fieldToDelete, setFieldToDelete] = useState<string | null>(null)
   const createField = useCreateField()
   const deleteField = useDeleteField()
 
@@ -71,18 +82,8 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
     }
   }
 
-  const handleDelete = async (fieldId: string) => {
-    if (
-      !window.confirm(
-        "このフィールドを削除しますか？削除するとエントリデータに影響する場合があります。",
-      )
-    )
-      return
-    try {
-      await deleteField.mutateAsync({ contentTypeId, fieldId })
-    } catch (err) {
-      console.error(err)
-    }
+  const handleDelete = (fieldId: string) => {
+    setFieldToDelete(fieldId)
   }
 
   return (
@@ -132,6 +133,38 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
           フィールドがありません
         </p>
       )}
+
+      <AlertDialog
+        open={fieldToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setFieldToDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>フィールドを削除しますか？</AlertDialogTitle>
+            <AlertDialogDescription>
+              削除するとエントリデータに影響する場合があります。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>キャンセル</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                if (fieldToDelete) {
+                  try {
+                    await deleteField.mutateAsync({ contentTypeId, fieldId: fieldToDelete })
+                  } catch (err) {
+                    console.error(err)
+                  }
+                }
+              }}
+            >
+              削除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Add field form */}
       {isAdding ? (

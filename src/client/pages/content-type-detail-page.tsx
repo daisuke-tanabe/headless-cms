@@ -5,6 +5,17 @@ import { AsyncBoundary } from "@/components/async-boundary"
 import { FieldEditor } from "@/components/field-editor"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageContainer } from "@/components/page-container"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -27,6 +38,7 @@ function ContentTypeDetailContent({ id }: { id: string }) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<EditNameForm>({
     defaultValues: { name: contentType?.name ?? "" },
@@ -48,19 +60,14 @@ function ContentTypeDetailContent({ id }: { id: string }) {
 
   const handleUpdateName = async (data: EditNameForm) => {
     try {
-      await updateContentType.mutateAsync({ id, data })
+      const result = await updateContentType.mutateAsync({ id, data })
+      reset({ name: result.data.name })
     } catch (err) {
       console.error(err)
     }
   }
 
   const handleDelete = async () => {
-    if (
-      !window.confirm(
-        `「${contentType.name}」を削除しますか？関連するフィールドとエントリも削除されます。`,
-      )
-    )
-      return
     try {
       await deleteContentType.mutateAsync(id)
       navigate("/content-types")
@@ -133,16 +140,31 @@ function ContentTypeDetailContent({ id }: { id: string }) {
         <p className="text-xs text-muted-foreground mb-4">
           コンテンツタイプを削除すると、関連するすべてのフィールドとエントリも削除されます。
         </p>
-        <Button
-          variant="destructive"
-          size="sm"
-          className="h-7 text-xs"
-          onClick={handleDelete}
-          disabled={deleteContentType.isPending}
-        >
-          <Trash2 className="h-3 w-3 mr-1" />
-          削除する
-        </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={deleteContentType.isPending}
+            >
+              <Trash2 className="h-3 w-3 mr-1" />
+              削除する
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>「{contentType.name}」を削除しますか？</AlertDialogTitle>
+              <AlertDialogDescription>
+                関連するすべてのフィールドとエントリも削除されます。この操作は取り消せません。
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>キャンセル</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>削除</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   )

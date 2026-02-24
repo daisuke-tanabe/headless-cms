@@ -53,7 +53,7 @@ model Field {
 
 model Entry {
   id            String    @id @default(uuid(7))
-  slug          String    @unique
+  slug          String
   contentTypeId String    @map("content_type_id")
   orgId         String    @map("org_id")
   authorId      String    @map("author_id")
@@ -64,6 +64,7 @@ model Entry {
 
   contentType ContentType @relation(fields: [contentTypeId], references: [id], onDelete: Cascade)
 
+  @@unique([contentTypeId, slug])
   @@index([orgId])
   @@index([contentTypeId])
   @@index([deletedAt])

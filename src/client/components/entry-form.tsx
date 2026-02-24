@@ -74,7 +74,7 @@ export function EntryForm({
                 id={field.slug}
                 type="number"
                 {...register(field.slug, { valueAsNumber: true })}
-                placeholder="0"
+                placeholder="例: 100"
               />
             ) : field.type === "date" ? (
               <Input id={field.slug} type="date" {...register(field.slug)} />
@@ -121,7 +121,7 @@ function buildDefaultValues(
         defaults[field.slug] = ""
         break
       case "number":
-        defaults[field.slug] = 0
+        defaults[field.slug] = ""
         break
       case "date":
         defaults[field.slug] = ""
