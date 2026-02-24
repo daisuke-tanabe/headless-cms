@@ -41,7 +41,14 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
   const createField = useCreateField()
   const deleteField = useDeleteField()
 
-  const { register, handleSubmit, reset, setValue, watch } = useForm<NewFieldForm>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<NewFieldForm>({
     defaultValues: { slug: "", name: "", type: "text" as FieldType, required: false },
   })
 
@@ -128,16 +135,28 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
               <Input
                 className="h-8 text-xs"
                 placeholder="例: title"
-                {...register("slug", { required: true })}
+                {...register("slug", {
+                  required: "スラッグは必須です",
+                  pattern: {
+                    value: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+                    message: "スラッグは小文字英数字とハイフンのみ使用できます",
+                  },
+                })}
               />
+              {errors.slug ? (
+                <p className="text-xs text-destructive">{errors.slug.message}</p>
+              ) : null}
             </div>
             <div className="space-y-1">
               <Label className="text-xs">表示名</Label>
               <Input
                 className="h-8 text-xs"
                 placeholder="例: タイトル"
-                {...register("name", { required: true })}
+                {...register("name", { required: "表示名は必須です" })}
               />
+              {errors.name ? (
+                <p className="text-xs text-destructive">{errors.name.message}</p>
+              ) : null}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">

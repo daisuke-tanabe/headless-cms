@@ -2,8 +2,8 @@ import { ChevronRight, FileText, Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
 import { useTransition } from "react"
 import { Link, useParams } from "react-router"
-import { ArticlePagination } from "@/components/article-pagination"
 import { AsyncBoundary } from "@/components/async-boundary"
+import { EntryPagination } from "@/components/entry-pagination"
 import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { PageContainer } from "@/components/page-container"
 import { Button } from "@/components/ui/button"
@@ -68,7 +68,7 @@ function EntryListContent({
         })}
       </div>
       {data.meta ? (
-        <ArticlePagination
+        <EntryPagination
           page={page}
           totalPages={data.meta.totalPages}
           onPageChange={onPageChange}
