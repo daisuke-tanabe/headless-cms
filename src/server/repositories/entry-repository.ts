@@ -44,6 +44,13 @@ export const createEntryRepository = (db: Database) => ({
   findBySlug: async (slug: string, contentTypeId: string, orgId: string) => {
     return db.entry.findFirst({
       where: { slug, contentTypeId, orgId, deletedAt: null },
+      select: {
+        id: true,
+        slug: true,
+        data: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     })
   },
 

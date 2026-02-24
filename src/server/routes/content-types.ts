@@ -198,6 +198,8 @@ export const createContentTypesRoute = (deps: Deps) =>
       const { id, entryId } = c.req.valid("param")
       const contentType = await deps.contentTypeRepo.findById(id, orgId)
       if (!contentType) return c.json({ error: "Not Found" }, 404)
+      const entry = await deps.entryRepo.findById(entryId, orgId)
+      if (!entry || entry.contentTypeId !== id) return c.json({ error: "Not Found" }, 404)
       const result = await deps.entryRepo.softDelete(entryId, orgId)
       if (!result) return c.json({ error: "Not Found" }, 404)
       return c.json({ data: { success: true } })
