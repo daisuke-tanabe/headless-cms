@@ -66,7 +66,9 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
       })
       reset()
       setIsAdding(false)
-    } catch {}
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const handleDelete = async (fieldId: string) => {
@@ -78,7 +80,9 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
       return
     try {
       await deleteField.mutateAsync({ contentTypeId, fieldId })
-    } catch {}
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (

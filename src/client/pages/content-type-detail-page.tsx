@@ -49,7 +49,9 @@ function ContentTypeDetailContent({ id }: { id: string }) {
   const handleUpdateName = async (data: EditNameForm) => {
     try {
       await updateContentType.mutateAsync({ id, data })
-    } catch {}
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   const handleDelete = async () => {
@@ -62,7 +64,9 @@ function ContentTypeDetailContent({ id }: { id: string }) {
     try {
       await deleteContentType.mutateAsync(id)
       navigate("/content-types")
-    } catch {}
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (

@@ -109,7 +109,9 @@ function EntryNewContent({ contentTypeId }: { contentTypeId: string }) {
               content: `[システム] エントリを保存しました（ID: ${result.data.id}）`,
             })
             navigate(`/content-types/${contentTypeId}/entries/${result.data.id}`)
-          } catch {}
+          } catch (err) {
+            console.error(err)
+          }
         }}
       />
     </EntryEditorShell>
@@ -221,7 +223,9 @@ function EntryEditContent({ contentTypeId, entryId }: { contentTypeId: string; e
               role: "assistant",
               content: `[システム] エントリを更新しました（ID: ${result.data.id}）`,
             })
-          } catch {}
+          } catch (err) {
+            console.error(err)
+          }
         }}
       />
     </EntryEditorShell>

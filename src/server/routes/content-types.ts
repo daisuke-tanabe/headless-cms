@@ -66,7 +66,7 @@ export const createContentTypesRoute = (deps: Deps) =>
       const { id } = c.req.valid("param")
       const result = await deps.contentTypeRepo.delete(id, orgId)
       if (!result) return c.json({ error: "Not Found" }, 404)
-      return c.body(null, 204)
+      return c.json({ data: { success: true } })
     })
     // Field CRUD
     .get("/:id/fields", zValidator("param", idParamSchema), async (c) => {

@@ -101,8 +101,9 @@ export function useDeleteContentType() {
       if (!res.ok) throw res
       return res.json()
     },
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       invalidateLists(queryClient)
+      queryClient.removeQueries({ queryKey: contentTypeKeys.detail(id) })
       toast.success("コンテンツタイプを削除しました")
     },
     onError: () => {
