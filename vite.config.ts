@@ -25,5 +25,13 @@ export default defineConfig({
   },
   test: {
     environment: "node",
+    coverage: {
+      provider: "v8",
+      thresholds: {
+        statements: 100,
+        functions: 100,
+        lines: 100,
+      },
+    },
   },
 })

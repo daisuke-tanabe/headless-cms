@@ -48,6 +48,7 @@ export const useChatStore = create<ChatStore>()(
         }
       }),
 
+    // shallow update で十分なため immer draft は使わず直接 set する
     setLoading: (loading) => set({ isLoading: loading }),
 
     clearMessages: () => set({ messages: [] }),
