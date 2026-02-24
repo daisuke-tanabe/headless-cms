@@ -1,10 +1,10 @@
 import { useCallback } from "react"
 import { useLocation } from "react-router"
 import { toast } from "sonner"
-import type { ChatMessage } from "~/shared"
 import { apiClient } from "@/lib/api-client"
 import { buildPageContext } from "@/lib/page-context"
 import { useChatStore } from "@/stores/chat-store"
+import type { ChatMessage } from "~/shared"
 import { useActionExecutor } from "./use-action-executor"
 
 type TextMessage = Extract<ChatMessage, { type: "text" }>
