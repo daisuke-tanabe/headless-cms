@@ -4,7 +4,10 @@ import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 import { buildPageContext } from "@/lib/page-context"
 import { useChatStore } from "@/stores/chat-store"
+import type { ChatMessage } from "~/shared"
 import { useActionExecutor } from "./use-action-executor"
+
+type TextMessage = Extract<ChatMessage, { type: "text" }>
 
 export function useSendMessage() {
   const { messages, addMessage, setLoading } = useChatStore()
@@ -19,11 +22,8 @@ export function useSendMessage() {
 
       try {
         const history = messages
-          .filter((m) => m.type === "text")
-          .map((m) => {
-            if (m.type !== "text") throw new Error("unreachable")
-            return { role: m.role, content: m.content }
-          })
+          .filter((m): m is TextMessage => m.type === "text")
+          .map((m) => ({ role: m.role, content: m.content }))
 
         const res = await apiClient.api.chat.$post({
           json: {

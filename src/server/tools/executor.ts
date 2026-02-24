@@ -1,5 +1,6 @@
 import type Anthropic from "@anthropic-ai/sdk"
 import { match } from "ts-pattern"
+import type { ZodType } from "zod"
 import type { ChatAction } from "../../shared/index.js"
 import type { ArticleRepository } from "../repositories/article-repository.js"
 import {
@@ -14,6 +15,15 @@ type ToolExecutorDeps = {
   readonly articleRepo: ArticleRepository
 }
 
+function parseToolInput<T>(schema: ZodType<T>, input: unknown, toolName: string): T | null {
+  const parsed = schema.safeParse(input)
+  if (!parsed.success) {
+    console.warn(`Invalid ${toolName} input:`, parsed.error.message)
+    return null
+  }
+  return parsed.data
+}
+
 export const createToolExecutor =
   (deps: ToolExecutorDeps) =>
   async (
@@ -22,39 +32,27 @@ export const createToolExecutor =
   ): Promise<ChatAction | null> => {
     return match(toolUse.name)
       .with("get_articles", () => {
-        const parsed = getArticlesInputSchema.safeParse(toolUse.input)
-        if (!parsed.success) {
-          console.warn("Invalid get_articles input:", parsed.error.message)
-        }
+        parseToolInput(getArticlesInputSchema, toolUse.input, "get_articles")
         return null
       })
       .with("get_article", () => {
-        const parsed = getArticleInputSchema.safeParse(toolUse.input)
-        if (!parsed.success) {
-          console.warn("Invalid get_article input:", parsed.error.message)
-        }
+        parseToolInput(getArticleInputSchema, toolUse.input, "get_article")
         return null
       })
       .with("create_article", () => {
-        const parsed = createArticleInputSchema.safeParse(toolUse.input)
-        if (!parsed.success) {
-          console.warn("Invalid create_article input:", parsed.error.message)
-          return null
-        }
+        const data = parseToolInput(createArticleInputSchema, toolUse.input, "create_article")
+        if (!data) return null
         return {
           type: "open_editor" as const,
           to: "/articles/new",
           mode: "create" as const,
-          data: { title: parsed.data.title, body: parsed.data.body },
+          data: { title: data.title, body: data.body },
         }
       })
       .with("update_article", () => {
-        const parsed = updateArticleInputSchema.safeParse(toolUse.input)
-        if (!parsed.success) {
-          console.warn("Invalid update_article input:", parsed.error.message)
-          return null
-        }
-        const { id, title, body } = parsed.data
+        const data = parseToolInput(updateArticleInputSchema, toolUse.input, "update_article")
+        if (!data) return null
+        const { id, title, body } = data
         return {
           type: "open_editor" as const,
           to: `/articles/${id}`,
@@ -63,12 +61,9 @@ export const createToolExecutor =
         }
       })
       .with("delete_article", async () => {
-        const parsed = deleteArticleInputSchema.safeParse(toolUse.input)
-        if (!parsed.success) {
-          console.warn("Invalid delete_article input:", parsed.error.message)
-          return null
-        }
-        const { id } = parsed.data
+        const data = parseToolInput(deleteArticleInputSchema, toolUse.input, "delete_article")
+        if (!data) return null
+        const { id } = data
         const article = await deps.articleRepo.findById(id, orgId)
         const title = article?.title ?? "不明な記事"
         return {

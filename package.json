@@ -4,6 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@10.30.1",
   "scripts": {
+    "prepare": "lefthook install",
     "dev": "concurrently \"pnpm dev:client\" \"pnpm dev:server\"",
     "dev:client": "vite",
     "dev:server": "tsx watch src/server/index.ts",
@@ -50,6 +51,7 @@
       "@biomejs/biome",
       "@prisma/client",
       "esbuild",
+      "lefthook",
       "prisma"
     ]
   },
@@ -61,6 +63,7 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.4",
     "concurrently": "9.2.1",
+    "lefthook": "2.1.1",
     "prisma": "6.19.2",
     "tailwindcss": "4.2.1",
     "tsx": "4.21.0",
