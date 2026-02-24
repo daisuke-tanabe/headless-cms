@@ -71,6 +71,9 @@ export const createProcessChat =
   async (request: ChatRequest, orgId: string): Promise<ChatResponse> => {
     const systemPrompt = buildSystemPrompt(request.context)
 
+    // assistant メッセージを除外し user のみ送信（既知の設計上の制約）:
+    // 各リクエストで system prompt にページ context（記事ID等）を含めるため
+    // 会話の連続性は context から復元できる。将来的には assistant ターンの包含を検討。
     const trimmedHistory = request.history
       .filter((h) => h.role === "user" && !h.content.trimStart().startsWith("[システム]"))
       .slice(-MAX_HISTORY_LENGTH)
