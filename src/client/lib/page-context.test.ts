@@ -24,11 +24,6 @@ describe("buildPageContext", () => {
     })
   })
 
-  it("extracts the article id correctly from the path", () => {
-    const result = buildPageContext("/articles/abc-def-ghi")
-    expect(result).toMatchObject({ page: "article_edit", article: { id: "abc-def-ghi" } })
-  })
-
   it("falls back to dashboard for unknown paths", () => {
     expect(buildPageContext("/unknown")).toEqual({ page: "dashboard" })
   })

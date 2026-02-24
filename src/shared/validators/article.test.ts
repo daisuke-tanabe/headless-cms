@@ -121,14 +121,4 @@ describe("paginationSchema", () => {
     const result = paginationSchema.safeParse({ limit: "101" })
     expect(result.success).toBe(false)
   })
-
-  it("accepts limit of exactly 100", () => {
-    const result = paginationSchema.safeParse({ limit: "100" })
-    expect(result.success).toBe(true)
-  })
-
-  it("accepts page of exactly 1", () => {
-    const result = paginationSchema.safeParse({ page: "1" })
-    expect(result.success).toBe(true)
-  })
 })

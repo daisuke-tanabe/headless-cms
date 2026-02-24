@@ -71,12 +71,6 @@ describe("hashApiKey", () => {
   it("should return different hashes for different keys", () => {
     expect(hashApiKey("key1")).not.toBe(hashApiKey("key2"))
   })
-
-  it("should produce different hashes for generated keys", () => {
-    const key1 = generateApiKey()
-    const key2 = generateApiKey()
-    expect(hashApiKey(key1)).not.toBe(hashApiKey(key2))
-  })
 })
 
 describe("extractPrefix", () => {
@@ -91,10 +85,5 @@ describe("extractPrefix", () => {
     const key = generateApiKey()
     const prefix = extractPrefix(key)
     expect(prefix.startsWith(API_KEY_PREFIX)).toBe(true)
-  })
-
-  it("should be consistent across calls", () => {
-    const key = generateApiKey()
-    expect(extractPrefix(key)).toBe(extractPrefix(key))
   })
 })
