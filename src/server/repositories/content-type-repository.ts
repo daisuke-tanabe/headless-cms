@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import type { CreateContentTypeInput, UpdateContentTypeInput } from "../../shared/index.js"
 import type { Database } from "../lib/prisma.js"
 
@@ -39,8 +40,11 @@ export const createContentTypeRepository = (db: Database) => ({
         where: { id, orgId },
         data: { name: data.name },
       })
-    } catch {
-      return null
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {
+        return null
+      }
+      throw e
     }
   },
 
@@ -48,8 +52,11 @@ export const createContentTypeRepository = (db: Database) => ({
     try {
       await db.contentType.delete({ where: { id, orgId } })
       return { id }
-    } catch {
-      return null
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {
+        return null
+      }
+      throw e
     }
   },
 })

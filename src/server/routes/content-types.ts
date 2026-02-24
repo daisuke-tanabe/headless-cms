@@ -185,6 +185,10 @@ export const createContentTypesRoute = (deps: Deps) =>
         const contentType = await deps.contentTypeRepo.findById(id, orgId)
         if (!contentType) return c.json({ error: "Not Found" }, 404)
 
+        const existingEntry = await deps.entryRepo.findById(entryId, orgId)
+        if (!existingEntry || existingEntry.contentTypeId !== id)
+          return c.json({ error: "Not Found" }, 404)
+
         const validationError = validateEntryData(data, contentType.fields, false)
         if (validationError) return c.json({ error: validationError }, 422)
 

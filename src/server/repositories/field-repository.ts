@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import type { CreateFieldInput, UpdateFieldInput } from "../../shared/index.js"
 import type { Database } from "../lib/prisma.js"
 
@@ -32,8 +33,11 @@ export const createFieldRepository = (db: Database) => ({
           ...(data.order !== undefined && { order: data.order }),
         },
       })
-    } catch {
-      return null
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {
+        return null
+      }
+      throw e
     }
   },
 
@@ -41,8 +45,11 @@ export const createFieldRepository = (db: Database) => ({
     try {
       await db.field.delete({ where: { id, contentTypeId } })
       return { id }
-    } catch {
-      return null
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {
+        return null
+      }
+      throw e
     }
   },
 })
