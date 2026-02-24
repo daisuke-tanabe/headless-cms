@@ -2,12 +2,6 @@ import { z } from "zod"
 
 const entryIdSchema = z.string().uuid()
 
-export const getEntriesInputSchema = z.object({
-  page: z.number().int().positive().optional(),
-})
-
-export const getEntryInputSchema = z.object({ id: entryIdSchema })
-
 export const createEntryInputSchema = z.object({
   contentTypeId: z.string().uuid(),
   data: z.record(z.string(), z.unknown()),

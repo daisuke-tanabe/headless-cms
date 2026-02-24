@@ -53,18 +53,20 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
   })
 
   const handleAdd = async (data: NewFieldForm) => {
-    await createField.mutateAsync({
-      contentTypeId,
-      data: {
-        slug: data.slug,
-        name: data.name,
-        type: data.type,
-        required: data.required,
-        order: fields.length,
-      },
-    })
-    reset()
-    setIsAdding(false)
+    try {
+      await createField.mutateAsync({
+        contentTypeId,
+        data: {
+          slug: data.slug,
+          name: data.name,
+          type: data.type,
+          required: data.required,
+          order: fields.length,
+        },
+      })
+      reset()
+      setIsAdding(false)
+    } catch {}
   }
 
   const handleDelete = async (fieldId: string) => {
@@ -74,7 +76,9 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
       )
     )
       return
-    await deleteField.mutateAsync({ contentTypeId, fieldId })
+    try {
+      await deleteField.mutateAsync({ contentTypeId, fieldId })
+    } catch {}
   }
 
   return (

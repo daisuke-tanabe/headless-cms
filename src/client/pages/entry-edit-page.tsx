@@ -101,13 +101,15 @@ function EntryNewContent({ contentTypeId }: { contentTypeId: string }) {
         defaultValues={defaultValues}
         isSubmitting={createEntry.isPending}
         onSubmit={async (data) => {
-          const result = await createEntry.mutateAsync(data)
-          addMessage({
-            type: "text",
-            role: "assistant",
-            content: `[システム] エントリを保存しました（ID: ${result.data.id}）`,
-          })
-          navigate(`/content-types/${contentTypeId}/entries/${result.data.id}`)
+          try {
+            const result = await createEntry.mutateAsync(data)
+            addMessage({
+              type: "text",
+              role: "assistant",
+              content: `[システム] エントリを保存しました（ID: ${result.data.id}）`,
+            })
+            navigate(`/content-types/${contentTypeId}/entries/${result.data.id}`)
+          } catch {}
         }}
       />
     </EntryEditorShell>
@@ -212,12 +214,14 @@ function EntryEditContent({ contentTypeId, entryId }: { contentTypeId: string; e
         defaultValues={defaultValues}
         isSubmitting={updateEntry.isPending}
         onSubmit={async (data) => {
-          const result = await updateEntry.mutateAsync({ entryId, data })
-          addMessage({
-            type: "text",
-            role: "assistant",
-            content: `[システム] エントリを更新しました（ID: ${result.data.id}）`,
-          })
+          try {
+            const result = await updateEntry.mutateAsync({ entryId, data })
+            addMessage({
+              type: "text",
+              role: "assistant",
+              content: `[システム] エントリを更新しました（ID: ${result.data.id}）`,
+            })
+          } catch {}
         }}
       />
     </EntryEditorShell>

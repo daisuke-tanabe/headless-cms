@@ -6,8 +6,6 @@ import type { EntryRepository } from "../repositories/entry-repository.js"
 import {
   createEntryInputSchema,
   deleteEntryInputSchema,
-  getEntriesInputSchema,
-  getEntryInputSchema,
   updateEntryInputSchema,
 } from "./schemas.js"
 
@@ -31,14 +29,6 @@ export const createToolExecutor =
     orgId: string,
   ): Promise<ChatAction | null> => {
     return match(toolUse.name)
-      .with("get_entries", () => {
-        parseToolInput(getEntriesInputSchema, toolUse.input, "get_entries")
-        return null
-      })
-      .with("get_entry", () => {
-        parseToolInput(getEntryInputSchema, toolUse.input, "get_entry")
-        return null
-      })
       .with("create_entry", () => {
         const data = parseToolInput(createEntryInputSchema, toolUse.input, "create_entry")
         if (!data) return null
