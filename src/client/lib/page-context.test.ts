@@ -40,4 +40,12 @@ describe("buildPageContext", () => {
   it("falls back to dashboard for empty string", () => {
     expect(buildPageContext("")).toEqual({ page: "dashboard" })
   })
+
+  it("returns article_edit with empty id for trailing slash /articles/", () => {
+    // "/articles/".startsWith("/articles/") → true, pop() returns "" → id: ""
+    expect(buildPageContext("/articles/")).toEqual({
+      page: "article_edit",
+      article: { id: "", title: "", body: "" },
+    })
+  })
 })

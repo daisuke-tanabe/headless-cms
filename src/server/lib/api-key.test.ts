@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest"
-import { extractPrefix, generateApiKey, hashApiKey } from "./api-key"
-
-const API_KEY_PREFIX = "sk_cms_"
-const DISPLAY_PREFIX_LENGTH = 16
-const EXPECTED_KEY_LENGTH = API_KEY_PREFIX.length + 24
+import {
+  API_KEY_PREFIX,
+  DISPLAY_PREFIX_LENGTH,
+  extractPrefix,
+  generateApiKey,
+  hashApiKey,
+  RANDOM_BYTES_LENGTH,
+} from "./api-key"
 
 describe("generateApiKey", () => {
   it("should generate a key with the correct prefix", () => {
@@ -13,7 +16,7 @@ describe("generateApiKey", () => {
 
   it("should generate a key of the expected length", () => {
     const key = generateApiKey()
-    expect(key.length).toBe(EXPECTED_KEY_LENGTH)
+    expect(key.length).toBe(API_KEY_PREFIX.length + RANDOM_BYTES_LENGTH)
   })
 
   it("should generate unique keys", () => {
@@ -52,17 +55,17 @@ describe("hashApiKey", () => {
 })
 
 describe("extractPrefix", () => {
-  it("should return exactly the first 16 characters", () => {
+  it("should return exactly the first DISPLAY_PREFIX_LENGTH characters", () => {
     const key = generateApiKey()
     const prefix = extractPrefix(key)
     expect(prefix.length).toBe(DISPLAY_PREFIX_LENGTH)
     expect(prefix).toBe(key.slice(0, DISPLAY_PREFIX_LENGTH))
   })
 
-  it("should include the sk_cms_ prefix", () => {
+  it("should include the API_KEY_PREFIX", () => {
     const key = generateApiKey()
     const prefix = extractPrefix(key)
-    expect(prefix).toMatch(/^sk_cms_/)
+    expect(prefix.startsWith(API_KEY_PREFIX)).toBe(true)
   })
 
   it("should be consistent across calls", () => {

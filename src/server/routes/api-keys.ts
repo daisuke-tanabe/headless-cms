@@ -23,7 +23,7 @@ export const createApiKeysRoute = (apiKeyRepo: ApiKeyRepository) =>
         const keys = await apiKeyRepo.findAll(orgId)
         return c.json({ data: keys })
       } catch (error) {
-        return handleError(c, error, "fetch API keys")
+        return handleError(c, error, "fetch")
       }
     })
     .post("/", async (c) => {
@@ -36,7 +36,7 @@ export const createApiKeysRoute = (apiKeyRepo: ApiKeyRepository) =>
         const apiKey = await apiKeyRepo.create(orgId, userId, hashedKey, prefix)
         return c.json({ data: { ...apiKey, key: rawKey } }, 201)
       } catch (error) {
-        return handleError(c, error, "create API key")
+        return handleError(c, error, "create")
       }
     })
     .delete("/:id", zValidator("param", deleteApiKeyParamSchema), async (c) => {
@@ -49,6 +49,6 @@ export const createApiKeysRoute = (apiKeyRepo: ApiKeyRepository) =>
         }
         return c.json({ data: { success: true } })
       } catch (error) {
-        return handleError(c, error, "delete API key")
+        return handleError(c, error, "delete")
       }
     })

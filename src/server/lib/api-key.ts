@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto"
 
-const API_KEY_PREFIX = "sk_cms_"
-const RANDOM_BYTES_LENGTH = 24
+export const API_KEY_PREFIX = "sk_cms_"
+export const RANDOM_BYTES_LENGTH = 24
 
 const BASE62_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 
@@ -22,7 +22,7 @@ export const hashApiKey = (key: string): string => {
   return createHash("sha256").update(key).digest("hex")
 }
 
-const DISPLAY_PREFIX_LENGTH = 16
+export const DISPLAY_PREFIX_LENGTH = 16
 
 export const extractPrefix = (key: string): string => {
   return key.slice(0, DISPLAY_PREFIX_LENGTH)

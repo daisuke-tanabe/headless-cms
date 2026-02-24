@@ -13,14 +13,15 @@ describe("formatDate", () => {
     expect(result).toContain("2024")
   })
 
+  it("formats in Japanese locale (contains 月 and 日)", () => {
+    const result = formatDate("2024-03-15T12:00:00Z")
+    expect(result).toContain("月")
+    expect(result).toContain("日")
+  })
+
   it("formats different dates differently", () => {
     const jan = formatDate("2024-01-01T00:00:00Z")
     const dec = formatDate("2024-12-01T00:00:00Z")
     expect(jan).not.toBe(dec)
-  })
-
-  it("formats a well-known date correctly", () => {
-    const result = formatDate("2024-03-15T12:00:00Z")
-    expect(result).toContain("2024")
   })
 })
