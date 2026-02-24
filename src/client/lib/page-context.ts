@@ -13,7 +13,7 @@ export const buildPageContext = (pathname: string): PageContext =>
       (p) => /^\/articles\/[^/]+$/.test(p) && p !== "/articles/new",
       (p) => ({
         page: "article_edit" as const,
-        article: { id: p.split("/").pop() ?? "", title: "", body: "" },
+        article: { id: p.slice(p.lastIndexOf("/") + 1), title: "", body: "" },
       }),
     )
     .otherwise(() => ({ page: "dashboard" as const }))
