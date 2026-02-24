@@ -1,4 +1,5 @@
 import type Anthropic from "@anthropic-ai/sdk"
+import { match } from "ts-pattern"
 import type { ChatAction, ChatRequest, ChatResponse, PageContext } from "../../shared/index.js"
 import { MAX_BODY_LENGTH, MAX_HISTORY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
 import { AI_MAX_TOKENS, AI_MODEL, DEFAULT_RESPONSE } from "../lib/constants.js"
@@ -41,38 +42,38 @@ const sanitizeForPrompt = (value: string): string =>
     .replace(/>/g, "\uff1e")
     .trim()
 
-const buildContextDescription = (context: PageContext): string => {
-  switch (context.page) {
-    case "dashboard":
-      return "ダッシュボード"
-    case "articles":
-      return `記事一覧（ページ ${context.pageNum}）`
-    case "article_new": {
-      const title = sanitizeForPrompt(truncate(context.editor.title, MAX_TITLE_LENGTH))
-      const body = sanitizeForPrompt(truncate(context.editor.body, MAX_BODY_LENGTH))
+const buildContextDescription = (context: PageContext): string =>
+  match(context)
+    .with({ page: "dashboard" }, () => "ダッシュボード")
+    .with({ page: "articles" }, (c) => `記事一覧（ページ ${c.pageNum}）`)
+    .with({ page: "article_new" }, (c) => {
+      const title = sanitizeForPrompt(truncate(c.editor.title, MAX_TITLE_LENGTH))
+      const body = sanitizeForPrompt(truncate(c.editor.body, MAX_BODY_LENGTH))
       return `記事作成エディタ
 <editor_context>
 タイトル: ${title}
 本文: ${body}
 </editor_context>`
-    }
-    case "article_edit": {
-      const title = sanitizeForPrompt(truncate(context.article.title, MAX_TITLE_LENGTH))
-      const body = sanitizeForPrompt(truncate(context.article.body, MAX_BODY_LENGTH))
-      return `記事編集エディタ（ID: ${context.article.id}）
+    })
+    .with({ page: "article_edit" }, (c) => {
+      const title = sanitizeForPrompt(truncate(c.article.title, MAX_TITLE_LENGTH))
+      const body = sanitizeForPrompt(truncate(c.article.body, MAX_BODY_LENGTH))
+      return `記事編集エディタ（ID: ${c.article.id}）
 <editor_context>
 タイトル: ${title}
 本文: ${body}
 </editor_context>`
-    }
-  }
-}
+    })
+    .exhaustive()
 
 export const createProcessChat =
   (deps: AIServiceDeps) =>
   async (request: ChatRequest, orgId: string): Promise<ChatResponse> => {
     const systemPrompt = buildSystemPrompt(request.context)
 
+    // assistant メッセージを除外し user のみ送信（既知の設計上の制約）:
+    // 各リクエストで system prompt にページ context（記事ID等）を含めるため
+    // 会話の連続性は context から復元できる。将来的には assistant ターンの包含を検討。
     const trimmedHistory = request.history
       .filter((h) => h.role === "user" && !h.content.trimStart().startsWith("[システム]"))
       .slice(-MAX_HISTORY_LENGTH)

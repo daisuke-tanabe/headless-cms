@@ -45,6 +45,7 @@ export const createArticleRepository = (db: Database) => ({
   },
 
   create: async (orgId: string, authorId: string, data: CreateArticleInput) => {
+    // slug の衝突（P2002）は稀に発生するため、最大 MAX_SLUG_RETRIES 回リトライする
     for (let i = 0; i < MAX_SLUG_RETRIES; i++) {
       try {
         return await db.article.create({

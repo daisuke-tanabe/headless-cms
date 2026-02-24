@@ -24,34 +24,41 @@ function buildPageItems(
   totalPages: number,
   onPageChange: (page: number) => void,
 ): readonly PageItem[] {
-  const items: PageItem[] = []
-  for (let i = 1; i <= totalPages; i++) {
+  return Array.from({ length: totalPages }, (_, i) => i + 1).flatMap((i): PageItem[] => {
     if (totalPages <= 5 || i === 1 || i === totalPages || Math.abs(i - page) <= 1) {
-      items.push({
-        key: i,
-        content: (
-          <PaginationLink
-            isActive={i === page}
-            onClick={() => onPageChange(i)}
-            className="cursor-pointer"
-          >
-            {i}
-          </PaginationLink>
-        ),
-      })
-    } else if (i === 2 && page > 3) {
-      items.push({
-        key: "ellipsis-start",
-        content: <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>,
-      })
-    } else if (i === totalPages - 1 && page < totalPages - 2) {
-      items.push({
-        key: "ellipsis-end",
-        content: <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>,
-      })
+      return [
+        {
+          key: i,
+          content: (
+            <PaginationLink
+              isActive={i === page}
+              onClick={() => onPageChange(i)}
+              className="cursor-pointer"
+            >
+              {i}
+            </PaginationLink>
+          ),
+        },
+      ]
     }
-  }
-  return items
+    if (i === 2 && page > 3) {
+      return [
+        {
+          key: "ellipsis-start",
+          content: <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>,
+        },
+      ]
+    }
+    if (i === totalPages - 1 && page < totalPages - 2) {
+      return [
+        {
+          key: "ellipsis-end",
+          content: <span className="flex h-9 w-9 items-center justify-center text-sm">...</span>,
+        },
+      ]
+    }
+    return []
+  })
 }
 
 export function ArticlePagination({ page, totalPages, onPageChange }: ArticlePaginationProps) {

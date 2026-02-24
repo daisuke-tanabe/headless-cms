@@ -1,3 +1,4 @@
+import { match } from "ts-pattern"
 import type { ChatAction, ChatMessage } from "~/shared"
 
 type ActionHandlers = {
@@ -9,23 +10,18 @@ type ActionHandlers = {
 export const executeAction = (action: ChatAction | null, handlers: ActionHandlers): void => {
   if (!action) return
 
-  switch (action.type) {
-    case "open_editor": {
-      handlers.setPendingContent({
-        title: action.data.title,
-        body: action.data.body,
-      })
-      handlers.navigate(action.to)
-      break
-    }
-    case "delete_article": {
+  match(action)
+    .with({ type: "open_editor" }, (a) => {
+      handlers.setPendingContent({ title: a.data.title, body: a.data.body })
+      handlers.navigate(a.to)
+    })
+    .with({ type: "delete_article" }, (a) => {
       handlers.addMessage({
         type: "approval",
-        articleId: action.data.id,
-        articleTitle: action.data.title,
+        articleId: a.data.id,
+        articleTitle: a.data.title,
         status: "pending",
       })
-      break
-    }
-  }
+    })
+    .exhaustive()
 }

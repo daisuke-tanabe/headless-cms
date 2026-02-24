@@ -1,4 +1,9 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query"
+import {
+  type QueryClient,
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query"
 import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 
@@ -9,6 +14,11 @@ const articleKeys = {
   details: () => [...articleKeys.all, "detail"] as const,
   detail: (id: string) => [...articleKeys.details(), id] as const,
   count: () => [...articleKeys.all, "count"] as const,
+}
+
+const invalidateListsAndCount = (queryClient: QueryClient) => {
+  queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+  queryClient.invalidateQueries({ queryKey: articleKeys.count() })
 }
 
 export function useArticles(page: number) {
@@ -61,8 +71,7 @@ export function useCreateArticle() {
       return res.json()
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: articleKeys.count() })
+      invalidateListsAndCount(queryClient)
       toast.success("記事を作成しました", {
         description: `「${variables.title}」を作成しました。`,
       })
@@ -90,6 +99,7 @@ export function useUpdateArticle() {
     onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: articleKeys.detail(variables.id) })
       queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
+      // count（記事件数）は更新で変わらないため invalidate 不要
       toast.success("記事を更新しました", {
         description: `「${result.data.title}」を更新しました。`,
       })
@@ -114,8 +124,7 @@ export function useDeleteArticle() {
       return res.json()
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: articleKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: articleKeys.count() })
+      invalidateListsAndCount(queryClient)
       toast.success("記事を削除しました", {
         description: "記事を完全に削除しました。",
       })
