@@ -1,22 +1,19 @@
+import { match } from "ts-pattern"
 import type { PageContext } from "~/shared"
 
-export const buildPageContext = (pathname: string): PageContext => {
-  if (pathname === "/dashboard") {
-    return { page: "dashboard" }
-  }
-
-  if (pathname === "/articles/new") {
-    return { page: "article_new", editor: { title: "", body: "" } }
-  }
-
-  if (pathname.startsWith("/articles/") && pathname !== "/articles") {
-    const id = pathname.split("/").pop() ?? ""
-    return { page: "article_edit", article: { id, title: "", body: "" } }
-  }
-
-  if (pathname === "/articles") {
-    return { page: "articles", pageNum: 1 }
-  }
-
-  return { page: "dashboard" }
-}
+export const buildPageContext = (pathname: string): PageContext =>
+  match(pathname)
+    .with("/dashboard", () => ({ page: "dashboard" as const }))
+    .with("/articles/new", () => ({
+      page: "article_new" as const,
+      editor: { title: "", body: "" },
+    }))
+    .with("/articles", () => ({ page: "articles" as const, pageNum: 1 }))
+    .when(
+      (p) => p.startsWith("/articles/"),
+      (p) => ({
+        page: "article_edit" as const,
+        article: { id: p.split("/").pop() ?? "", title: "", body: "" },
+      }),
+    )
+    .otherwise(() => ({ page: "dashboard" as const }))
