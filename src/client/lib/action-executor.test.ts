@@ -23,7 +23,7 @@ describe("executeAction", () => {
   it("calls setPendingContent and navigate for open_editor action", () => {
     const action: ChatAction = {
       type: "open_editor",
-      to: "/articles/new",
+      to: "/content-types/ct-123/entries/new",
       mode: "create",
       data: { title: "Test Title", body: "Test Body" },
     }
@@ -32,36 +32,34 @@ describe("executeAction", () => {
       title: "Test Title",
       body: "Test Body",
     })
-    expect(mockHandlers.navigate).toHaveBeenCalledWith("/articles/new")
+    expect(mockHandlers.navigate).toHaveBeenCalledWith("/content-types/ct-123/entries/new")
     expect(mockHandlers.addMessage).not.toHaveBeenCalled()
   })
 
-  it("handles open_editor with optional title/body being undefined", () => {
+  it("handles open_editor with empty data", () => {
     const action: ChatAction = {
       type: "open_editor",
-      to: "/articles/new",
+      to: "/content-types/ct-123/entries/new",
       mode: "create",
       data: {},
     }
     executeAction(action, mockHandlers)
-    expect(mockHandlers.setPendingContent).toHaveBeenCalledWith({
-      title: undefined,
-      body: undefined,
-    })
-    expect(mockHandlers.navigate).toHaveBeenCalledWith("/articles/new")
+    expect(mockHandlers.setPendingContent).toHaveBeenCalledWith({})
+    expect(mockHandlers.navigate).toHaveBeenCalledWith("/content-types/ct-123/entries/new")
   })
 
-  it("calls addMessage with approval message for delete_article action", () => {
+  it("calls addMessage with approval message for delete_entry action", () => {
     const action: ChatAction = {
-      type: "delete_article",
-      data: { id: "article-123", title: "Article to Delete" },
+      type: "delete_entry",
+      data: { id: "entry-123", label: "Entry to Delete", contentTypeId: "ct-123" },
       requiresApproval: true,
     }
     executeAction(action, mockHandlers)
     expect(mockHandlers.addMessage).toHaveBeenCalledWith({
       type: "approval",
-      articleId: "article-123",
-      articleTitle: "Article to Delete",
+      entryId: "entry-123",
+      entryLabel: "Entry to Delete",
+      contentTypeId: "ct-123",
       status: "pending",
     })
     expect(mockHandlers.navigate).not.toHaveBeenCalled()

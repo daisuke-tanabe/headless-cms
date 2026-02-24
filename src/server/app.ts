@@ -8,20 +8,24 @@ import { prisma } from "./lib/prisma.js"
 import { createRequireApiKey } from "./middleware/api-key-auth.js"
 import { clerkMiddleware } from "./middleware/auth.js"
 import { createApiKeyRepository } from "./repositories/api-key-repository.js"
-import { createArticleRepository } from "./repositories/article-repository.js"
+import { createContentTypeRepository } from "./repositories/content-type-repository.js"
+import { createEntryRepository } from "./repositories/entry-repository.js"
+import { createFieldRepository } from "./repositories/field-repository.js"
 import { createApiKeysRoute } from "./routes/api-keys.js"
-import { createArticlesRoute } from "./routes/articles.js"
 import { createChatRoute } from "./routes/chat.js"
-import { createV1ArticlesRoute } from "./routes/v1/articles.js"
+import { createContentTypesRoute } from "./routes/content-types.js"
+import { createV1EntriesRoute } from "./routes/v1/entries.js"
 import { createProcessChat } from "./services/ai-service.js"
 import { createToolExecutor } from "./tools/executor.js"
 
 // --- Dependency injection ---
 
-const articleRepo = createArticleRepository(prisma)
+const contentTypeRepo = createContentTypeRepository(prisma)
+const fieldRepo = createFieldRepository(prisma)
+const entryRepo = createEntryRepository(prisma)
 const apiKeyRepo = createApiKeyRepository(prisma)
 
-const executeToolUse = createToolExecutor({ articleRepo })
+const executeToolUse = createToolExecutor({ entryRepo })
 const processChat = createProcessChat({ anthropic: new Anthropic(), executeToolUse })
 
 // --- App setup ---
@@ -72,10 +76,10 @@ const routes = app
   .get("/health", (c) => {
     return c.json({ status: "ok" })
   })
-  .route("/articles", createArticlesRoute(articleRepo))
+  .route("/content-types", createContentTypesRoute({ contentTypeRepo, fieldRepo, entryRepo }))
   .route("/chat", createChatRoute(processChat))
   .route("/api-keys", createApiKeysRoute(apiKeyRepo))
-  .route("/v1/articles", createV1ArticlesRoute(articleRepo))
+  .route("/v1", createV1EntriesRoute({ contentTypeRepo, entryRepo }))
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

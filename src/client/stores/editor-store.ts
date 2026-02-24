@@ -1,9 +1,6 @@
 import { create } from "zustand"
 
-type PendingContent = {
-  readonly title?: string
-  readonly body?: string
-}
+type PendingContent = Record<string, unknown>
 
 type EditorStore = {
   readonly pendingContent: PendingContent | null

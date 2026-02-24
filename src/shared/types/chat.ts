@@ -1,22 +1,42 @@
+import type { Field } from "./content-type.js"
+
 export type ChatMessage =
   | { readonly type: "text"; readonly role: "user" | "assistant"; readonly content: string }
   | {
       readonly type: "approval"
-      readonly articleId: string
-      readonly articleTitle: string
+      readonly entryId: string
+      readonly entryLabel: string
+      readonly contentTypeId: string
       readonly status: "pending" | "approved" | "cancelled"
     }
 
 export type PageContext =
   | { readonly page: "dashboard" }
-  | { readonly page: "articles"; readonly pageNum: number }
+  | { readonly page: "content_type_list" }
   | {
-      readonly page: "article_new"
-      readonly editor: { readonly title: string; readonly body: string }
+      readonly page: "content_type_detail"
+      readonly contentTypeId: string
+      readonly contentTypeName: string
     }
   | {
-      readonly page: "article_edit"
-      readonly article: { readonly id: string; readonly title: string; readonly body: string }
+      readonly page: "entry_list"
+      readonly contentTypeId: string
+      readonly contentTypeName: string
+      readonly pageNum: number
+    }
+  | {
+      readonly page: "entry_new"
+      readonly contentTypeId: string
+      readonly contentTypeName: string
+      readonly fields: Field[]
+      readonly editor: Record<string, unknown>
+    }
+  | {
+      readonly page: "entry_edit"
+      readonly contentTypeId: string
+      readonly contentTypeName: string
+      readonly fields: Field[]
+      readonly entry: { readonly id: string; readonly data: Record<string, unknown> }
     }
 
 export type ChatRequest = {
@@ -30,15 +50,11 @@ export type ChatAction =
       readonly type: "open_editor"
       readonly to: string
       readonly mode: "create" | "edit"
-      readonly data: {
-        readonly id?: string
-        readonly title?: string
-        readonly body?: string
-      }
+      readonly data: Record<string, unknown>
     }
   | {
-      readonly type: "delete_article"
-      readonly data: { readonly id: string; readonly title: string }
+      readonly type: "delete_entry"
+      readonly data: { readonly id: string; readonly label: string; readonly contentTypeId: string }
       readonly requiresApproval: true
     }
 

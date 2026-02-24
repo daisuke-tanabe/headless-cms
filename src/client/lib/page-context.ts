@@ -1,21 +1,62 @@
 import { match } from "ts-pattern"
-import type { PageContext } from "~/shared"
+import type { Field, PageContext } from "~/shared"
 
-export const buildPageContext = (pathname: string): PageContext =>
-  match(pathname)
+export const buildPageContext = (
+  pathname: string,
+  extras?: {
+    contentTypeId?: string
+    contentTypeName?: string
+    fields?: Field[]
+    entryId?: string
+    entryData?: Record<string, unknown>
+    editorData?: Record<string, unknown>
+    pageNum?: number
+  },
+): PageContext => {
+  const result = match(pathname)
     .with("/dashboard", () => ({ page: "dashboard" as const }))
-    .with("/articles/new", () => ({
-      page: "article_new" as const,
-      editor: { title: "", body: "" },
-    }))
-    .with("/articles", () => ({ page: "articles" as const, pageNum: 1 }))
+    .with("/content-types", () => ({ page: "content_type_list" as const }))
     .when(
-      // ts-pattern の評価順では "/articles/new" は上の .with() で先処理されるため
-      // この条件は冗長だが、評価順に依存しない防衛的ガードとして維持する（revert: 4b58557）
-      (p) => /^\/articles\/[^/]+$/.test(p) && p !== "/articles/new",
-      (p) => ({
-        page: "article_edit" as const,
-        article: { id: p.slice(p.lastIndexOf("/") + 1), title: "", body: "" },
+      (p) => /^\/content-types\/[^/]+$/.test(p),
+      () => ({
+        page: "content_type_detail" as const,
+        contentTypeId: extras?.contentTypeId ?? "",
+        contentTypeName: extras?.contentTypeName ?? "",
+      }),
+    )
+    .when(
+      (p) => /^\/content-types\/[^/]+\/entries$/.test(p),
+      () => ({
+        page: "entry_list" as const,
+        contentTypeId: extras?.contentTypeId ?? "",
+        contentTypeName: extras?.contentTypeName ?? "",
+        pageNum: extras?.pageNum ?? 1,
+      }),
+    )
+    .when(
+      (p) => /^\/content-types\/[^/]+\/entries\/new$/.test(p),
+      () => ({
+        page: "entry_new" as const,
+        contentTypeId: extras?.contentTypeId ?? "",
+        contentTypeName: extras?.contentTypeName ?? "",
+        fields: extras?.fields ?? ([] as Field[]),
+        editor: extras?.editorData ?? {},
+      }),
+    )
+    .when(
+      (p) => /^\/content-types\/[^/]+\/entries\/[^/]+$/.test(p) && !p.endsWith("/new"),
+      () => ({
+        page: "entry_edit" as const,
+        contentTypeId: extras?.contentTypeId ?? "",
+        contentTypeName: extras?.contentTypeName ?? "",
+        fields: extras?.fields ?? ([] as Field[]),
+        entry: {
+          id: extras?.entryId ?? "",
+          data: extras?.entryData ?? {},
+        },
       }),
     )
     .otherwise(() => ({ page: "dashboard" as const }))
+
+  return result as PageContext
+}

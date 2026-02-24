@@ -1,23 +1,22 @@
 import { z } from "zod"
-import { MAX_BODY_LENGTH, MAX_TITLE_LENGTH } from "../../shared/index.js"
 
-const articleIdSchema = z.string().uuid()
+const entryIdSchema = z.string().uuid()
 
-export const getArticlesInputSchema = z.object({
+export const getEntriesInputSchema = z.object({
   page: z.number().int().positive().optional(),
 })
 
-export const getArticleInputSchema = z.object({ id: articleIdSchema })
+export const getEntryInputSchema = z.object({ id: entryIdSchema })
 
-export const createArticleInputSchema = z.object({
-  title: z.string().min(1).max(MAX_TITLE_LENGTH),
-  body: z.string().max(MAX_BODY_LENGTH),
+export const createEntryInputSchema = z.object({
+  contentTypeId: z.string().uuid(),
+  data: z.record(z.string(), z.unknown()),
 })
 
-export const updateArticleInputSchema = z.object({
-  id: articleIdSchema,
-  title: z.string().min(1).max(MAX_TITLE_LENGTH).optional(),
-  body: z.string().max(MAX_BODY_LENGTH).optional(),
+export const updateEntryInputSchema = z.object({
+  id: entryIdSchema,
+  contentTypeId: z.string().uuid(),
+  data: z.record(z.string(), z.unknown()),
 })
 
-export const deleteArticleInputSchema = z.object({ id: articleIdSchema })
+export const deleteEntryInputSchema = z.object({ id: entryIdSchema })

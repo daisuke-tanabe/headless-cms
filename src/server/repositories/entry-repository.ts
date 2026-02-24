@@ -1,32 +1,32 @@
 import { Prisma } from "@prisma/client"
 import { nanoid } from "nanoid"
-import type { CreateArticleInput, UpdateArticleInput } from "../../shared/index.js"
+import type { CreateEntryInput, UpdateEntryInput } from "../../shared/index.js"
 import type { Database } from "../lib/prisma.js"
 
 const MAX_SLUG_RETRIES = 3
 
-export const createArticleRepository = (db: Database) => ({
-  findAll: async (orgId: string, page: number, limit: number) => {
+export const createEntryRepository = (db: Database) => ({
+  findAll: async (contentTypeId: string, orgId: string, page: number, limit: number) => {
     const skip = (page - 1) * limit
-    const [articles, total] = await Promise.all([
-      db.article.findMany({
-        where: { orgId },
+    const [entries, total] = await Promise.all([
+      db.entry.findMany({
+        where: { contentTypeId, orgId },
         orderBy: { createdAt: "desc" },
         skip,
         take: limit,
         select: {
           id: true,
           slug: true,
-          title: true,
+          data: true,
           createdAt: true,
           updatedAt: true,
         },
       }),
-      db.article.count({ where: { orgId } }),
+      db.entry.count({ where: { contentTypeId, orgId } }),
     ])
 
     return {
-      articles,
+      entries,
       total,
       page,
       limit,
@@ -35,26 +35,37 @@ export const createArticleRepository = (db: Database) => ({
   },
 
   findById: async (id: string, orgId: string) => {
-    return db.article.findFirst({
+    return db.entry.findFirst({
       where: { id, orgId },
     })
   },
 
-  count: async (orgId: string) => {
-    return db.article.count({ where: { orgId } })
+  findBySlug: async (slug: string, orgId: string) => {
+    return db.entry.findFirst({
+      where: { slug, orgId },
+    })
   },
 
-  create: async (orgId: string, authorId: string, data: CreateArticleInput) => {
+  count: async (contentTypeId: string, orgId: string) => {
+    return db.entry.count({ where: { contentTypeId, orgId } })
+  },
+
+  create: async (
+    contentTypeId: string,
+    orgId: string,
+    authorId: string,
+    data: CreateEntryInput,
+  ) => {
     // slug の衝突（P2002）は稀に発生するため、最大 MAX_SLUG_RETRIES 回リトライする
     for (let i = 0; i < MAX_SLUG_RETRIES; i++) {
       try {
-        return await db.article.create({
+        return await db.entry.create({
           data: {
             slug: nanoid(8),
-            title: data.title,
-            body: data.body,
+            contentTypeId,
             orgId,
             authorId,
+            data: data.data,
           },
         })
       } catch (e) {
@@ -67,14 +78,11 @@ export const createArticleRepository = (db: Database) => ({
     throw new Error("Failed to generate unique slug after retries")
   },
 
-  update: async (id: string, orgId: string, data: UpdateArticleInput) => {
+  update: async (id: string, orgId: string, data: UpdateEntryInput) => {
     try {
-      return await db.article.update({
+      return await db.entry.update({
         where: { id, orgId, deletedAt: null },
-        data: {
-          ...(data.title !== undefined && { title: data.title }),
-          ...(data.body !== undefined && { body: data.body }),
-        },
+        data: { data: data.data },
       })
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2025") {
@@ -84,14 +92,8 @@ export const createArticleRepository = (db: Database) => ({
     }
   },
 
-  findBySlug: async (slug: string, orgId: string) => {
-    return db.article.findFirst({
-      where: { slug, orgId, deletedAt: null },
-    })
-  },
-
   softDelete: async (id: string, orgId: string) => {
-    const deleted = await db.article.updateMany({
+    const deleted = await db.entry.updateMany({
       where: { id, orgId, deletedAt: null },
       data: { deletedAt: new Date() },
     })
@@ -100,4 +102,4 @@ export const createArticleRepository = (db: Database) => ({
   },
 })
 
-export type ArticleRepository = ReturnType<typeof createArticleRepository>
+export type EntryRepository = ReturnType<typeof createEntryRepository>

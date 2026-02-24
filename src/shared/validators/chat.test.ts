@@ -41,50 +41,37 @@ describe("chatRequestSchema", () => {
     expect(result.success).toBe(true)
   })
 
-  it("validates articles context with pageNum", () => {
+  it("validates content_type_list context", () => {
     const result = chatRequestSchema.safeParse({
-      message: "Show articles",
+      message: "Show content types",
       history: [],
-      context: { page: "articles", pageNum: 2 },
+      context: { page: "content_type_list" },
     })
     expect(result.success).toBe(true)
   })
 
-  it("validates article_new context", () => {
+  it("validates entry_list context", () => {
+    const result = chatRequestSchema.safeParse({
+      message: "Show entries",
+      history: [],
+      context: { page: "entry_list", contentTypeId: "ct-123", contentTypeName: "記事", pageNum: 1 },
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it("validates entry_new context", () => {
     const result = chatRequestSchema.safeParse({
       message: "Create",
       history: [],
-      context: { page: "article_new", editor: { title: "Draft", body: "Content" } },
-    })
-    expect(result.success).toBe(true)
-  })
-
-  it("validates article_edit context with valid UUID", () => {
-    const result = chatRequestSchema.safeParse({
-      message: "Edit",
-      history: [],
       context: {
-        page: "article_edit",
-        article: {
-          id: "550e8400-e29b-41d4-a716-446655440000",
-          title: "Test",
-          body: "Body",
-        },
+        page: "entry_new",
+        contentTypeId: "ct-123",
+        contentTypeName: "記事",
+        fields: [],
+        editor: {},
       },
     })
     expect(result.success).toBe(true)
-  })
-
-  it("rejects article_edit context with non-UUID id", () => {
-    const result = chatRequestSchema.safeParse({
-      message: "Edit",
-      history: [],
-      context: {
-        page: "article_edit",
-        article: { id: "not-a-uuid", title: "Test", body: "Body" },
-      },
-    })
-    expect(result.success).toBe(false)
   })
 
   it("rejects unknown page context", () => {

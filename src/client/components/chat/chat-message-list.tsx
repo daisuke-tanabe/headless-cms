@@ -11,9 +11,9 @@ type ChatMessageListProps = {
 }
 
 const examplePrompts = [
-  "「AIの最新トレンド」という記事を作成して",
-  "記事一覧を見せて",
-  "最新の記事のタイトルを変更して",
+  "「新着情報」というエントリを作成して",
+  "エントリ一覧を見せて",
+  "最新のエントリを編集して",
 ]
 
 function EmptyState() {
@@ -99,8 +99,9 @@ function ChatMessageItem({ message }: { readonly message: ChatMessage }) {
   if (message.type === "approval") {
     return (
       <ApprovalMessage
-        articleId={message.articleId}
-        articleTitle={message.articleTitle}
+        entryId={message.entryId}
+        entryLabel={message.entryLabel}
+        contentTypeId={message.contentTypeId}
         status={message.status}
       />
     )

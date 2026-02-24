@@ -6,21 +6,65 @@ describe("buildPageContext", () => {
     expect(buildPageContext("/dashboard")).toEqual({ page: "dashboard" })
   })
 
-  it("returns articles context for /articles", () => {
-    expect(buildPageContext("/articles")).toEqual({ page: "articles", pageNum: 1 })
+  it("returns content_type_list context for /content-types", () => {
+    expect(buildPageContext("/content-types")).toEqual({ page: "content_type_list" })
   })
 
-  it("returns article_new context for /articles/new", () => {
-    expect(buildPageContext("/articles/new")).toEqual({
-      page: "article_new",
-      editor: { title: "", body: "" },
+  it("returns content_type_detail context for /content-types/:id", () => {
+    const result = buildPageContext("/content-types/ct-123", {
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+    })
+    expect(result).toEqual({
+      page: "content_type_detail",
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
     })
   })
 
-  it("returns article_edit context for /articles/:id", () => {
-    expect(buildPageContext("/articles/some-id-123")).toEqual({
-      page: "article_edit",
-      article: { id: "some-id-123", title: "", body: "" },
+  it("returns entry_list context for /content-types/:id/entries", () => {
+    const result = buildPageContext("/content-types/ct-123/entries", {
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+      pageNum: 1,
+    })
+    expect(result).toEqual({
+      page: "entry_list",
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+      pageNum: 1,
+    })
+  })
+
+  it("returns entry_new context for /content-types/:id/entries/new", () => {
+    const result = buildPageContext("/content-types/ct-123/entries/new", {
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+      fields: [],
+    })
+    expect(result).toEqual({
+      page: "entry_new",
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+      fields: [],
+      editor: {},
+    })
+  })
+
+  it("returns entry_edit context for /content-types/:id/entries/:entryId", () => {
+    const result = buildPageContext("/content-types/ct-123/entries/entry-456", {
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+      fields: [],
+      entryId: "entry-456",
+      entryData: { title: "Test" },
+    })
+    expect(result).toEqual({
+      page: "entry_edit",
+      contentTypeId: "ct-123",
+      contentTypeName: "記事",
+      fields: [],
+      entry: { id: "entry-456", data: { title: "Test" } },
     })
   })
 
@@ -34,9 +78,5 @@ describe("buildPageContext", () => {
 
   it("falls back to dashboard for empty string", () => {
     expect(buildPageContext("")).toEqual({ page: "dashboard" })
-  })
-
-  it("falls back to dashboard for trailing slash /articles/", () => {
-    expect(buildPageContext("/articles/")).toEqual({ page: "dashboard" })
   })
 })
