@@ -1,5 +1,5 @@
 import { FileX, Loader2 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { Link, useParams } from "react-router"
 import { ArticleEditor } from "@/components/article-editor"
 import { EditorShell } from "@/components/article-editor-layout"
@@ -19,28 +19,17 @@ function ArticleEditContent({ id }: { id: string }) {
   const { pendingContent, clearPendingContent } = useEditorStore()
   const addMessage = useChatStore((s) => s.addMessage)
 
-  const [defaultValues, setDefaultValues] = useState<{
-    title?: string
-    body?: string
-  }>()
-
-  const initialized = useRef(false)
-  useEffect(() => {
-    if (!article || initialized.current) return
-    initialized.current = true
+  const [defaultValues] = useState<{ title?: string; body?: string } | undefined>(() => {
+    if (!article) return undefined
     if (pendingContent) {
-      setDefaultValues({
+      clearPendingContent()
+      return {
         title: pendingContent.title ?? article.title,
         body: pendingContent.body ?? article.body,
-      })
-      clearPendingContent()
-    } else {
-      setDefaultValues({
-        title: article.title,
-        body: article.body,
-      })
+      }
     }
-  }, [article, pendingContent, clearPendingContent])
+    return { title: article.title, body: article.body }
+  })
 
   if (!article) {
     return (

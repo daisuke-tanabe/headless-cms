@@ -14,24 +14,16 @@ export const createV1ArticlesRoute = (articleRepo: ArticleRepository) =>
     .get("/", zValidator("query", paginationSchema), async (c) => {
       const orgId = getOrgId(c)
       const { page, limit } = c.req.valid("query")
-      try {
-        const result = await articleRepo.findAll(orgId, page, limit)
-        return c.json({
-          data: result.articles,
-          meta: {
-            total: result.total,
-            page: result.page,
-            limit: result.limit,
-            totalPages: result.totalPages,
-          },
-        })
-      } catch (error) {
-        console.error(
-          "v1 Articles findAll error:",
-          error instanceof Error ? error.message : "Unknown error",
-        )
-        return c.json({ error: "Failed to fetch articles" }, 500)
-      }
+      const result = await articleRepo.findAll(orgId, page, limit)
+      return c.json({
+        data: result.articles,
+        meta: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages,
+        },
+      })
     })
     .get("/:slug", zValidator("param", slugParamSchema), async (c) => {
       const orgId = getOrgId(c)
