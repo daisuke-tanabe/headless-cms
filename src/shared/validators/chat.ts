@@ -30,6 +30,7 @@ const pageContextSchema = z.discriminatedUnion("page", [
     page: z.literal("entry_list"),
     contentTypeId: z.string(),
     contentTypeName: z.string(),
+    fields: z.array(fieldSchema),
     pageNum: z.number().int().min(1),
   }),
   z.object({
