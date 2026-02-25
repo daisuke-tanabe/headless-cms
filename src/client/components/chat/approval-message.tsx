@@ -1,32 +1,38 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { useDeleteArticle } from "@/hooks/use-articles"
+import { useDeleteEntry } from "@/hooks/use-entries"
 import { useChatStore } from "@/stores/chat-store"
 
 type ApprovalMessageProps = {
-  readonly articleId: string
-  readonly articleTitle: string
+  readonly entryId: string
+  readonly entryLabel: string
+  readonly contentTypeId: string
   readonly status: "pending" | "approved" | "cancelled"
 }
 
-export function ApprovalMessage({ articleId, articleTitle, status }: ApprovalMessageProps) {
-  const deleteArticle = useDeleteArticle()
+export function ApprovalMessage({
+  entryId,
+  entryLabel,
+  contentTypeId,
+  status,
+}: ApprovalMessageProps) {
+  const deleteEntry = useDeleteEntry()
   const { updateLastApproval, addMessage } = useChatStore()
 
   const handleApprove = async () => {
     try {
-      await deleteArticle.mutateAsync(articleId)
+      await deleteEntry.mutateAsync({ contentTypeId, entryId })
       updateLastApproval("approved")
       addMessage({
         type: "text",
         role: "assistant",
-        content: `[システム] 記事を削除しました（タイトル: ${articleTitle}）`,
+        content: `[システム] エントリを削除しました（${entryLabel}）`,
       })
     } catch {
       addMessage({
         type: "text",
         role: "assistant",
-        content: "記事の削除に失敗しました。",
+        content: "エントリの削除に失敗しました。",
       })
     }
   }
@@ -39,7 +45,7 @@ export function ApprovalMessage({ articleId, articleTitle, status }: ApprovalMes
     return (
       <Card className="bg-muted">
         <CardContent className="p-3 text-sm text-muted-foreground">
-          「{articleTitle}」を削除しました。
+          「{entryLabel}」を削除しました。
         </CardContent>
       </Card>
     )
@@ -49,7 +55,7 @@ export function ApprovalMessage({ articleId, articleTitle, status }: ApprovalMes
     return (
       <Card className="bg-muted">
         <CardContent className="p-3 text-sm text-muted-foreground">
-          「{articleTitle}」の削除をキャンセルしました。
+          「{entryLabel}」の削除をキャンセルしました。
         </CardContent>
       </Card>
     )
@@ -58,13 +64,13 @@ export function ApprovalMessage({ articleId, articleTitle, status }: ApprovalMes
   return (
     <Card>
       <CardContent className="p-3 space-y-3">
-        <p className="text-sm">この記事を削除します「{articleTitle}」</p>
+        <p className="text-sm">このエントリを削除します「{entryLabel}」</p>
         <div className="flex gap-2">
           <Button
             size="sm"
             variant="destructive"
             onClick={handleApprove}
-            disabled={deleteArticle.isPending}
+            disabled={deleteEntry.isPending}
           >
             削除する
           </Button>

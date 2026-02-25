@@ -7,19 +7,19 @@ import { PageBreadcrumb } from "@/components/page-breadcrumb"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { useIsMobile } from "@/hooks/use-mobile"
 
-type EditorShellProps = {
+type EntryEditorShellProps = {
   readonly children: ReactNode
   readonly breadcrumbItems: readonly BreadcrumbSegment[]
   readonly actionButton: ReactNode
   readonly closePath: string
 }
 
-export function EditorShell({
+export function EntryEditorShell({
   children,
   breadcrumbItems,
   actionButton,
   closePath,
-}: EditorShellProps) {
+}: EntryEditorShellProps) {
   const isMobile = useIsMobile()
   const [isChatOpen, setIsChatOpen] = useState(false)
 

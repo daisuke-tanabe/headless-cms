@@ -4,7 +4,7 @@ import type { ChatAction, ChatMessage } from "~/shared"
 type ActionHandlers = {
   readonly navigate: (to: string) => void
   readonly addMessage: (message: ChatMessage) => void
-  readonly setPendingContent: (content: { readonly title?: string; readonly body?: string }) => void
+  readonly setPendingContent: (content: Record<string, unknown>) => void
 }
 
 export const executeAction = (action: ChatAction | null, handlers: ActionHandlers): void => {
@@ -12,14 +12,15 @@ export const executeAction = (action: ChatAction | null, handlers: ActionHandler
 
   match(action)
     .with({ type: "open_editor" }, (a) => {
-      handlers.setPendingContent({ title: a.data.title, body: a.data.body })
+      handlers.setPendingContent(a.data)
       handlers.navigate(a.to)
     })
-    .with({ type: "delete_article" }, (a) => {
+    .with({ type: "delete_entry" }, (a) => {
       handlers.addMessage({
         type: "approval",
-        articleId: a.data.id,
-        articleTitle: a.data.title,
+        entryId: a.data.id,
+        entryLabel: a.data.label,
+        contentTypeId: a.data.contentTypeId,
         status: "pending",
       })
     })

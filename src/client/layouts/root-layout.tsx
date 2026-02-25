@@ -12,7 +12,7 @@ import {
 
 const navItems = [
   { to: "/dashboard", label: "ダッシュボード", match: "/dashboard" },
-  { to: "/articles", label: "記事", match: "/articles" },
+  { to: "/content-types", label: "コンテンツ", match: "/content-types" },
   { to: "/settings", label: "設定", match: "/settings" },
 ] as const
 

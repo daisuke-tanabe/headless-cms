@@ -2,17 +2,15 @@ import type Anthropic from "@anthropic-ai/sdk"
 import { match } from "ts-pattern"
 import type { ZodType } from "zod"
 import type { ChatAction } from "../../shared/index.js"
-import type { ArticleRepository } from "../repositories/article-repository.js"
+import type { EntryRepository } from "../repositories/entry-repository.js"
 import {
-  createArticleInputSchema,
-  deleteArticleInputSchema,
-  getArticleInputSchema,
-  getArticlesInputSchema,
-  updateArticleInputSchema,
+  createEntryInputSchema,
+  deleteEntryInputSchema,
+  updateEntryInputSchema,
 } from "./schemas.js"
 
 type ToolExecutorDeps = {
-  readonly articleRepo: ArticleRepository
+  readonly entryRepo: EntryRepository
 }
 
 function parseToolInput<T>(schema: ZodType<T>, input: unknown, toolName: string): T | null {
@@ -31,44 +29,37 @@ export const createToolExecutor =
     orgId: string,
   ): Promise<ChatAction | null> => {
     return match(toolUse.name)
-      .with("get_articles", () => {
-        parseToolInput(getArticlesInputSchema, toolUse.input, "get_articles")
-        return null
-      })
-      .with("get_article", () => {
-        parseToolInput(getArticleInputSchema, toolUse.input, "get_article")
-        return null
-      })
-      .with("create_article", () => {
-        const data = parseToolInput(createArticleInputSchema, toolUse.input, "create_article")
+      .with("create_entry", () => {
+        const data = parseToolInput(createEntryInputSchema, toolUse.input, "create_entry")
         if (!data) return null
         return {
           type: "open_editor" as const,
-          to: "/articles/new",
+          to: `/content-types/${data.contentTypeId}/entries/new`,
           mode: "create" as const,
-          data: { title: data.title, body: data.body },
+          data: data.data,
         }
       })
-      .with("update_article", () => {
-        const data = parseToolInput(updateArticleInputSchema, toolUse.input, "update_article")
+      .with("update_entry", () => {
+        const data = parseToolInput(updateEntryInputSchema, toolUse.input, "update_entry")
         if (!data) return null
-        const { id, title, body } = data
         return {
           type: "open_editor" as const,
-          to: `/articles/${id}`,
+          to: `/content-types/${data.contentTypeId}/entries/${data.id}`,
           mode: "edit" as const,
-          data: { id, title, body },
+          data: data.data,
         }
       })
-      .with("delete_article", async () => {
-        const data = parseToolInput(deleteArticleInputSchema, toolUse.input, "delete_article")
+      .with("delete_entry", async () => {
+        const data = parseToolInput(deleteEntryInputSchema, toolUse.input, "delete_entry")
         if (!data) return null
         const { id } = data
-        const article = await deps.articleRepo.findById(id, orgId)
-        const title = article?.title ?? "不明な記事"
+        const entry = await deps.entryRepo.findById(id, orgId)
+        if (!entry) return null
+        const label = String((entry.data as Record<string, unknown>)?.title ?? entry.slug)
+        const { contentTypeId } = entry
         return {
-          type: "delete_article" as const,
-          data: { id, title },
+          type: "delete_entry" as const,
+          data: { id, label, contentTypeId },
           requiresApproval: true as const,
         }
       })

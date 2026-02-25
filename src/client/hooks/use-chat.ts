@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 import { buildPageContext } from "@/lib/page-context"
 import { useChatStore } from "@/stores/chat-store"
+import { usePageContextStore } from "@/stores/page-context-store"
 import type { ChatMessage } from "~/shared"
 import { useActionExecutor } from "./use-action-executor"
 
@@ -12,7 +13,8 @@ type TextMessage = Extract<ChatMessage, { type: "text" }>
 export function useSendMessage() {
   const { messages, addMessage, setLoading } = useChatStore()
   const location = useLocation()
-  const context = buildPageContext(location.pathname)
+  const extras = usePageContextStore((s) => s.extras)
+  const context = buildPageContext(location.pathname, extras)
   const executeAction = useActionExecutor()
 
   return useCallback(

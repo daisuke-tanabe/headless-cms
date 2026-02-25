@@ -8,7 +8,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination"
 
-interface ArticlePaginationProps {
+interface EntryPaginationProps {
   page: number
   totalPages: number
   onPageChange: (page: number) => void
@@ -61,7 +61,7 @@ function buildPageItems(
   })
 }
 
-export function ArticlePagination({ page, totalPages, onPageChange }: ArticlePaginationProps) {
+export function EntryPagination({ page, totalPages, onPageChange }: EntryPaginationProps) {
   if (totalPages <= 1) return null
 
   const pageItems = buildPageItems(page, totalPages, onPageChange)

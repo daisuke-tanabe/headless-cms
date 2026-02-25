@@ -1,28 +1,52 @@
 import { z } from "zod"
 import {
-  MAX_BODY_LENGTH,
+  FIELD_TYPES,
   MAX_CHAT_INPUT_LENGTH,
   MAX_HISTORY_CONTENT_LENGTH,
   MAX_HISTORY_LENGTH,
-  MAX_TITLE_LENGTH,
 } from "../constants.js"
+
+const fieldSchema = z.object({
+  id: z.string(),
+  contentTypeId: z.string(),
+  slug: z.string(),
+  name: z.string(),
+  type: z.enum(FIELD_TYPES),
+  required: z.boolean(),
+  order: z.number().int(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
 
 const pageContextSchema = z.discriminatedUnion("page", [
   z.object({ page: z.literal("dashboard") }),
-  z.object({ page: z.literal("articles"), pageNum: z.number().int().min(1) }),
+  z.object({ page: z.literal("content_type_list") }),
   z.object({
-    page: z.literal("article_new"),
-    editor: z.object({
-      title: z.string().max(MAX_TITLE_LENGTH),
-      body: z.string().max(MAX_BODY_LENGTH),
-    }),
+    page: z.literal("content_type_detail"),
+    contentTypeId: z.string(),
+    contentTypeName: z.string(),
   }),
   z.object({
-    page: z.literal("article_edit"),
-    article: z.object({
-      id: z.string().uuid(),
-      title: z.string().max(MAX_TITLE_LENGTH),
-      body: z.string().max(MAX_BODY_LENGTH),
+    page: z.literal("entry_list"),
+    contentTypeId: z.string(),
+    contentTypeName: z.string(),
+    pageNum: z.number().int().min(1),
+  }),
+  z.object({
+    page: z.literal("entry_new"),
+    contentTypeId: z.string(),
+    contentTypeName: z.string(),
+    fields: z.array(fieldSchema),
+    editor: z.record(z.string(), z.unknown()),
+  }),
+  z.object({
+    page: z.literal("entry_edit"),
+    contentTypeId: z.string(),
+    contentTypeName: z.string(),
+    fields: z.array(fieldSchema),
+    entry: z.object({
+      id: z.string(),
+      data: z.record(z.string(), z.unknown()),
     }),
   }),
 ])

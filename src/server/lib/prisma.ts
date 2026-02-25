@@ -5,10 +5,10 @@ const createPrismaClient = () => {
 
   const extendedClient = baseClient.$extends({
     query: {
-      article: {
+      entry: {
         // Soft delete: delete → update(deletedAt = now)
         async delete({ args, query: _query }) {
-          return baseClient.article.update({
+          return baseClient.entry.update({
             where: args.where,
             data: { deletedAt: new Date() },
           })
@@ -16,7 +16,7 @@ const createPrismaClient = () => {
 
         // Soft delete: deleteMany → updateMany(deletedAt = now)
         async deleteMany({ args, query: _query }) {
-          return baseClient.article.updateMany({
+          return baseClient.entry.updateMany({
             where: args.where,
             data: { deletedAt: new Date() },
           }) as never
