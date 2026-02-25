@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useCreateField, useDeleteField } from "@/hooks/use-content-types"
+import { useEntryCount } from "@/hooks/use-entries"
 import type { Field, FieldType } from "~/shared"
 import { FIELD_TYPES } from "~/shared"
 
@@ -51,6 +52,8 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
   const [fieldToDelete, setFieldToDelete] = useState<string | null>(null)
   const createField = useCreateField()
   const deleteField = useDeleteField()
+  const { data: entryCountData } = useEntryCount(contentTypeId)
+  const entryCount = entryCountData.data.count
 
   const {
     register,
@@ -72,7 +75,7 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
           name: data.name,
           type: data.type,
           required: data.required,
-          order: fields.length,
+          order: fields.length > 0 ? Math.max(...fields.map((f) => f.order)) + 1 : 0,
         },
       })
       reset()
@@ -144,7 +147,9 @@ export function FieldEditor({ contentTypeId, fields }: FieldEditorProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>フィールドを削除しますか？</AlertDialogTitle>
             <AlertDialogDescription>
-              削除するとエントリデータに影響する場合があります。
+              {entryCount > 0
+                ? `${entryCount} 件のエントリが存在します。削除したフィールドのデータは各エントリの JSON に残り続けます。`
+                : "削除してもエントリデータへの影響はありません。"}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

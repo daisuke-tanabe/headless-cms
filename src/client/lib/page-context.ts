@@ -56,7 +56,12 @@ export const buildPageContext = (
         },
       }),
     )
-    .otherwise(() => ({ page: "dashboard" as const }))
+    .otherwise((p) => {
+      if (import.meta.env.DEV) {
+        console.warn(`[page-context] unrecognized path: "${p}", falling back to dashboard`)
+      }
+      return { page: "dashboard" as const }
+    })
 
   return result as PageContext
 }

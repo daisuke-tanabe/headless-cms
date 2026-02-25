@@ -30,6 +30,8 @@ export const validateEntryData = (
   for (const field of fields) {
     const value = record[field.slug]
 
+    // 空文字列は text/richtext の「未入力」を表す。
+    // number は valueAsNumber で NaN に変換されフォーム側 clean フィルタで除外済み。
     if (
       checkRequired &&
       field.required &&
