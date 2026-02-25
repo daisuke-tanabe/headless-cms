@@ -28,26 +28,26 @@ export const createToolExecutor =
     toolUse: Anthropic.ContentBlockParam & { type: "tool_use" },
     orgId: string,
   ): Promise<ChatAction | null> => {
-    return match(toolUse.name)
-      .with("create_entry", () => {
+    return await match(toolUse.name)
+      .with("create_entry", async () => {
         const data = parseToolInput(createEntryInputSchema, toolUse.input, "create_entry")
         if (!data) return null
         return {
-          type: "open_editor" as const,
+          type: "open_editor",
           to: `/content-types/${data.contentTypeId}/entries/new`,
-          mode: "create" as const,
+          mode: "create",
           data: data.data,
-        }
+        } satisfies ChatAction
       })
-      .with("update_entry", () => {
+      .with("update_entry", async () => {
         const data = parseToolInput(updateEntryInputSchema, toolUse.input, "update_entry")
         if (!data) return null
         return {
-          type: "open_editor" as const,
+          type: "open_editor",
           to: `/content-types/${data.contentTypeId}/entries/${data.id}`,
-          mode: "edit" as const,
+          mode: "edit",
           data: data.data,
-        }
+        } satisfies ChatAction
       })
       .with("delete_entry", async () => {
         const data = parseToolInput(deleteEntryInputSchema, toolUse.input, "delete_entry")
@@ -55,15 +55,15 @@ export const createToolExecutor =
         const { id } = data
         const entry = await deps.entryRepo.findById(id, orgId)
         if (!entry) return null
-        const label = String((entry.data as Record<string, unknown>)?.title ?? entry.slug)
+        const label = String((entry.data as { title?: unknown })?.title ?? entry.slug)
         const { contentTypeId } = entry
         return {
-          type: "delete_entry" as const,
+          type: "delete_entry",
           data: { id, label, contentTypeId },
           requiresApproval: true as const,
-        }
+        } satisfies ChatAction
       })
-      .otherwise(() => null)
+      .otherwise(async () => null)
   }
 
 export type ToolExecutor = ReturnType<typeof createToolExecutor>

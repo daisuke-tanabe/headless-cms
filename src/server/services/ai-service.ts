@@ -133,15 +133,21 @@ export const createProcessChat =
       messages,
     })
 
+    type ResponseBlock = (typeof response.content)[number]
+
     // テキスト応答を抽出
-    const textBlock = response.content.find((block) => block.type === "text")
-    const messageText = textBlock?.type === "text" ? textBlock.text : ""
+    const textBlock = response.content.find(
+      (block): block is Extract<ResponseBlock, { type: "text" }> => block.type === "text",
+    )
+    const messageText = textBlock?.text ?? ""
 
     // tool_use ブロックを抽出（single-turn: 最初の1つのみ処理）
-    const toolUseBlock = response.content.find((block) => block.type === "tool_use")
+    const toolUseBlock = response.content.find(
+      (block): block is Extract<ResponseBlock, { type: "tool_use" }> => block.type === "tool_use",
+    )
 
     let action: ChatAction | null = null
-    if (toolUseBlock?.type === "tool_use") {
+    if (toolUseBlock) {
       action = await deps.executeToolUse(
         toolUseBlock as Anthropic.ContentBlockParam & { type: "tool_use" },
         orgId,
