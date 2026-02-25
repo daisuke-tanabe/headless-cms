@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client"
 
+const withDeletedAtFilter = (where: Record<string, unknown> = {}): Record<string, unknown> =>
+  where.deletedAt !== undefined ? where : { ...where, deletedAt: null }
+
 const createPrismaClient = () => {
   const baseClient = new PrismaClient()
 
@@ -24,37 +27,27 @@ const createPrismaClient = () => {
 
         // Auto-filter: findMany → add deletedAt: null
         async findMany({ args, query }) {
-          const where = args.where ?? {}
-          if (where.deletedAt === undefined) {
-            args.where = { ...where, deletedAt: null }
-          }
+          args.where = withDeletedAtFilter(args.where as Record<string, unknown>)
           return query(args)
         },
 
         // Auto-filter: findFirst → add deletedAt: null
         async findFirst({ args, query }) {
-          const where = args.where ?? {}
-          if (where.deletedAt === undefined) {
-            args.where = { ...where, deletedAt: null }
-          }
+          args.where = withDeletedAtFilter(args.where as Record<string, unknown>)
           return query(args)
         },
 
         // Auto-filter: findUnique → findFirst with deletedAt: null
         async findUnique({ args, query }) {
-          const where = args.where as Record<string, unknown>
-          if (where.deletedAt === undefined) {
-            args.where = { ...where, deletedAt: null } as typeof args.where
-          }
+          args.where = withDeletedAtFilter(
+            args.where as Record<string, unknown>,
+          ) as typeof args.where
           return query(args)
         },
 
         // Auto-filter: count → add deletedAt: null
         async count({ args, query }) {
-          const where = args.where ?? {}
-          if (where.deletedAt === undefined) {
-            args.where = { ...where, deletedAt: null }
-          }
+          args.where = withDeletedAtFilter(args.where as Record<string, unknown>)
           return query(args)
         },
       },

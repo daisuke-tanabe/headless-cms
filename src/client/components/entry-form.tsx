@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { useForm } from "react-hook-form"
+import { match } from "ts-pattern"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -60,36 +61,40 @@ export function EntryForm({
               <span className="text-xs text-muted-foreground ml-2">({field.type})</span>
             </Label>
 
-            {field.type === "text" ? (
-              <Input id={field.slug} {...register(field.slug)} placeholder={field.name} />
-            ) : field.type === "richtext" ? (
-              <Textarea
-                id={field.slug}
-                {...register(field.slug)}
-                placeholder={field.name}
-                className="min-h-[200px] resize-y"
-              />
-            ) : field.type === "number" ? (
-              <Input
-                id={field.slug}
-                type="number"
-                {...register(field.slug, { valueAsNumber: true })}
-                placeholder="例: 100"
-              />
-            ) : field.type === "date" ? (
-              <Input id={field.slug} type="date" {...register(field.slug)} />
-            ) : field.type === "boolean" ? (
-              <div className="flex items-center gap-2">
-                <Checkbox
+            {match(field.type)
+              .with("text", () => (
+                <Input id={field.slug} {...register(field.slug)} placeholder={field.name} />
+              ))
+              .with("richtext", () => (
+                <Textarea
                   id={field.slug}
-                  checked={Boolean(watch(field.slug))}
-                  onCheckedChange={(checked) => setValue(field.slug, checked === true)}
+                  {...register(field.slug)}
+                  placeholder={field.name}
+                  className="min-h-[200px] resize-y"
                 />
-                <Label htmlFor={field.slug} className="font-normal cursor-pointer">
-                  有効にする
-                </Label>
-              </div>
-            ) : null}
+              ))
+              .with("number", () => (
+                <Input
+                  id={field.slug}
+                  type="number"
+                  {...register(field.slug, { valueAsNumber: true })}
+                  placeholder="例: 100"
+                />
+              ))
+              .with("date", () => <Input id={field.slug} type="date" {...register(field.slug)} />)
+              .with("boolean", () => (
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={field.slug}
+                    checked={Boolean(watch(field.slug))}
+                    onCheckedChange={(checked) => setValue(field.slug, checked === true)}
+                  />
+                  <Label htmlFor={field.slug} className="font-normal cursor-pointer">
+                    有効にする
+                  </Label>
+                </div>
+              ))
+              .exhaustive()}
 
             {errors[field.slug] ? (
               <p className="text-xs text-destructive">
@@ -113,30 +118,18 @@ function buildDefaultValues(
   fields: readonly Field[],
   overrides?: Record<string, unknown>,
 ): Record<string, unknown> {
-  const defaults: Record<string, unknown> = {}
-  for (const field of fields) {
-    switch (field.type) {
-      case "text":
-      case "richtext":
-        defaults[field.slug] = ""
-        break
-      case "number":
-        defaults[field.slug] = ""
-        break
-      case "date":
-        defaults[field.slug] = ""
-        break
-      case "boolean":
-        defaults[field.slug] = false
-        break
-    }
-  }
-  if (overrides) {
-    for (const [key, value] of Object.entries(overrides)) {
-      if (value !== undefined && value !== null) {
-        defaults[key] = value
-      }
-    }
-  }
-  return defaults
+  const defaults = Object.fromEntries(
+    fields.map((field) => [
+      field.slug,
+      match(field.type)
+        .with("boolean", () => false as unknown)
+        .with("text", "richtext", "number", "date", () => "" as unknown)
+        .exhaustive(),
+    ]),
+  )
+  if (!overrides) return defaults
+  const filtered = Object.fromEntries(
+    Object.entries(overrides).filter(([, value]) => value !== undefined && value !== null),
+  )
+  return { ...defaults, ...filtered }
 }
