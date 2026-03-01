@@ -30,6 +30,7 @@ export const buildPageContext = (
         page: "entry_list" as const,
         contentTypeId: extras?.contentTypeId ?? "",
         contentTypeName: extras?.contentTypeName ?? "",
+        fields: extras?.fields ?? ([] as Field[]),
         pageNum: extras?.pageNum ?? 1,
       }),
     )

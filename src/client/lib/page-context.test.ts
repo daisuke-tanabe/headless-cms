@@ -26,12 +26,14 @@ describe("buildPageContext", () => {
     const result = buildPageContext("/content-types/ct-123/entries", {
       contentTypeId: "ct-123",
       contentTypeName: "記事",
+      fields: [],
       pageNum: 1,
     })
     expect(result).toEqual({
       page: "entry_list",
       contentTypeId: "ct-123",
       contentTypeName: "記事",
+      fields: [],
       pageNum: 1,
     })
   })
@@ -95,6 +97,7 @@ describe("buildPageContext", () => {
       page: "entry_list",
       contentTypeId: "",
       contentTypeName: "",
+      fields: [],
       pageNum: 1,
     })
   })

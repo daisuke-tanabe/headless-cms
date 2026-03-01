@@ -22,6 +22,7 @@ export type PageContext =
       readonly page: "entry_list"
       readonly contentTypeId: string
       readonly contentTypeName: string
+      readonly fields: Field[]
       readonly pageNum: number
     }
   | {

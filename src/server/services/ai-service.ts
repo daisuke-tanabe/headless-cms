@@ -74,11 +74,13 @@ const buildContextDescription = (context: PageContext): string =>
       (c) =>
         `コンテンツタイプ詳細（ID: ${c.contentTypeId}、名前: ${sanitizeForPrompt(c.contentTypeName)}）`,
     )
-    .with(
-      { page: "entry_list" },
-      (c) =>
-        `エントリ一覧（コンテンツタイプ: ${sanitizeForPrompt(c.contentTypeName)}、ページ ${c.pageNum}）`,
-    )
+    .with({ page: "entry_list" }, (c) => {
+      const fieldsDesc = buildFieldsDescription(c.fields)
+      return `エントリ一覧（コンテンツタイプ: ${sanitizeForPrompt(c.contentTypeName)}、コンテンツタイプID: ${c.contentTypeId}、ページ ${c.pageNum}）
+<fields>
+${fieldsDesc}
+</fields>`
+    })
     .with({ page: "entry_new" }, (c) => {
       const fieldsDesc = buildFieldsDescription(c.fields)
       const editorDesc = buildEditorContext(c.editor, c.fields)
@@ -93,7 +95,7 @@ ${editorDesc}
     .with({ page: "entry_edit" }, (c) => {
       const fieldsDesc = buildFieldsDescription(c.fields)
       const editorDesc = buildEditorContext(c.entry.data, c.fields)
-      return `エントリ編集エディタ（コンテンツタイプ: ${sanitizeForPrompt(c.contentTypeName)}、エントリID: ${c.entry.id}）
+      return `エントリ編集エディタ（コンテンツタイプ: ${sanitizeForPrompt(c.contentTypeName)}、コンテンツタイプID: ${c.contentTypeId}、エントリID: ${c.entry.id}）
 <fields>
 ${fieldsDesc}
 </fields>
@@ -108,11 +110,10 @@ export const createProcessChat =
   async (request: ChatRequest, orgId: string): Promise<ChatResponse> => {
     const systemPrompt = buildSystemPrompt(request.context)
 
-    // assistant メッセージを除外し user のみ送信（既知の設計上の制約）:
-    // 各リクエストで system prompt にページ context（エントリID等）を含めるため
-    // 会話の連続性は context から復元できる。将来的には assistant ターンの包含を検討。
+    // [システム] 通知メッセージ（保存完了通知等）を除外し、user/assistant の会話履歴を保持する。
+    // ページコンテキストは system prompt で毎回提供するため、過去の context 依存情報は不要。
     const trimmedHistory = request.history
-      .filter((h) => h.role === "user" && !h.content.trimStart().startsWith("[システム]"))
+      .filter((h) => !h.content.trimStart().startsWith("[システム]"))
       .slice(-MAX_HISTORY_LENGTH)
     const messages: Anthropic.MessageParam[] = [
       ...trimmedHistory.map(

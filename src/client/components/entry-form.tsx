@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useEditorStore } from "@/stores/editor-store"
 import type { Field } from "~/shared"
 
 type EntryFormProps = {
@@ -13,6 +14,7 @@ type EntryFormProps = {
   readonly defaultValues?: Record<string, unknown>
   readonly onSubmit: (data: Record<string, unknown>) => void
   readonly isSubmitting?: boolean
+  readonly onPendingContentConsumed?: (values: Record<string, unknown>) => void
 }
 
 export function EntryForm({
@@ -21,13 +23,16 @@ export function EntryForm({
   defaultValues,
   onSubmit,
   isSubmitting = false,
+  onPendingContentConsumed,
 }: EntryFormProps) {
+  const { pendingContent, clearPendingContent } = useEditorStore()
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     watch,
+    getValues,
     formState: { errors },
   } = useForm<Record<string, unknown>>({
     defaultValues: buildDefaultValues(fields, defaultValues),
@@ -38,6 +43,14 @@ export function EntryForm({
       reset(buildDefaultValues(fields, defaultValues))
     }
   }, [defaultValues, fields, reset])
+
+  useEffect(() => {
+    if (!pendingContent) return
+    const newValues = buildDefaultValues(fields, { ...getValues(), ...pendingContent })
+    reset(newValues)
+    onPendingContentConsumed?.(newValues)
+    clearPendingContent()
+  }, [pendingContent, fields, reset, getValues, clearPendingContent, onPendingContentConsumed])
 
   return (
     <form

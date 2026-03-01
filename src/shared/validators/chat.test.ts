@@ -54,7 +54,13 @@ describe("chatRequestSchema", () => {
     const result = chatRequestSchema.safeParse({
       message: "Show entries",
       history: [],
-      context: { page: "entry_list", contentTypeId: "ct-123", contentTypeName: "記事", pageNum: 1 },
+      context: {
+        page: "entry_list",
+        contentTypeId: "ct-123",
+        contentTypeName: "記事",
+        fields: [],
+        pageNum: 1,
+      },
     })
     expect(result.success).toBe(true)
   })

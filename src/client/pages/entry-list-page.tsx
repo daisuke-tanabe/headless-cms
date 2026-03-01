@@ -1,6 +1,6 @@
 import { ChevronRight, FileText, Plus } from "lucide-react"
 import { parseAsInteger, useQueryState } from "nuqs"
-import { useTransition } from "react"
+import { useEffect, useTransition } from "react"
 import { Link, useParams } from "react-router"
 import { AsyncBoundary } from "@/components/async-boundary"
 import { EntryPagination } from "@/components/entry-pagination"
@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useContentType } from "@/hooks/use-content-types"
 import { useEntries } from "@/hooks/use-entries"
 import { formatDate } from "@/lib/format"
+import { usePageContextStore } from "@/stores/page-context-store"
 
 function EntryListContent({
   contentTypeId,
@@ -131,7 +132,22 @@ function EntryListInner({
   onPageChange: (page: number) => void
 }) {
   const { data: ctData } = useContentType(contentTypeId)
-  const name = ctData?.data?.name ?? "エントリ"
+  const contentType = ctData?.data
+  const name = contentType?.name ?? "エントリ"
+  const setExtras = usePageContextStore((s) => s.setExtras)
+  const clearExtras = usePageContextStore((s) => s.clearExtras)
+
+  useEffect(() => {
+    if (contentType) {
+      setExtras({
+        contentTypeId,
+        contentTypeName: contentType.name,
+        fields: contentType.fields,
+        pageNum: page,
+      })
+    }
+    return () => clearExtras()
+  }, [contentTypeId, contentType, page, setExtras, clearExtras])
 
   return (
     <PageContainer>

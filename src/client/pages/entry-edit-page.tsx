@@ -1,5 +1,5 @@
 import { FileX, Loader2 } from "lucide-react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router"
 import { AsyncBoundary } from "@/components/async-boundary"
 import { EntryEditorShell } from "@/components/entry-editor-layout"
@@ -9,7 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useContentType } from "@/hooks/use-content-types"
 import { useCreateEntry, useEntry, useUpdateEntry } from "@/hooks/use-entries"
 import { useChatStore } from "@/stores/chat-store"
-import { useEditorStore } from "@/stores/editor-store"
 import { usePageContextStore } from "@/stores/page-context-store"
 
 const NEW_FORM_ID = "entry-new-form"
@@ -22,20 +21,10 @@ function EntryNewContent({ contentTypeId }: { contentTypeId: string }) {
   const contentType = ctData?.data
   const navigate = useNavigate()
   const createEntry = useCreateEntry(contentTypeId)
-  const { pendingContent, clearPendingContent } = useEditorStore()
   const addMessage = useChatStore((s) => s.addMessage)
   const setExtras = usePageContextStore((s) => s.setExtras)
   const clearExtras = usePageContextStore((s) => s.clearExtras)
-
-  const pendingContentRef = useRef(pendingContent)
-
-  const [defaultValues] = useState<Record<string, unknown> | undefined>(() => {
-    return pendingContentRef.current ?? undefined
-  })
-
-  useEffect(() => {
-    if (pendingContentRef.current) clearPendingContent()
-  }, [clearPendingContent])
+  const [editorData, setEditorData] = useState<Record<string, unknown>>({})
 
   useEffect(() => {
     if (contentType) {
@@ -43,11 +32,11 @@ function EntryNewContent({ contentTypeId }: { contentTypeId: string }) {
         contentTypeId,
         contentTypeName: contentType.name,
         fields: contentType.fields,
-        editorData: defaultValues ?? {},
+        editorData,
       })
     }
     return () => clearExtras()
-  }, [contentTypeId, contentType, defaultValues, setExtras, clearExtras])
+  }, [contentTypeId, contentType, editorData, setExtras, clearExtras])
 
   if (!contentType) {
     return (
@@ -98,8 +87,8 @@ function EntryNewContent({ contentTypeId }: { contentTypeId: string }) {
       <EntryForm
         formId={NEW_FORM_ID}
         fields={contentType.fields}
-        defaultValues={defaultValues}
         isSubmitting={createEntry.isPending}
+        onPendingContentConsumed={setEditorData}
         onSubmit={async (data) => {
           try {
             const result = await createEntry.mutateAsync(data)
@@ -126,22 +115,9 @@ function EntryEditContent({ contentTypeId, entryId }: { contentTypeId: string; e
   const contentType = ctData?.data
   const entry = entryData?.data
   const updateEntry = useUpdateEntry(contentTypeId)
-  const { pendingContent, clearPendingContent } = useEditorStore()
   const addMessage = useChatStore((s) => s.addMessage)
   const setExtras = usePageContextStore((s) => s.setExtras)
   const clearExtras = usePageContextStore((s) => s.clearExtras)
-
-  const pendingContentRef = useRef(pendingContent)
-
-  const [defaultValues] = useState<Record<string, unknown> | undefined>(() => {
-    if (!entry) return undefined
-    const base = entry.data as Record<string, unknown>
-    return pendingContentRef.current ? { ...base, ...pendingContentRef.current } : base
-  })
-
-  useEffect(() => {
-    if (pendingContentRef.current) clearPendingContent()
-  }, [clearPendingContent])
 
   useEffect(() => {
     if (contentType && entry) {
@@ -213,7 +189,7 @@ function EntryEditContent({ contentTypeId, entryId }: { contentTypeId: string; e
       <EntryForm
         formId={EDIT_FORM_ID}
         fields={contentType.fields}
-        defaultValues={defaultValues}
+        defaultValues={entry.data as Record<string, unknown>}
         isSubmitting={updateEntry.isPending}
         onSubmit={async (data) => {
           try {
