@@ -1,5 +1,6 @@
 {
-  "buildCommand": "pnpm db:generate && pnpm build:server && pnpm build:client",
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm dev",
   "outputDirectory": "dist/client",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },

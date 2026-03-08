@@ -1,33 +1,36 @@
 {
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
   "permissions": {
     "allow": [
-      "Read",
-      "Edit",
-      "MultiEdit",
-      "Write",
-      "Glob",
-      "Grep",
-      "LS",
-      "Task",
-      "WebFetch",
-      "WebSearch",
-      "Bash(*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git branch *)",
+      "Bash(git switch *)",
       "mcp__clerk__*",
       "mcp__context7__*",
       "mcp__shadcn__*",
       "mcp__supabase__*"
     ],
     "deny": [
-      "Bash(sudo *)",
       "Bash(curl *)",
+      "Bash(sudo *)",
       "Bash(wget *)",
-      "Bash(git push *)",
-      "Bash(git remote *)",
+      "Bash(git push *--force*)",
+      "Bash(git push * -f)",
+      "Bash(git push * -f *)",
+      "Bash(git remote add *)",
+      "Bash(git remote set-url *)",
+      "Bash(git remote remove *)",
+      "Bash(npm publish *)",
+      "Bash(bun publish *)",
       "Bash(pnpm publish *)",
-      "Bash(npx vercel *)"
+      "Bash(yarn publish *)",
+      "Bash(npx vercel *)",
+      "Read(.env)",
+      "Read(.env.local)",
+      "Write(.env)",
+      "Write(.env.local)",
+      "Edit(.env)",
+      "Edit(.env.local)"
     ]
   },
   "enabledMcpjsonServers": ["clerk", "context7", "shadcn", "supabase"],
@@ -39,6 +42,5 @@
     "feature-dev@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true
   },
-  "language": "japanese",
-  "teammateMode": "tmux"
+  "language": "japanese"
 }
