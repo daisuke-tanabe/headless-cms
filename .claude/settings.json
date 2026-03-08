@@ -26,17 +26,11 @@
       "Bash(yarn publish *)",
       "Bash(npx vercel *)",
       "Read(.env)",
-      "Read(.env.*)",
-      "Read(**/.env)",
-      "Read(**/.env.*)",
+      "Read(.env.local)",
       "Write(.env)",
-      "Write(.env.*)",
-      "Write(**/.env)",
-      "Write(**/.env.*)",
+      "Write(.env.local)",
       "Edit(.env)",
-      "Edit(.env.*)",
-      "Edit(**/.env)",
-      "Edit(**/.env.*)"
+      "Edit(.env.local)"
     ]
   },
   "enabledMcpjsonServers": ["clerk", "context7", "shadcn", "supabase"],
