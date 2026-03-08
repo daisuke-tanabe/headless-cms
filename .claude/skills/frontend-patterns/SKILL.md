@@ -1,28 +1,28 @@
 ---
 name: frontend-patterns
-description: Frontend development patterns for React, Next.js, state management, performance optimization, and UI best practices.
+description: React・Next.js・状態管理・パフォーマンス最適化・UI のベストプラクティスを含むフロントエンド開発パターン。
 ---
 
-# Frontend Development Patterns
+# フロントエンド開発パターン
 
-Modern frontend patterns for React, Next.js, and performant user interfaces.
+React・Next.js・パフォーマンスの高いユーザーインターフェースのための現代的なフロントエンドパターン。
 
-## When to Activate
+## 発動タイミング
 
-- Building React components (composition, props, rendering)
-- Managing state (useState, useReducer, Zustand, Context)
-- Implementing data fetching (SWR, React Query, server components)
-- Optimizing performance (memoization, virtualization, code splitting)
-- Working with forms (validation, controlled inputs, Zod schemas)
-- Handling client-side routing and navigation
-- Building accessible, responsive UI patterns
+- React コンポーネントを構築するとき（コンポジション・props・レンダリング）
+- 状態を管理するとき（useState・useReducer・Zustand・Context）
+- データフェッチを実装するとき（SWR・React Query・サーバーコンポーネント）
+- パフォーマンスを最適化するとき（メモ化・仮想化・コード分割）
+- フォームを扱うとき（バリデーション・制御済み入力・Zod スキーマ）
+- クライアントサイドルーティングとナビゲーションを扱うとき
+- アクセシブルでレスポンシブな UI パターンを構築するとき
 
-## Component Patterns
+## コンポーネントパターン
 
-### Composition Over Inheritance
+### 継承よりコンポジション
 
 ```typescript
-// ✅ GOOD: Component composition
+// ✅ 良い例: コンポーネントコンポジション
 interface CardProps {
   children: React.ReactNode
   variant?: 'default' | 'outlined'
@@ -40,14 +40,14 @@ export function CardBody({ children }: { children: React.ReactNode }) {
   return <div className="card-body">{children}</div>
 }
 
-// Usage
+// 使用例
 <Card>
-  <CardHeader>Title</CardHeader>
-  <CardBody>Content</CardBody>
+  <CardHeader>タイトル</CardHeader>
+  <CardBody>コンテンツ</CardBody>
 </Card>
 ```
 
-### Compound Components
+### 複合コンポーネント
 
 ```typescript
 interface TabsContextValue {
@@ -88,16 +88,16 @@ export function Tab({ id, children }: { id: string, children: React.ReactNode })
   )
 }
 
-// Usage
+// 使用例
 <Tabs defaultTab="overview">
   <TabList>
-    <Tab id="overview">Overview</Tab>
-    <Tab id="details">Details</Tab>
+    <Tab id="overview">概要</Tab>
+    <Tab id="details">詳細</Tab>
   </TabList>
 </Tabs>
 ```
 
-### Render Props Pattern
+### レンダープロップパターン
 
 ```typescript
 interface DataLoaderProps<T> {
@@ -121,7 +121,7 @@ export function DataLoader<T>({ url, children }: DataLoaderProps<T>) {
   return <>{children(data, loading, error)}</>
 }
 
-// Usage
+// 使用例
 <DataLoader<Market[]> url="/api/markets">
   {(markets, loading, error) => {
     if (loading) return <Spinner />
@@ -131,9 +131,9 @@ export function DataLoader<T>({ url, children }: DataLoaderProps<T>) {
 </DataLoader>
 ```
 
-## Custom Hooks Patterns
+## カスタムフックパターン
 
-### State Management Hook
+### 状態管理フック
 
 ```typescript
 export function useToggle(initialValue = false): [boolean, () => void] {
@@ -146,11 +146,11 @@ export function useToggle(initialValue = false): [boolean, () => void] {
   return [value, toggle]
 }
 
-// Usage
+// 使用例
 const [isOpen, toggleOpen] = useToggle()
 ```
 
-### Async Data Fetching Hook
+### 非同期データフェッチフック
 
 ```typescript
 interface UseQueryOptions<T> {
@@ -194,7 +194,7 @@ export function useQuery<T>(
   return { data, error, loading, refetch }
 }
 
-// Usage
+// 使用例
 const { data: markets, loading, error, refetch } = useQuery(
   'markets',
   () => fetch('/api/markets').then(r => r.json()),
@@ -205,7 +205,7 @@ const { data: markets, loading, error, refetch } = useQuery(
 )
 ```
 
-### Debounce Hook
+### デバウンスフック
 
 ```typescript
 export function useDebounce<T>(value: T, delay: number): T {
@@ -222,7 +222,7 @@ export function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue
 }
 
-// Usage
+// 使用例
 const [searchQuery, setSearchQuery] = useState('')
 const debouncedQuery = useDebounce(searchQuery, 500)
 
@@ -233,9 +233,9 @@ useEffect(() => {
 }, [debouncedQuery])
 ```
 
-## State Management Patterns
+## 状態管理パターン
 
-### Context + Reducer Pattern
+### Context + Reducer パターン
 
 ```typescript
 interface State {
@@ -288,22 +288,22 @@ export function useMarkets() {
 }
 ```
 
-## Performance Optimization
+## パフォーマンス最適化
 
-### Memoization
+### メモ化
 
 ```typescript
-// ✅ useMemo for expensive computations
+// ✅ 高コストな計算には useMemo
 const sortedMarkets = useMemo(() => {
   return markets.sort((a, b) => b.volume - a.volume)
 }, [markets])
 
-// ✅ useCallback for functions passed to children
+// ✅ 子コンポーネントに渡す関数には useCallback
 const handleSearch = useCallback((query: string) => {
   setSearchQuery(query)
 }, [])
 
-// ✅ React.memo for pure components
+// ✅ 純粋なコンポーネントには React.memo
 export const MarketCard = React.memo<MarketCardProps>(({ market }) => {
   return (
     <div className="market-card">
@@ -314,12 +314,12 @@ export const MarketCard = React.memo<MarketCardProps>(({ market }) => {
 })
 ```
 
-### Code Splitting & Lazy Loading
+### コード分割と遅延ロード
 
 ```typescript
 import { lazy, Suspense } from 'react'
 
-// ✅ Lazy load heavy components
+// ✅ 重いコンポーネントを遅延ロード
 const HeavyChart = lazy(() => import('./HeavyChart'))
 const ThreeJsBackground = lazy(() => import('./ThreeJsBackground'))
 
@@ -338,7 +338,7 @@ export function Dashboard() {
 }
 ```
 
-### Virtualization for Long Lists
+### 長いリストの仮想化
 
 ```typescript
 import { useVirtualizer } from '@tanstack/react-virtual'
@@ -349,8 +349,8 @@ export function VirtualMarketList({ markets }: { markets: Market[] }) {
   const virtualizer = useVirtualizer({
     count: markets.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 100,  // Estimated row height
-    overscan: 5  // Extra items to render
+    estimateSize: () => 100,  // 推定行の高さ
+    overscan: 5  // 余分にレンダリングするアイテム数
   })
 
   return (
@@ -382,9 +382,9 @@ export function VirtualMarketList({ markets }: { markets: Market[] }) {
 }
 ```
 
-## Form Handling Patterns
+## フォーム処理パターン
 
-### Controlled Form with Validation
+### バリデーション付き制御フォーム
 
 ```typescript
 interface FormData {
@@ -412,17 +412,17 @@ export function CreateMarketForm() {
     const newErrors: FormErrors = {}
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = '名前は必須です'
     } else if (formData.name.length > 200) {
-      newErrors.name = 'Name must be under 200 characters'
+      newErrors.name = '名前は 200 文字以内にしてください'
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'Description is required'
+      newErrors.description = '説明は必須です'
     }
 
     if (!formData.endDate) {
-      newErrors.endDate = 'End date is required'
+      newErrors.endDate = '終了日は必須です'
     }
 
     setErrors(newErrors)
@@ -436,9 +436,9 @@ export function CreateMarketForm() {
 
     try {
       await createMarket(formData)
-      // Success handling
+      // 成功処理
     } catch (error) {
-      // Error handling
+      // エラー処理
     }
   }
 
@@ -447,19 +447,19 @@ export function CreateMarketForm() {
       <input
         value={formData.name}
         onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-        placeholder="Market name"
+        placeholder="マーケット名"
       />
       {errors.name && <span className="error">{errors.name}</span>}
 
-      {/* Other fields */}
+      {/* その他のフィールド */}
 
-      <button type="submit">Create Market</button>
+      <button type="submit">マーケットを作成</button>
     </form>
   )
 }
 ```
 
-## Error Boundary Pattern
+## エラーバウンダリパターン
 
 ```typescript
 interface ErrorBoundaryState {
@@ -488,10 +488,10 @@ export class ErrorBoundary extends React.Component<
     if (this.state.hasError) {
       return (
         <div className="error-fallback">
-          <h2>Something went wrong</h2>
+          <h2>問題が発生しました</h2>
           <p>{this.state.error?.message}</p>
           <button onClick={() => this.setState({ hasError: false })}>
-            Try again
+            再試行
           </button>
         </div>
       )
@@ -501,20 +501,20 @@ export class ErrorBoundary extends React.Component<
   }
 }
 
-// Usage
+// 使用例
 <ErrorBoundary>
   <App />
 </ErrorBoundary>
 ```
 
-## Animation Patterns
+## アニメーションパターン
 
-### Framer Motion Animations
+### Framer Motion アニメーション
 
 ```typescript
 import { motion, AnimatePresence } from 'framer-motion'
 
-// ✅ List animations
+// ✅ リストアニメーション
 export function AnimatedMarketList({ markets }: { markets: Market[] }) {
   return (
     <AnimatePresence>
@@ -533,7 +533,7 @@ export function AnimatedMarketList({ markets }: { markets: Market[] }) {
   )
 }
 
-// ✅ Modal animations
+// ✅ モーダルアニメーション
 export function Modal({ isOpen, onClose, children }: ModalProps) {
   return (
     <AnimatePresence>
@@ -561,9 +561,9 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 }
 ```
 
-## Accessibility Patterns
+## アクセシビリティパターン
 
-### Keyboard Navigation
+### キーボードナビゲーション
 
 ```typescript
 export function Dropdown({ options, onSelect }: DropdownProps) {
@@ -598,13 +598,13 @@ export function Dropdown({ options, onSelect }: DropdownProps) {
       aria-haspopup="listbox"
       onKeyDown={handleKeyDown}
     >
-      {/* Dropdown implementation */}
+      {/* ドロップダウンの実装 */}
     </div>
   )
 }
 ```
 
-### Focus Management
+### フォーカス管理
 
 ```typescript
 export function Modal({ isOpen, onClose, children }: ModalProps) {
@@ -613,13 +613,13 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 
   useEffect(() => {
     if (isOpen) {
-      // Save currently focused element
+      // 現在フォーカスされている要素を保存
       previousFocusRef.current = document.activeElement as HTMLElement
 
-      // Focus modal
+      // モーダルにフォーカス
       modalRef.current?.focus()
     } else {
-      // Restore focus when closing
+      // クローズ時にフォーカスを復元
       previousFocusRef.current?.focus()
     }
   }, [isOpen])
@@ -638,4 +638,4 @@ export function Modal({ isOpen, onClose, children }: ModalProps) {
 }
 ```
 
-**Remember**: Modern frontend patterns enable maintainable, performant user interfaces. Choose patterns that fit your project complexity.
+**注意**: 現代的なフロントエンドパターンは保守性が高くパフォーマンスの良いユーザーインターフェースを実現します。プロジェクトの複雑さに合ったパターンを選択してください。
