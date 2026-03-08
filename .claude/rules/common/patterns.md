@@ -1,42 +1,42 @@
-# Common Patterns
+# 共通パターン
 
-## Skeleton Projects
+## スケルトンプロジェクト
 
-When implementing new functionality:
-1. Search for battle-tested skeleton projects
-2. Use parallel agents to evaluate options:
-   - Security assessment
-   - Extensibility analysis
-   - Relevance scoring
-   - Implementation planning
-3. Clone best match as foundation
-4. Iterate within proven structure
+新しい機能を実装する際:
+1. 実績のあるスケルトンプロジェクトを探す
+2. 並行エージェントを使ってオプションを評価する:
+   - セキュリティ評価
+   - 拡張性分析
+   - 関連性スコアリング
+   - 実装計画
+3. 最適なものをベースとしてクローンする
+4. 実績ある構造の中でイテレーションする
 
-## Design Patterns
+## デザインパターン
 
-### Repository Pattern
+### リポジトリパターン
 
-Encapsulate data access behind a consistent interface:
-- Define standard operations: findAll, findById, create, update, delete
-- Concrete implementations handle storage details (database, API, file, etc.)
-- Business logic depends on the abstract interface, not the storage mechanism
-- Enables easy swapping of data sources and simplifies testing with mocks
+一貫したインターフェースの背後にデータアクセスをカプセル化する:
+- 標準的な操作を定義する: findAll, findById, create, update, delete
+- 具体的な実装がストレージの詳細（データベース、API、ファイルなど）を処理する
+- ビジネスロジックはストレージの仕組みではなく抽象インターフェースに依存する
+- データソースの切り替えを容易にし、モックを使ったテストをシンプルにする
 
-### Star Topology (Extension Independence)
+### スタートポロジー（拡張独立性）
 
-Modules at the same layer must not depend on each other directly. Each module communicates only through the core (composition root, host, or shared interface):
-- Routes do not import other routes
-- Services do not import other services
-- Stores do not import other stores
-- Tools do not import other tools
-- All wiring happens in the composition root via dependency injection
+同じレイヤーのモジュールは互いに直接依存してはならない。各モジュールはコア（コンポジションルート、ホスト、または共有インターフェース）を通じてのみ通信する:
+- ルートは他のルートをインポートしない
+- サービスは他のサービスをインポートしない
+- ストアは他のストアをインポートしない
+- ツールは他のツールをインポートしない
+- すべての結線はコンポジションルートで依存性注入により行う
 
-This keeps the dependency graph as a hub-and-spoke shape, avoiding N² coupling and cascading breakage.
+これにより依存グラフがハブアンドスポーク型を維持し、N² の結合やカスケード障害を防ぐ。
 
-### API Response Format
+### API レスポンス形式
 
-Use a consistent envelope for all API responses:
-- Include a success/status indicator
-- Include the data payload (nullable on error)
-- Include an error message field (nullable on success)
-- Include metadata for paginated responses (total, page, limit)
+すべての API レスポンスに一貫したエンベロープを使用する:
+- 成功/ステータスの指標を含める
+- データペイロードを含める（エラー時は nullable）
+- エラーメッセージフィールドを含める（成功時は nullable）
+- ページネーションレスポンスにはメタデータを含める（total, page, limit）

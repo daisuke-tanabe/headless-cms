@@ -5,11 +5,11 @@ paths:
   - "**/*.js"
   - "**/*.jsx"
 ---
-# TypeScript/JavaScript Patterns
+# TypeScript/JavaScript パターン
 
-> This file extends [common/patterns.md](../common/patterns.md) with TypeScript/JavaScript specific content.
+> このファイルは [common/patterns.md](../common/patterns.md) を TypeScript/JavaScript 固有の内容で拡張したものです。
 
-## API Response Format
+## API レスポンス形式
 
 ```typescript
 interface ApiResponse<T> {
@@ -24,7 +24,7 @@ interface ApiResponse<T> {
 }
 ```
 
-## Custom Hooks Pattern
+## カスタムフックパターン
 
 ```typescript
 export function useDebounce<T>(value: T, delay: number): T {
@@ -39,7 +39,7 @@ export function useDebounce<T>(value: T, delay: number): T {
 }
 ```
 
-## Repository Pattern
+## リポジトリパターン
 
 ```typescript
 interface Repository<T> {

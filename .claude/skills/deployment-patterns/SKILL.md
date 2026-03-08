@@ -1,94 +1,94 @@
 ---
 name: deployment-patterns
-description: Deployment workflows, CI/CD pipeline patterns, Docker containerization, health checks, rollback strategies, and production readiness checklists for web applications.
+description: デプロイワークフロー・CI/CD パイプラインパターン・Docker コンテナ化・ヘルスチェック・ロールバック戦略・Web アプリケーションの本番リリース準備チェックリスト。
 ---
 
-# Deployment Patterns
+# デプロイパターン
 
-Production deployment workflows and CI/CD best practices.
+本番デプロイワークフローと CI/CD ベストプラクティス。
 
-## When to Activate
+## 発動タイミング
 
-- Setting up CI/CD pipelines
-- Dockerizing an application
-- Planning deployment strategy (blue-green, canary, rolling)
-- Implementing health checks and readiness probes
-- Preparing for a production release
-- Configuring environment-specific settings
+- CI/CD パイプラインをセットアップするとき
+- アプリケーションを Docker 化するとき
+- デプロイ戦略を計画するとき（Blue-Green・カナリア・ローリング）
+- ヘルスチェックとレディネスプローブを実装するとき
+- 本番リリースを準備するとき
+- 環境固有の設定を構成するとき
 
-## Deployment Strategies
+## デプロイ戦略
 
-### Rolling Deployment (Default)
+### ローリングデプロイ（デフォルト）
 
-Replace instances gradually — old and new versions run simultaneously during rollout.
-
-```
-Instance 1: v1 → v2  (update first)
-Instance 2: v1        (still running v1)
-Instance 3: v1        (still running v1)
-
-Instance 1: v2
-Instance 2: v1 → v2  (update second)
-Instance 3: v1
-
-Instance 1: v2
-Instance 2: v2
-Instance 3: v1 → v2  (update last)
-```
-
-**Pros:** Zero downtime, gradual rollout
-**Cons:** Two versions run simultaneously — requires backward-compatible changes
-**Use when:** Standard deployments, backward-compatible changes
-
-### Blue-Green Deployment
-
-Run two identical environments. Switch traffic atomically.
+インスタンスを段階的に入れ替える — ロールアウト中は古いバージョンと新しいバージョンが同時に稼働する。
 
 ```
-Blue  (v1) ← traffic
-Green (v2)   idle, running new version
+インスタンス 1: v1 → v2  （最初に更新）
+インスタンス 2: v1        （まだ v1 で稼働中）
+インスタンス 3: v1        （まだ v1 で稼働中）
 
-# After verification:
-Blue  (v1)   idle (becomes standby)
-Green (v2) ← traffic
+インスタンス 1: v2
+インスタンス 2: v1 → v2  （2 番目に更新）
+インスタンス 3: v1
+
+インスタンス 1: v2
+インスタンス 2: v2
+インスタンス 3: v1 → v2  （最後に更新）
 ```
 
-**Pros:** Instant rollback (switch back to blue), clean cutover
-**Cons:** Requires 2x infrastructure during deployment
-**Use when:** Critical services, zero-tolerance for issues
+**メリット:** ゼロダウンタイム・段階的なロールアウト
+**デメリット:** 2 つのバージョンが同時稼働 — 後方互換性のある変更が必要
+**使用場面:** 標準デプロイ・後方互換性のある変更
 
-### Canary Deployment
+### Blue-Green デプロイ
 
-Route a small percentage of traffic to the new version first.
+2 つの同一環境を稼働させ、トラフィックをアトミックに切り替える。
 
 ```
-v1: 95% of traffic
-v2:  5% of traffic  (canary)
+Blue  (v1) ← トラフィック
+Green (v2)   待機中・新バージョンで稼働
 
-# If metrics look good:
-v1: 50% of traffic
-v2: 50% of traffic
-
-# Final:
-v2: 100% of traffic
+# 検証後:
+Blue  (v1)   待機中（スタンバイになる）
+Green (v2) ← トラフィック
 ```
 
-**Pros:** Catches issues with real traffic before full rollout
-**Cons:** Requires traffic splitting infrastructure, monitoring
-**Use when:** High-traffic services, risky changes, feature flags
+**メリット:** 即時ロールバック（Blue に切り戻す）・クリーンなカットオーバー
+**デメリット:** デプロイ中に 2 倍のインフラが必要
+**使用場面:** 重要なサービス・問題に対するゼロ許容
+
+### カナリアデプロイ
+
+最初に新バージョンへのトラフィックを少量だけルーティングする。
+
+```
+v1: トラフィックの 95%
+v2: トラフィックの 5%  （カナリア）
+
+# メトリクスが良好な場合:
+v1: トラフィックの 50%
+v2: トラフィックの 50%
+
+# 最終:
+v2: トラフィックの 100%
+```
+
+**メリット:** フルロールアウト前に実際のトラフィックで問題を検出できる
+**デメリット:** トラフィック分割インフラとモニタリングが必要
+**使用場面:** 高トラフィックサービス・リスクの高い変更・フィーチャーフラグ
 
 ## Docker
 
-### Multi-Stage Dockerfile (Node.js)
+### マルチステージ Dockerfile（Node.js）
 
 ```dockerfile
-# Stage 1: Install dependencies
+# ステージ 1: 依存関係のインストール
 FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --production=false
 
-# Stage 2: Build
+# ステージ 2: ビルド
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -96,7 +96,7 @@ COPY . .
 RUN npm run build
 RUN npm prune --production
 
-# Stage 3: Production image
+# ステージ 3: 本番イメージ
 FROM node:22-alpine AS runner
 WORKDIR /app
 
@@ -116,7 +116,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 CMD ["node", "dist/server.js"]
 ```
 
-### Multi-Stage Dockerfile (Go)
+### マルチステージ Dockerfile（Go）
 
 ```dockerfile
 FROM golang:1.22-alpine AS builder
@@ -138,7 +138,7 @@ HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost:8080/heal
 CMD ["/server"]
 ```
 
-### Multi-Stage Dockerfile (Python/Django)
+### マルチステージ Dockerfile（Python/Django）
 
 ```dockerfile
 FROM python:3.12-slim AS builder
@@ -164,29 +164,29 @@ HEALTHCHECK --interval=30s --timeout=3s CMD python -c "import urllib.request; ur
 CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4"]
 ```
 
-### Docker Best Practices
+### Docker ベストプラクティス
 
 ```
-# GOOD practices
-- Use specific version tags (node:22-alpine, not node:latest)
-- Multi-stage builds to minimize image size
-- Run as non-root user
-- Copy dependency files first (layer caching)
-- Use .dockerignore to exclude node_modules, .git, tests
-- Add HEALTHCHECK instruction
-- Set resource limits in docker-compose or k8s
+# 良い例
+- 特定のバージョンタグを使う（node:22-alpine・node:latest は使わない）
+- マルチステージビルドでイメージサイズを最小化
+- 非 root ユーザーで実行する
+- 依存関係ファイルを先にコピーする（レイヤーキャッシュ）
+- .dockerignore で node_modules・.git・テストを除外
+- HEALTHCHECK 命令を追加する
+- docker-compose または k8s でリソース制限を設定
 
-# BAD practices
-- Running as root
-- Using :latest tags
-- Copying entire repo in one COPY layer
-- Installing dev dependencies in production image
-- Storing secrets in image (use env vars or secrets manager)
+# 悪い例
+- root で実行する
+- :latest タグを使う
+- 1 つの COPY レイヤーでリポジトリ全体をコピーする
+- 本番イメージに開発依存関係をインストールする
+- イメージにシークレットを保存する（env var またはシークレットマネージャーを使う）
 ```
 
-## CI/CD Pipeline
+## CI/CD パイプライン
 
-### GitHub Actions (Standard Pipeline)
+### GitHub Actions（標準パイプライン）
 
 ```yaml
 name: CI/CD
@@ -241,36 +241,36 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: production
     steps:
-      - name: Deploy to production
+      - name: 本番へデプロイ
         run: |
-          # Platform-specific deployment command
+          # プラットフォーム固有のデプロイコマンド
           # Railway: railway up
           # Vercel: vercel --prod
           # K8s: kubectl set image deployment/app app=ghcr.io/${{ github.repository }}:${{ github.sha }}
           echo "Deploying ${{ github.sha }}"
 ```
 
-### Pipeline Stages
+### パイプラインステージ
 
 ```
-PR opened:
-  lint → typecheck → unit tests → integration tests → preview deploy
+PR オープン時:
+  lint → typecheck → ユニットテスト → 統合テスト → プレビューデプロイ
 
-Merged to main:
-  lint → typecheck → unit tests → integration tests → build image → deploy staging → smoke tests → deploy production
+main へのマージ時:
+  lint → typecheck → ユニットテスト → 統合テスト → イメージビルド → ステージングデプロイ → スモークテスト → 本番デプロイ
 ```
 
-## Health Checks
+## ヘルスチェック
 
-### Health Check Endpoint
+### ヘルスチェックエンドポイント
 
 ```typescript
-// Simple health check
+// シンプルなヘルスチェック
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-// Detailed health check (for internal monitoring)
+// 詳細なヘルスチェック（内部モニタリング用）
 app.get("/health/detailed", async (req, res) => {
   const checks = {
     database: await checkDatabase(),
@@ -299,7 +299,7 @@ async function checkDatabase(): Promise<HealthCheck> {
 }
 ```
 
-### Kubernetes Probes
+### Kubernetes プローブ
 
 ```yaml
 livenessProbe:
@@ -324,27 +324,27 @@ startupProbe:
     port: 3000
   initialDelaySeconds: 0
   periodSeconds: 5
-  failureThreshold: 30    # 30 * 5s = 150s max startup time
+  failureThreshold: 30    # 30 * 5s = 最大 150s の起動時間
 ```
 
-## Environment Configuration
+## 環境設定
 
-### Twelve-Factor App Pattern
+### Twelve-Factor App パターン
 
 ```bash
-# All config via environment variables — never in code
+# 全設定を環境変数で管理 — コードに書かない
 DATABASE_URL=postgres://user:pass@host:5432/db
 REDIS_URL=redis://host:6379/0
-API_KEY=${API_KEY}           # injected by secrets manager
+API_KEY=${API_KEY}           # シークレットマネージャーから注入
 LOG_LEVEL=info
 PORT=3000
 
-# Environment-specific behavior
-NODE_ENV=production          # or staging, development
-APP_ENV=production           # explicit app environment
+# 環境固有の動作
+NODE_ENV=production          # または staging・development
+APP_ENV=production           # 明示的なアプリ環境
 ```
 
-### Configuration Validation
+### 設定バリデーション
 
 ```typescript
 import { z } from "zod";
@@ -358,69 +358,69 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 });
 
-// Validate at startup — fail fast if config is wrong
+// 起動時にバリデーション — 設定が間違っていたら早期に失敗
 export const env = envSchema.parse(process.env);
 ```
 
-## Rollback Strategy
+## ロールバック戦略
 
-### Instant Rollback
+### 即時ロールバック
 
 ```bash
-# Docker/Kubernetes: point to previous image
+# Docker/Kubernetes: 前のイメージを指定
 kubectl rollout undo deployment/app
 
-# Vercel: promote previous deployment
+# Vercel: 前のデプロイを昇格
 vercel rollback
 
-# Railway: redeploy previous commit
+# Railway: 前のコミットを再デプロイ
 railway up --commit <previous-sha>
 
-# Database: rollback migration (if reversible)
+# データベース: マイグレーションをロールバック（可逆な場合）
 npx prisma migrate resolve --rolled-back <migration-name>
 ```
 
-### Rollback Checklist
+### ロールバックチェックリスト
 
-- [ ] Previous image/artifact is available and tagged
-- [ ] Database migrations are backward-compatible (no destructive changes)
-- [ ] Feature flags can disable new features without deploy
-- [ ] Monitoring alerts configured for error rate spikes
-- [ ] Rollback tested in staging before production release
+- [ ] 前のイメージ/アーティファクトが利用可能でタグ付けされている
+- [ ] データベースマイグレーションが後方互換（破壊的変更なし）
+- [ ] フィーチャーフラグでデプロイなしに新機能を無効化できる
+- [ ] エラーレート急増に対するモニタリングアラートが設定されている
+- [ ] 本番リリース前にステージングでロールバックがテスト済み
 
-## Production Readiness Checklist
+## 本番リリース準備チェックリスト
 
-Before any production deployment:
+本番へのデプロイ前に:
 
-### Application
-- [ ] All tests pass (unit, integration, E2E)
-- [ ] No hardcoded secrets in code or config files
-- [ ] Error handling covers all edge cases
-- [ ] Logging is structured (JSON) and does not contain PII
-- [ ] Health check endpoint returns meaningful status
+### アプリケーション
+- [ ] 全テストが通過している（ユニット・統合・E2E）
+- [ ] コードや設定ファイルにハードコードされたシークレットがない
+- [ ] エラーハンドリングが全エッジケースをカバーしている
+- [ ] ログが構造化されている（JSON）かつ PII を含んでいない
+- [ ] ヘルスチェックエンドポイントが意味のあるステータスを返す
 
-### Infrastructure
-- [ ] Docker image builds reproducibly (pinned versions)
-- [ ] Environment variables documented and validated at startup
-- [ ] Resource limits set (CPU, memory)
-- [ ] Horizontal scaling configured (min/max instances)
-- [ ] SSL/TLS enabled on all endpoints
+### インフラ
+- [ ] Docker イメージが再現性よくビルドされる（バージョンが固定されている）
+- [ ] 環境変数が文書化されており起動時にバリデーションされる
+- [ ] リソース制限が設定されている（CPU・メモリ）
+- [ ] 水平スケーリングが設定されている（最小/最大インスタンス数）
+- [ ] 全エンドポイントで SSL/TLS が有効
 
-### Monitoring
-- [ ] Application metrics exported (request rate, latency, errors)
-- [ ] Alerts configured for error rate > threshold
-- [ ] Log aggregation set up (structured logs, searchable)
-- [ ] Uptime monitoring on health endpoint
+### モニタリング
+- [ ] アプリケーションメトリクスがエクスポートされている（リクエストレート・レイテンシ・エラー）
+- [ ] エラーレートが閾値を超えた場合のアラートが設定されている
+- [ ] ログ集約がセットアップされている（構造化ログ・検索可能）
+- [ ] ヘルスエンドポイントの稼働時間モニタリングが設定されている
 
-### Security
-- [ ] Dependencies scanned for CVEs
-- [ ] CORS configured for allowed origins only
-- [ ] Rate limiting enabled on public endpoints
-- [ ] Authentication and authorization verified
-- [ ] Security headers set (CSP, HSTS, X-Frame-Options)
+### セキュリティ
+- [ ] 依存関係の CVE スキャン済み
+- [ ] CORS が許可されたオリインのみに設定されている
+- [ ] 公開エンドポイントにレート制限が有効
+- [ ] 認証と認可が確認済み
+- [ ] セキュリティヘッダーが設定されている（CSP・HSTS・X-Frame-Options）
 
-### Operations
-- [ ] Rollback plan documented and tested
-- [ ] Database migration tested against production-sized data
-- [ ] Runbook for common failure scenarios
-- [ ] On-call rotation and escalation path defined
+### 運用
+- [ ] ロールバック計画が文書化され、テスト済み
+- [ ] 本番サイズのデータでデータベースマイグレーションがテスト済み
+- [ ] 一般的な障害シナリオのランブック
+- [ ] オンコールのローテーションとエスカレーションパスが定義されている

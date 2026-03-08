@@ -2,557 +2,557 @@
 description: Reference UX psychology concepts when designing or reviewing UI/UX, landing pages, onboarding flows, pricing displays, and CTAs. Provides evidence-based psychological principles to inform design decisions.
 ---
 
-# UX Psychology Concepts
+# UX 心理学概念
 
-A collection of 43 psychology concepts for designing user experiences grounded in behavioral science.
+行動科学に基づいたユーザーエクスペリエンスを設計するための 43 の心理学概念集。
 
-Source: https://www.shokasonjuku.com/ux-psychology
+出典: https://www.shokasonjuku.com/ux-psychology
 
 ---
 
-## Category Index
+## カテゴリ索引
 
-**Perception & Appearance**
+**知覚・外見**
 Aesthetic-Usability Effect / Banner Blindness / Halo Effect / Skeuomorphism / Visual Hierarchy / Visual Anchor / Selective Attention
 
-**Judgment & Decision Biases**
+**判断・意思決定バイアス**
 Anchor Effect / Confirmation Bias / Default Bias / Decoy Effect / Framing / Loss Aversion / Sunk Cost Effect / Expectation Bias / Familiarity Bias / Survey Bias
 
-**Cognition & Information Processing**
+**認知・情報処理**
 Cognitive Load / Progressive Disclosure / Serial Position Effect / Empathy Gap / Priming
 
-**Motivation & Engagement**
+**モチベーション・エンゲージメント**
 Curiosity Gap / Gamification / Goal Gradient Effect / Variable Reward / Temptation Bundling / Nudge / Zeigarnik Effect
 
-**Behavior Change & Retention**
+**行動変容・定着**
 Decision Fatigue / Foot-in-the-Door Effect / Reactive Onboarding / Hawthorne Effect / Pygmalion Effect
 
-**Emotion & Experience**
+**感情・体験**
 User Delight / Peak-End Rule / Labor Illusion / Endowment Effect / Reactance
 
-**Scarcity & Social Dynamics**
+**希少性・社会的動態**
 Scarcity / Social Proof / Doherty Threshold
 
-**Other Design Techniques**
+**その他のデザインテクニック**
 Intentional Friction / Visual Anchor
 
 ---
 
-## Concepts
+## 概念一覧
 
-### 1. Aesthetic-Usability Effect
+### 1. Aesthetic-Usability Effect (美的ユーザビリティ効果)
 
-Products and interfaces that are beautifully designed are perceived as more usable than less attractive ones. Users intuitively find them easier to operate and become more tolerant of errors when the visual design is appealing.
+美しくデザインされたプロダクトやインターフェースは、魅力的でないものよりも使いやすいと認識される。ビジュアルデザインが優れていると、ユーザーは直感的に操作しやすいと感じ、エラーに対して寛容になる。
 
-**UX Applications:**
-- Increase user error tolerance through design aesthetics
-- Elevate overall product perception through strong brand first impressions
-- Secure visual advantage during competitive comparisons
-
----
-
-### 2. Anchor Effect
-
-Users evaluate subsequent information based on the first piece of information (the anchor) they encounter. This strongly influences price presentation order and comparative displays.
-
-**UX Applications:**
-- Show a higher-priced plan first to make the mid-tier plan feel like a deal (pricing pages)
-- Display the original price before showing the discounted price
-- Highlight paid plan value by contrasting with a free tier
+**UX への応用:**
+- デザインの美しさを通じてユーザーのエラー許容度を高める
+- ブランドの強い第一印象で製品全体の印象を向上させる
+- 競合比較時の視覚的優位性を確保する
 
 ---
 
-### 3. Banner Blindness
+### 2. Anchor Effect (アンカー効果)
 
-Users unconsciously ignore ad banners on websites. Elements that look like ads (due to color, shape, or placement) are less likely to be recognized as content.
+ユーザーは最初に目にした情報 (アンカー) をもとに後続の情報を評価する。価格の提示順序や比較表示に大きく影響する。
 
-**UX Applications:**
-- Avoid "ad-like" styling for important CTAs; integrate them naturally into the content
-- Use inline CTAs and in-text links instead of banner formats
-- Never use banner-style layouts for critical notifications
-
----
-
-### 4. Cognitive Load
-
-The mental energy required for users to process and understand information. Higher cognitive load leads to higher drop-off rates.
-
-**UX Applications:**
-- Minimize the number of form fields
-- Limit information displayed per screen (combine with Progressive Disclosure)
-- Keep choices within 7 plus or minus 2 (Miller's Law)
-- Use clear labels and icons to reduce learning cost
+**UX への応用:**
+- 高額プランを先に表示して中間プランをお得に見せる (料金ページ)
+- 割引価格を表示する前に元の価格を表示する
+- 無料プランとの対比により有料プランの価値を際立たせる
 
 ---
 
-### 5. Confirmation Bias
+### 3. Banner Blindness (バナーブラインドネス)
 
-People preferentially accept information that aligns with their existing beliefs while ignoring or denying contradictory information.
+ユーザーはウェブサイト上の広告バナーを無意識に無視する。色・形・配置が広告に似ている要素はコンテンツとして認識されにくい。
 
-**UX Applications:**
-- Present expected results first, then provide details
-- Avoid leading questions in survey design (counter Survey Bias)
-- Guard against letting your own hypotheses skew A/B test interpretation
-
----
-
-### 6. Curiosity Gap
-
-A UX technique that drives users to act by creating a gap between what they know and what they want to know.
-
-**UX Applications:**
-- Use incomplete information in email subject lines ("The surprising reason for...")
-- Show partial article previews to encourage reading the full content
-- Display "3 steps remaining" during onboarding
-- Show progress bars to visualize progress (combine with Zeigarnik Effect)
+**UX への応用:**
+- 重要な CTA に「広告らしい」スタイルを避け、コンテンツに自然に溶け込ませる
+- バナー形式の代わりにインライン CTA やテキスト内リンクを使用する
+- 重要な通知にバナースタイルのレイアウトを絶対に使わない
 
 ---
 
-### 7. Decision Fatigue
+### 4. Cognitive Load (認知負荷)
 
-Repeated decision-making degrades users' ability to make rational choices. More options and consecutive decisions increase fatigue.
+ユーザーが情報を処理・理解するために必要な精神的エネルギー。認知負荷が高いほどドロップオフ率が高くなる。
 
-**UX Applications:**
-- Limit choices to around 3 options (combine with Decoy Effect)
-- Reduce cognitive cost with "Recommended" labels (combine with Default Bias)
-- Keep checkout flows short and simple
-- Place important decision-making UI early in the session
-
----
-
-### 8. Decoy Effect
-
-Adding a "decoy" option among choices makes other options appear relatively more attractive, guiding user preference.
-
-**UX Applications:**
-- Present 3 plans to make the middle plan most appealing (S/M/L strategy)
-- Offer monthly/quarterly/annual pricing to make annual plans look like the best deal
-- Add a "Most Popular" badge to the target plan
+**UX への応用:**
+- フォームのフィールド数を最小化する
+- 1 画面に表示する情報を制限する (Progressive Disclosure と組み合わせる)
+- 選択肢を 7 ± 2 以内に保つ (Miller's Law)
+- 明確なラベルとアイコンで学習コストを下げる
 
 ---
 
-### 9. Default Bias
+### 5. Confirmation Bias (確証バイアス)
 
-Users tend to stick with default settings unless there is sufficient incentive to change them.
+人は自分の既存の信念と一致する情報を優先的に受け入れ、矛盾する情報は無視または否定する。
 
-**UX Applications:**
-- Set newsletter subscription to ON by default (ethical considerations required)
-- Pre-select the annual plan as the default
-- Pre-check the recommended option
-- Organ donation opt-out designs have shown increased participation rates
-
----
-
-### 10. Doherty Threshold
-
-When system response time is within 0.4 seconds (400ms), users can continue operating without stress. Slow responses break user focus.
-
-**UX Applications:**
-- Optimize page loads to under 400ms
-- Display skeleton screens or progress bars during processing to reduce perceived wait time
-- Provide instant feedback with incremental search
+**UX への応用:**
+- 期待される結果を先に提示してから詳細を提供する
+- アンケート設計での誘導質問を避ける (Survey Bias への対策)
+- 自分の仮説が A/B テストの解釈を歪めないよう注意する
 
 ---
 
-### 11. Empathy Gap
+### 6. Curiosity Gap (好奇心ギャップ)
 
-Emotional states (hunger, anger, excitement, etc.) influence decision-making, yet people who are not in those states underestimate that influence. Designers struggle to accurately understand user emotional states.
+ユーザーが知っていることと知りたいことのギャップを作ることで行動を促す UX テクニック。
 
-**UX Applications:**
-- Conduct user interviews in conditions close to actual usage scenarios
-- Design error UX assuming users are in a frustrated state
-- Consider impulse purchasing behavior for food delivery apps (hungry users)
-
----
-
-### 12. Endowment Effect
-
-People assign higher value to things they own (or feel they own) compared to things they do not possess.
-
-**UX Applications:**
-- Unlock full features during free trials so users feel the loss when it ends
-- Refer to cart items as "your items"
-- Let users create custom configurations (harder to abandon personalized settings)
+**UX への応用:**
+- メールの件名に不完全な情報を使う (「意外な理由は...」)
+- 記事の一部プレビューを表示して全文の閲覧を促す
+- オンボーディング中に「残り 3 ステップ」を表示する
+- 進捗バーで進行状況を可視化する (Zeigarnik Effect と組み合わせる)
 
 ---
 
-### 13. Expectation Bias
+### 7. Decision Fatigue (決断疲れ)
 
-Users evaluate products based on pre-formed expectations. Exceeding expectations increases satisfaction; falling short creates dissatisfaction.
+繰り返しの意思決定はユーザーの合理的な判断能力を低下させる。選択肢が多く、連続した決断が多いほど疲労が増す。
 
-**UX Applications:**
-- Set appropriate expectations during onboarding ("Here's what you can do")
-- Deliver on promises consistently (over-promising backfires)
-- For beta products, setting expectations of "still incomplete" is effective
-
----
-
-### 14. Familiarity Bias
-
-People prefer what is familiar. They feel comfortable with recognizable UI patterns and brands.
-
-**UX Applications:**
-- Follow industry-standard UI patterns (navigation placement, icon meanings, etc.)
-- Design new features along existing UI patterns
-- Roll out rebranding or major UI changes gradually
+**UX への応用:**
+- 選択肢を約 3 つに制限する (Decoy Effect と組み合わせる)
+- 「おすすめ」ラベルで認知コストを下げる (Default Bias と組み合わせる)
+- チェックアウトフローを短くシンプルに保つ
+- 重要な意思決定 UI をセッションの早い段階に配置する
 
 ---
 
-### 15. Foot-in-the-Door Effect
+### 8. Decoy Effect (デコイ効果)
 
-Users who comply with a small request are more likely to comply with a subsequent larger request.
+選択肢の中に「デコイ」オプションを加えることで、他のオプションが相対的に魅力的に見え、ユーザーの選好を誘導する。
 
-**UX Applications:**
-- Ask for name and email first, then collect detailed information later
-- Escalate commitment gradually: "like" then "share" then "sign up"
-- Improve CVR through micro-commitment design
-
----
-
-### 16. Framing
-
-The same information is received differently depending on how it is presented. "95% success rate" and "5% failure rate" convey the same fact but create different impressions.
-
-**UX Applications:**
-- "Only 5 seats left" vs "95% sold out" (use loss-aversion framing)
-- "3 days until free trial ends" vs "Free for 3 more days"
-- Convey negative information through positive framing
-- Use "Get started" instead of "Register" for CTA copy
+**UX への応用:**
+- 3 つのプランを提示して中間プランを最も魅力的に見せる (S/M/L 戦略)
+- 月額・四半期・年額の料金体系を提供して年額プランをベストディールに見せる
+- 対象プランに「最も人気」バッジを追加する
 
 ---
 
-### 17. Gamification
+### 9. Default Bias (デフォルトバイアス)
 
-Incorporating game-like elements (points, badges, rankings, streaks) into products to boost user motivation and engagement.
+ユーザーは、変更する十分なインセンティブがない限り、デフォルト設定のままにしておく傾向がある。
 
-**UX Applications:**
-- Duolingo streaks (consecutive learning days) to improve app retention
-- Badges and rankings in fitness apps
-- Profile completion bars to encourage profile input (LinkedIn)
-- Award points for completing checklists
-
----
-
-### 18. Goal Gradient Effect
-
-As people approach a goal, their effort and behavior accelerate. The more visible the finish line, the higher the motivation.
-
-**UX Applications:**
-- Use progress bars to visualize "almost there"
-- Distribute stamp cards with 2 out of 10 slots pre-filled
-- Explicitly show the number of onboarding steps
+**UX への応用:**
+- ニュースレター購読をデフォルトで ON に設定する (倫理的配慮が必要)
+- 年額プランをデフォルトとして事前選択する
+- 推奨オプションを事前にチェックしておく
+- 臓器提供のオプトアウト設計により参加率が向上した事例がある
 
 ---
 
-### 19. Halo Effect
+### 10. Doherty Threshold (ドハティの閾値)
 
-A single characteristic (positive or negative) influences evaluation of all other attributes. First impressions shape subsequent judgments.
+システムの応答時間が 0.4 秒 (400ms) 以内の場合、ユーザーはストレスなく操作を続けられる。応答が遅いとユーザーの集中が途切れる。
 
-**UX Applications:**
-- Invest most heavily in the landing page first impression (visuals and copy)
-- Display logos of well-known partner brands in prominent locations
-- Show highest-rated user reviews first
-
----
-
-### 20. Hawthorne Effect
-
-People change their behavior when they know they are being observed. User tests and surveys may diverge from actual behavior.
-
-**UX Applications:**
-- Account for the possibility that user test results differ from unobserved actual usage
-- Combine quantitative data (behavioral logs) with qualitative data (user tests)
-- Use behavior analytics tools to capture actual usage patterns
+**UX への応用:**
+- ページの読み込みを 400ms 以内に最適化する
+- 処理中はスケルトンスクリーンや進捗バーを表示して体感待ち時間を短縮する
+- インクリメンタル検索で即座にフィードバックを提供する
 
 ---
 
-### 21. Intentional Friction
+### 11. Empathy Gap (共感ギャップ)
 
-Deliberately adding steps or effort to an operation to prevent inappropriate actions or make users pause before important decisions.
+感情状態 (空腹、怒り、興奮等) は意思決定に影響するが、その状態にない人はその影響を過小評価する。デザイナーはユーザーの感情状態を正確に理解することが難しい。
 
-**UX Applications:**
-- Require typing "delete" to confirm account deletion
-- Add confirmation dialogs for dangerous operations (data deletion, large transfers)
-- Include reason entry or retention screens in subscription cancellation flows
-
----
-
-### 22. Labor Illusion
-
-Showing users that the system is "working hard" even when processing is already complete, making them perceive the result as more valuable. Also known as the "KAYAK effect."
-
-**UX Applications:**
-- Display "Searching for the best prices..." with a progress animation during flight searches
-- Show "Calculating your optimal tax savings" with a deliberate delay in TurboTax
-- Display "Selecting the perfect shows for you" after Netflix preference input
+**UX への応用:**
+- 実際の利用シーンに近い条件でユーザーインタビューを実施する
+- ユーザーがフラストレーションを感じている状態を想定してエラー UX を設計する
+- フードデリバリーアプリの衝動買い行動を考慮する (空腹のユーザー)
 
 ---
 
-### 23. Loss Aversion
+### 12. Endowment Effect (保有効果)
 
-People are more strongly motivated to avoid losses than to acquire gains. The pain of losing is approximately twice as strong as the pleasure of gaining.
+人は、所有していないものと比べて、自分が所有している (または所有していると感じている) ものに高い価値を置く。
 
-**UX Applications:**
-- Use CTAs framed as "You'll miss out on X if you don't sign up now"
-- Present a list of features users will lose when a free trial ends
-- Use countdown timers to create awareness of missed opportunities (combine with Scarcity)
-
----
-
-### 24. Nudge
-
-A technique from behavioral economics that encourages desirable behavior through choice architecture without coercion.
-
-**UX Applications:**
-- Set defaults to the preferred option (combine with Default Bias)
-- Add social proof like "Most users choose this plan"
-- Show input examples in form placeholders
+**UX への応用:**
+- 無料トライアル中はフルの機能を解放してトライアル終了時の喪失感を高める
+- カート内のアイテムを「あなたのアイテム」と呼ぶ
+- ユーザーがカスタム設定を作れるようにする (パーソナライズされた設定は手放しにくい)
 
 ---
 
-### 25. Peak-End Rule
+### 13. Expectation Bias (期待バイアス)
 
-Overall experience evaluation is determined by the peak moment and the ending of the experience. Details in between are rarely remembered.
+ユーザーは事前に形成された期待をもとにプロダクトを評価する。期待を超えると満足度が上がり、下回ると不満につながる。
 
-**UX Applications:**
-- Make the checkout completion (end) experience exceptionally delightful
-- Orchestrate the first Aha! moment (peak) during onboarding
-- Carefully design the recovery experience after errors
-- Include a positive experience at the end of cancellation flows to protect brand impression
-
----
-
-### 26. Priming
-
-Prior exposure to a stimulus unconsciously influences subsequent cognition and behavior.
-
-**UX Applications:**
-- Opening images and words on landing pages influence conversion rates (nature/family images vs urban/business images)
-- Show "safe" and "trusted" words before presenting prices
-- Place reassuring icons (lock, shield) near purchase buttons
+**UX への応用:**
+- オンボーディング中に適切な期待値を設定する (「これができます」)
+- 約束を一貫して守る (過大な約束は逆効果)
+- ベータプロダクトでは「まだ未完成」と事前に伝えることが有効
 
 ---
 
-### 27. Progressive Disclosure
+### 14. Familiarity Bias (親しみバイアス)
 
-A design approach that initially shows only essential information, then reveals details progressively as needed. Reduces cognitive load.
+人は親しみのあるものを好む。認識できる UI パターンやブランドに対して安心感を覚える。
 
-**UX Applications:**
-- Structure forms as multi-step wizards
-- Collapse advanced settings under an "Advanced" section
-- Use tooltips and accordions to show details only to users who need them
-
----
-
-### 28. Pygmalion Effect
-
-People tend to perform in accordance with others' high expectations. Communicating "you can do it" to users can alter their behavior.
-
-**UX Applications:**
-- Encourage users during onboarding with "You're in the top 10% of users"
-- Message "Pro user features have been unlocked for you"
-- Use emails saying "Specially for active users like you"
+**UX への応用:**
+- 業界標準の UI パターンに従う (ナビゲーションの配置、アイコンの意味等)
+- 既存の UI パターンに沿って新しい機能をデザインする
+- リブランドや大きな UI 変更は段階的に展開する
 
 ---
 
-### 29. Reactance
+### 15. Foot-in-the-Door Effect (フット・イン・ザ・ドア効果)
 
-When people feel their freedom or choices are threatened, they push back to restore them. Excessive pressure produces the opposite effect.
+小さなリクエストに応じたユーザーは、その後のより大きなリクエストにも応じやすくなる。
 
-**UX Applications:**
-- Explain the value before requesting push notification permission
-- "Try it free" generates less resistance than "Sign up now!"
-- Avoid showing pop-ups too frequently
-- Forced upgrade prompts decrease engagement
-
----
-
-### 30. Reactive Onboarding
-
-An onboarding approach that provides timely guidance in response to user actions. Instead of explaining everything upfront, it delivers the right information at the right moment.
-
-**UX Applications:**
-- Display tooltips when a user accesses a feature for the first time
-- Detect when users are stuck (e.g., staying on the same screen too long) and show help
-- Snapchat's Memories tab explains each feature at the point of use
+**UX への応用:**
+- まず名前とメールを聞き、後から詳細情報を収集する
+- コミットメントを段階的にエスカレートする: 「いいね」→「シェア」→「登録」
+- マイクロコミットメントのデザインで CVR を向上させる
 
 ---
 
-### 31. Scarcity
+### 16. Framing (フレーミング)
 
-When a product is perceived as limited in availability or difficult to obtain, consumers assign it higher value and their purchase intent increases. Closely related to Loss Aversion.
+同じ情報でも提示の仕方によって受け取られ方が変わる。「成功率 95%」と「失敗率 5%」は同じ事実を伝えるが、異なる印象を与える。
 
-**UX Applications:**
-- Show inventory counts like "Only 3 rooms left" or "5 items in stock" (Airbnb, Amazon)
-- Display time limits: "Until 11:59 PM today"
-- Use limited edition or limited quantity badges
-- Show real-time activity: "X people are currently viewing this"
-
----
-
-### 32. Selective Attention
-
-Even amid information overload, users focus on information relevant to their goals and ignore irrelevant stimuli. Known from the famous "gorilla experiment."
-
-**UX Applications:**
-- Remove irrelevant information from UI to maintain task focus
-- Hide unnecessary navigation during checkout flows
-- Minimize exit links on landing pages
-- Dim the background on modal overlays to direct attention
+**UX への応用:**
+- 「残り 5 席」vs「95% 売り切れ」(損失回避フレームを使用)
+- 「無料トライアル終了まで 3 日」vs「あと 3 日間無料」
+- ネガティブな情報をポジティブなフレーミングで伝える
+- CTA コピーに「登録する」ではなく「始める」を使う
 
 ---
 
-### 33. Serial Position Effect
+### 17. Gamification (ゲーミフィケーション)
 
-Information presented at the beginning (primacy effect) and end (recency effect) of a list is most likely to be remembered.
+ゲームのような要素 (ポイント、バッジ、ランキング、ストリーク) をプロダクトに取り入れてユーザーのモチベーションとエンゲージメントを高める。
 
-**UX Applications:**
-- Place the most important navigation items at the beginning or end
-- In pricing comparison tables, position the recommended plan at the edge (especially first)
-- Place email CTAs at both the beginning and end of the body
-
----
-
-### 34. Skeuomorphism
-
-Incorporating physical-world appearances and textures into digital design to help users intuitively understand how to interact. Early iOS design is a classic example.
-
-**UX Applications:**
-- Page-turning animations in e-book apps
-- Paper textures in note-taking apps
-- Use familiar physical models to reduce learning cost for new features
+**UX への応用:**
+- Duolingo のストリーク (連続学習日数) でアプリの継続率を向上させる
+- フィットネスアプリのバッジとランキング
+- プロフィール入力を促すプロフィール完成度バー (LinkedIn)
+- チェックリストの完了でポイントを付与する
 
 ---
 
-### 35. Social Proof
+### 18. Goal Gradient Effect (ゴールグラジェント効果)
 
-People use the behavior and evaluations of others as a reference for their own actions. The "everyone is doing it, so it must be right" mentality.
+目標に近づくほど、人の努力と行動が加速する。ゴールが明確に見えるほどモチベーションが高まる。
 
-**UX Applications:**
-- Display user reviews and star ratings prominently
-- Show adoption metrics: "Used by X million people" or "Trusted by Company Y"
-- Real-time purchase notifications: "A. from Tokyo just purchased"
-- Display social share counts and download numbers
-
----
-
-### 36. Sunk Cost Effect
-
-People continue activities that are no longer rational because they are reluctant to "waste" costs (money, time, effort) already invested.
-
-**UX Applications:**
-- Visualize profile completion progress to trigger "I've come this far" feelings
-- Invest users' time through gradual onboarding before asking for conversion
-- Show achievements like "X hours of learning completed" to encourage continued service use
+**UX への応用:**
+- 「もうすぐ完了」を可視化する進捗バーを使用する
+- 10 枚中 2 枚が事前に押されたスタンプカードを配布する
+- オンボーディングのステップ数を明示的に表示する
 
 ---
 
-### 37. Survey Bias
+### 19. Halo Effect (ハロー効果)
 
-Survey and questionnaire design or execution methods produce results that differ from users' actual opinions or behavior.
+1 つの特性 (良いものも悪いものも) が他のすべての属性の評価に影響する。第一印象がその後の判断を形成する。
 
-**UX Applications:**
-- Avoid leading questions ("Was it easy to use?" vs "What did you think?")
-- Use clearly defined neutral points on numerical rating scales
-- Combine survey results with actual behavioral data for decision-making
-
----
-
-### 38. Temptation Bundling
-
-Pairing an unpleasant task with an enjoyable reward to encourage continued behavior.
-
-**UX Applications:**
-- Offer podcasts in fitness apps that are only available during workouts
-- Unlock game elements after completing learning modules
-- Design as a form of gamification
+**UX への応用:**
+- ランディングページの第一印象 (ビジュアルとコピー) に最も投資する
+- 有名パートナーブランドのロゴを目立つ場所に表示する
+- 最も評価の高いユーザーレビューを先頭に表示する
 
 ---
 
-### 39. User Delight
+### 20. Hawthorne Effect (ホーソン効果)
 
-Providing small joys or surprises that exceed user expectations, building product affinity, word-of-mouth, and retention.
+人は観察されていると知ると行動を変える。ユーザーテストやアンケートの結果は実際の行動と乖離することがある。
 
-**UX Applications:**
-- Animations and sounds on task completion
-- Send special messages on birthdays
-- Make error pages entertaining (404 pages)
-- Demonstrate attention to detail through micro-interactions
-
----
-
-### 40. Variable Reward
-
-A mechanism where rewards given at irregular intervals strengthen user behavior and create habits or dependency. Same principle as slot machines.
-
-**UX Applications:**
-- Social media feeds (unpredictable when good content appears)
-- Push notifications at irregular timing
-- Gacha and random reward systems
-- The habit of checking email inboxes
+**UX への応用:**
+- ユーザーテストの結果が非観察時の実際の利用と異なる可能性を考慮する
+- 定量データ (行動ログ) と定性データ (ユーザーテスト) を組み合わせる
+- 行動分析ツールを使って実際の利用パターンを把握する
 
 ---
 
-### 41. Visual Anchor
+### 21. Intentional Friction (意図的な摩擦)
 
-A visual element on a page that attracts the eye and serves as a starting point for attention. Controls user attention and communicates information priority visually.
+不適切な操作を防いだり、重要な決断の前にユーザーに立ち止まらせたりするために、操作にあえてステップや手間を加える。
 
-**UX Applications:**
-- Create visual starting points with hero images or large headings
-- Guide attention toward CTAs using the direction of a person's gaze
-- Direct user eye movement with arrows, lines, and color emphasis
-
----
-
-### 42. Visual Hierarchy
-
-A design technique that uses color, size, contrast, position, and texture to prioritize information and guide user attention as intended.
-
-**UX Applications:**
-- Communicate information structure through size hierarchy: H1 > H2 > body text
-- Make CTA buttons the most prominent in color and size
-- Consider that eye movement follows F-pattern or Z-pattern when no visual anchor is present
-- Balance accessibility and visibility through contrast ratios
+**UX への応用:**
+- アカウント削除の確認に「delete」と入力させる
+- 危険な操作 (データ削除、大きな送金) に確認ダイアログを追加する
+- サブスクリプション解約フローに理由入力や引き止め画面を含める
 
 ---
 
-### 43. Zeigarnik Effect
+### 22. Labor Illusion (労力の幻想)
 
-Incomplete tasks are remembered more easily than completed ones, and people feel a drive to finish them.
+処理がすでに完了していても「システムが一生懸命働いている」ことをユーザーに見せることで、結果をより価値あるものとして認識させる。「KAYAK 効果」とも呼ばれる。
 
-**UX Applications:**
-- Show "80% complete" profile completion to motivate filling the remaining 20%
-- Highlight incomplete items in onboarding step lists
-- Offer "Resume where you left off" features to bring users back
-- Combine with Curiosity Gap and Goal Gradient Effect
+**UX への応用:**
+- フライト検索中に進捗アニメーション付きで「最安値を検索中...」と表示する
+- TurboTax で意図的な遅延を入れて「最適な節税額を計算中」と表示する
+- Netflix でユーザーが好みを入力した後に「あなたにぴったりの番組を選んでいます」と表示する
 
 ---
 
-## Combination Patterns
+### 23. Loss Aversion (損失回避)
 
-| Scenario | Psychology Concepts to Apply |
+人は利益を得ることより損失を避けることに強く動機づけられる。損失の痛みは利益の喜びの約 2 倍強い。
+
+**UX への応用:**
+- 「今すぐ登録しないと X を逃します」というフレームで CTA を表示する
+- 無料トライアル終了後に失われる機能の一覧を提示する
+- カウントダウンタイマーで機会損失への意識を高める (Scarcity と組み合わせる)
+
+---
+
+### 24. Nudge (ナッジ)
+
+強制なしに選択アーキテクチャを通じて望ましい行動を促す行動経済学のテクニック。
+
+**UX への応用:**
+- 望ましいオプションをデフォルトに設定する (Default Bias と組み合わせる)
+- 「ほとんどのユーザーはこのプランを選んでいます」というソーシャルプルーフを追加する
+- フォームのプレースホルダーに入力例を表示する
+
+---
+
+### 25. Peak-End Rule (ピーク・エンドの法則)
+
+体験全体の評価は、最も印象的な瞬間 (ピーク) と終わり方 (エンド) によって決まる。その間の詳細はほとんど記憶されない。
+
+**UX への応用:**
+- チェックアウト完了 (エンド) の体験を特別に喜ばしいものにする
+- オンボーディング中の最初の Aha! モーメント (ピーク) を演出する
+- エラー後の回復体験を丁寧に設計する
+- 解約フローの最後にポジティブな体験を含めてブランド印象を守る
+
+---
+
+### 26. Priming (プライミング)
+
+事前に接した刺激が無意識のうちに後続の認知や行動に影響を与える。
+
+**UX への応用:**
+- ランディングページの冒頭の画像や言葉がコンバージョン率に影響する (自然・家族の画像 vs 都市・ビジネスの画像)
+- 価格を提示する前に「安全」「信頼」といった言葉を表示する
+- 購入ボタン付近に安心感を与えるアイコン (鍵、盾) を配置する
+
+---
+
+### 27. Progressive Disclosure (プログレッシブ・ディスクロージャー)
+
+最初は必要最小限の情報のみを表示し、必要に応じて詳細を段階的に開示するデザインアプローチ。認知負荷を軽減する。
+
+**UX への応用:**
+- フォームをマルチステップのウィザード形式に構成する
+- 高度な設定を「詳細設定」セクションに折りたたむ
+- 必要なユーザーにのみ詳細を表示するツールチップとアコーディオンを使用する
+
+---
+
+### 28. Pygmalion Effect (ピグマリオン効果)
+
+人は他者の高い期待に応えようとする傾向がある。ユーザーに「あなたならできる」と伝えることで行動を変えられる。
+
+**UX への応用:**
+- オンボーディング中に「あなたはユーザーの上位 10% に入っています」と励ます
+- 「あなた専用の Pro ユーザー機能が解放されました」とメッセージを送る
+- 「あなたのようなアクティブユーザーに特別に」というメールを使用する
+
+---
+
+### 29. Reactance (リアクタンス)
+
+人は自由や選択が脅かされると感じると、反発してそれを取り戻そうとする。過度なプレッシャーは逆効果を生む。
+
+**UX への応用:**
+- プッシュ通知の許可を求める前に価値を説明する
+- 「今すぐ登録！」より「無料で試す」の方が抵抗感が少ない
+- ポップアップを過度に表示しない
+- 強制的なアップグレードの促しはエンゲージメントを低下させる
+
+---
+
+### 30. Reactive Onboarding (リアクティブ・オンボーディング)
+
+ユーザーの行動に対応して適切なタイミングでガイダンスを提供するオンボーディングのアプローチ。最初からすべてを説明するのではなく、適切な瞬間に適切な情報を届ける。
+
+**UX への応用:**
+- ユーザーが初めて機能にアクセスしたときにツールチップを表示する
+- ユーザーが行き詰まっているのを検知し (同じ画面に長時間とどまる等)、ヘルプを表示する
+- Snapchat の Memories タブは各機能を使う時点でその機能を説明する
+
+---
+
+### 31. Scarcity (希少性)
+
+プロダクトが数量限定または入手困難と認識されると、消費者はより高い価値を置き、購買意向が高まる。Loss Aversion と密接に関連している。
+
+**UX への応用:**
+- 「残り 3 部屋」「在庫 5 点」のような在庫数を表示する (Airbnb、Amazon)
+- 「本日 23:59 まで」のような期限を表示する
+- 限定版・数量限定バッジを使用する
+- 「現在 X 人がこれを見ています」のようなリアルタイムのアクティビティを表示する
+
+---
+
+### 32. Selective Attention (選択的注意)
+
+情報過多の中でも、ユーザーは自分の目標に関連する情報に集中し、無関係な刺激は無視する。有名な「ゴリラ実験」から知られている。
+
+**UX への応用:**
+- タスクの集中を維持するために UI から無関係な情報を取り除く
+- チェックアウトフロー中は不要なナビゲーションを非表示にする
+- ランディングページの離脱リンクを最小化する
+- モーダルオーバーレイ時に背景をぼかして注意を誘導する
+
+---
+
+### 33. Serial Position Effect (系列位置効果)
+
+リストの最初 (初頭効果) と最後 (親近効果) に提示された情報が最も記憶に残りやすい。
+
+**UX への応用:**
+- 最も重要なナビゲーション項目を最初または最後に配置する
+- 料金比較テーブルでは推奨プランを端 (特に最初) に配置する
+- メールの本文の最初と最後の両方に CTA を配置する
+
+---
+
+### 34. Skeuomorphism (スキューモーフィズム)
+
+物理世界の外観やテクスチャをデジタルデザインに取り入れ、ユーザーが直感的に操作方法を理解できるようにする。初期の iOS デザインが典型例。
+
+**UX への応用:**
+- 電子書籍アプリのページめくりアニメーション
+- メモアプリの紙のテクスチャ
+- 新機能の学習コストを下げるために親しみのある物理的なモデルを使用する
+
+---
+
+### 35. Social Proof (社会的証明)
+
+人は自分の行動の参考として他者の行動や評価を使う。「みんながやっているから正しいはず」というメンタリティ。
+
+**UX への応用:**
+- ユーザーレビューと星評価を目立つ場所に表示する
+- 「X 百万人が利用」「Y 社が導入」のような採用指標を表示する
+- 「東京の A さんが購入しました」のようなリアルタイムの購買通知
+- SNS のシェア数やダウンロード数を表示する
+
+---
+
+### 36. Sunk Cost Effect (サンクコスト効果)
+
+人は既に投資したコスト (お金、時間、労力) を「無駄にしたくない」という気持ちから、もはや合理的でない活動を続けてしまう。
+
+**UX への応用:**
+- プロフィール完成度の進捗を可視化して「ここまでやってきた」という感覚を引き起こす
+- コンバージョンを求める前に段階的なオンボーディングでユーザーの時間を投資させる
+- 「X 時間の学習完了」のような実績を表示してサービスの継続利用を促す
+
+---
+
+### 37. Survey Bias (調査バイアス)
+
+アンケートや質問票の設計・実施方法が、ユーザーの実際の意見や行動とは異なる結果を生む。
+
+**UX への応用:**
+- 誘導質問を避ける (「使いやすかったですか？」ではなく「どう思いましたか？」)
+- 数値評価スケールに明確に定義された中立点を使用する
+- 意思決定にはアンケート結果と実際の行動データを組み合わせる
+
+---
+
+### 38. Temptation Bundling (誘惑のバンドル)
+
+不快なタスクと楽しい報酬を組み合わせることで、継続的な行動を促す。
+
+**UX への応用:**
+- フィットネスアプリでワークアウト中にのみ利用可能なポッドキャストを提供する
+- 学習モジュール完了後にゲーム要素を解放する
+- ゲーミフィケーションの一形態としてデザインする
+
+---
+
+### 39. User Delight (ユーザーデライト)
+
+ユーザーの期待を超える小さな喜びや驚きを提供し、プロダクトへの愛着、口コミ、継続利用を生み出す。
+
+**UX への応用:**
+- タスク完了時のアニメーションとサウンド
+- 誕生日に特別なメッセージを送る
+- エラーページを楽しいものにする (404 ページ)
+- マイクロインタラクションで細部へのこだわりを表現する
+
+---
+
+### 40. Variable Reward (可変報酬)
+
+不規則な間隔で与えられる報酬はユーザーの行動を強化し、習慣や依存性を生み出す。スロットマシンと同じ原理。
+
+**UX への応用:**
+- SNS フィード (良いコンテンツがいつ現れるかわからない)
+- 不規則なタイミングでのプッシュ通知
+- ガチャやランダム報酬システム
+- メール受信箱を確認する習慣
+
+---
+
+### 41. Visual Anchor (ビジュアルアンカー)
+
+ページ上で視線を引きつけ、注意の起点となる視覚的要素。ユーザーの注意をコントロールし、情報の優先順位を視覚的に伝える。
+
+**UX への応用:**
+- ヒーロー画像や大きな見出しで視線の起点を作る
+- 人物の視線の方向を使って CTA へ注意を誘導する
+- 矢印、線、色の強調でユーザーの視線の動きを誘導する
+
+---
+
+### 42. Visual Hierarchy (視覚的階層)
+
+色、サイズ、コントラスト、位置、テクスチャを使って情報の優先順位をつけ、意図した通りにユーザーの注意を誘導するデザインテクニック。
+
+**UX への応用:**
+- サイズの階層で情報構造を伝える: H1 > H2 > 本文テキスト
+- CTA ボタンを色とサイズで最も目立つ要素にする
+- ビジュアルアンカーがない場合、視線は F パターンまたは Z パターンで動くことを考慮する
+- コントラスト比でアクセシビリティと視認性を両立させる
+
+---
+
+### 43. Zeigarnik Effect (ツァイガルニク効果)
+
+未完了のタスクは完了したものよりも記憶に残りやすく、完了しようとする衝動を感じる。
+
+**UX への応用:**
+- 「プロフィール 80% 完成」と表示して残り 20% の入力を促す
+- オンボーディングのステップ一覧で未完了の項目を目立たせる
+- 「前回の続きから」機能を提供してユーザーを呼び戻す
+- Curiosity Gap と Goal Gradient Effect と組み合わせる
+
+---
+
+## 組み合わせパターン
+
+| シナリオ | 適用する心理学概念 |
 |---|---|
-| Pricing Page Design | Anchor Effect + Decoy Effect + Default Bias + Social Proof |
-| Onboarding Design | Progressive Disclosure + Goal Gradient Effect + Zeigarnik Effect + User Delight |
-| CTA Optimization | Framing + Loss Aversion + Scarcity + Visual Anchor |
-| Engagement Improvement | Gamification + Variable Reward + Foot-in-the-Door Effect + Peak-End Rule |
-| Conversion Rate Improvement | Social Proof + Cognitive Load Reduction + Default Bias + Framing |
-| Churn Prevention | Sunk Cost Effect + Endowment Effect + Curiosity Gap |
-| Form Optimization | Cognitive Load + Progressive Disclosure + Foot-in-the-Door Effect + Goal Gradient Effect |
+| 料金ページのデザイン | Anchor Effect + Decoy Effect + Default Bias + Social Proof |
+| オンボーディングのデザイン | Progressive Disclosure + Goal Gradient Effect + Zeigarnik Effect + User Delight |
+| CTA の最適化 | Framing + Loss Aversion + Scarcity + Visual Anchor |
+| エンゲージメントの向上 | Gamification + Variable Reward + Foot-in-the-Door Effect + Peak-End Rule |
+| コンバージョン率の向上 | Social Proof + Cognitive Load の軽減 + Default Bias + Framing |
+| チャーン防止 | Sunk Cost Effect + Endowment Effect + Curiosity Gap |
+| フォームの最適化 | Cognitive Load + Progressive Disclosure + Foot-in-the-Door Effect + Goal Gradient Effect |
 
 ---
 
-## Usage Guide
+## 活用ガイド
 
-**Questions to ask during UX design and review:**
+**UX デザインとレビュー時に問うべき質問:**
 
-1. Is this UI element increasing cognitive load unnecessarily?
-2. Is information placement optimized for the primacy and recency effects?
-3. Are default values set to the most desirable option?
-4. Does the CTA copy leverage loss aversion and framing?
-5. Are social proof and trust signals positioned effectively?
-6. Is the peak experience (Aha! moment) clearly designed?
-7. Are scarcity and urgency appeals based on honest evidence?
+1. この UI 要素は不必要に認知負荷を高めていないか？
+2. 情報の配置は初頭効果と親近効果に最適化されているか？
+3. デフォルト値は最も望ましいオプションに設定されているか？
+4. CTA のコピーは損失回避とフレーミングを活用しているか？
+5. ソーシャルプルーフと信頼シグナルは効果的に配置されているか？
+6. ピーク体験 (Aha! モーメント) は明確にデザインされているか？
+7. 希少性と緊急性の訴求は正直な根拠に基づいているか？
 
-**Ethical Considerations:**
-Avoid dark patterns (designs that deceive users). These psychology concepts should be used to create experiences that are genuinely valuable for users, not to exploit them for short-term conversion gains at the expense of trust.
+**倫理的配慮:**
+ダークパターン (ユーザーを欺くデザイン) は避けること。これらの心理学概念は、短期的なコンバージョンのために信頼を犠牲にするのではなく、ユーザーにとって本当に価値ある体験を作るために使用すること。

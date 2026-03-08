@@ -1,57 +1,57 @@
 ---
 name: code-metrics
-description: Quantitative code quality analysis across 4 layers (physical, structural, evolution, semantic). Use when evaluating codebase health, identifying refactoring targets, or tracking architectural drift.
+description: 4 レイヤー（物理・構造・進化・セマンティック）にわたる定量的コード品質分析。コードベースの健全性評価・リファクタリング対象の特定・アーキテクチャのドリフト追跡に使用する。
 ---
 
-# Code Metrics Skill
+# コードメトリクス スキル
 
-Quantitative code quality analysis providing measurable, repeatable metrics across 4 layers. Complements qualitative `/code-review` with hard numbers.
+4 レイヤーにわたる定量的なコード品質分析。測定可能で再現可能なメトリクスを提供する。定性的な `/code-review` を数値で補完する。
 
-## When to Activate
+## 発動タイミング
 
-- Evaluating overall codebase health
-- Identifying refactoring priorities (hotspot detection)
-- Checking architectural compliance (layer violations, circular deps)
-- Before/after major refactoring to measure improvement
-- Sprint retrospectives or technical debt reviews
+- コードベース全体の健全性を評価するとき
+- リファクタリング優先度を特定するとき（ホットスポット検出）
+- アーキテクチャ準拠を確認するとき（レイヤー違反・循環依存）
+- 大規模リファクタリングの前後で改善を測定するとき
+- スプリントの振り返りやテクニカルデット レビューのとき
 
-## Analysis Modes
+## 分析モード
 
-| Mode | Layers | Use Case |
+| モード | レイヤー | ユースケース |
 |------|--------|----------|
-| `quick` | L1 only | Fast pulse-check during coding |
-| `architecture` | L1 + L2 | Dependency analysis, before/after refactoring |
-| `hotspots` | L1 + L3 | Identify refactoring priorities |
-| `drift` | L2 focused | Layer violations, circular deps |
-| `full` | L1-L4 | Comprehensive health report |
+| `quick` | L1 のみ | コーディング中の素早いパルスチェック |
+| `architecture` | L1 + L2 | 依存関係分析・リファクタリング前後の比較 |
+| `hotspots` | L1 + L3 | リファクタリング優先度の特定 |
+| `drift` | L2 重点 | レイヤー違反・循環依存 |
+| `full` | L1-L4 | 包括的な健全性レポート |
 
-When the user specifies a mode, run only the layers listed. Default to `full` if no mode is specified.
+ユーザーがモードを指定した場合は、記載されたレイヤーのみを実行する。モードが指定されない場合はデフォルトで `full` を使用する。
 
 ---
 
-## Project Configuration
+## プロジェクト設定
 
-Command templates below use `<placeholder>` tokens for project-specific values. Before executing, resolve each placeholder using the table below.
+以下のコマンドテンプレートはプロジェクト固有の値のプレースホルダー `<placeholder>` を使用している。実行前に以下の表を参照して各プレースホルダーを解決すること。
 
-**Resolution order:**
-1. Look for a code-metrics configuration section in CLAUDE.md
-2. If the section exists, substitute each token with the corresponding setting -- done
-3. If absent, run auto-detection for each placeholder using the Fallback column
-4. Present detected values to the user via AskUserQuestion for confirmation
-5. On confirmation, append the configuration section to CLAUDE.md (see template below), then proceed with analysis
+**解決順序:**
+1. CLAUDE.md のコードメトリクス設定セクションを探す
+2. セクションが存在する場合、各トークンを対応する設定値で置換して完了
+3. セクションが存在しない場合、フォールバック列を使用して各プレースホルダーを自動検出する
+4. 検出した値を AskUserQuestion でユーザーに提示して確認を求める
+5. 確認後、設定セクションを CLAUDE.md に追記（以下のテンプレートを参照）してから分析を進める
 
-| Placeholder | What to look for in CLAUDE.md | Expansion Format | Fallback |
+| プレースホルダー | CLAUDE.md で探すもの | 展開形式 | フォールバック |
 |-------------|------------------------------|-----------------|----------|
-| `<src_dir>` | Source directory | as-is | Detect from project structure (`src/`, `lib/`, `app/`, or `.`) |
-| `<ext_glob>` | Target file extensions (glob form) | `-name '*.ext1' -o -name '*.ext2'` | Detect from project config (e.g. `tsconfig.json` -> `*.ts *.tsx`) |
-| `<ext_include>` | Target file extensions (glob form) | `--include='*.ext1' --include='*.ext2'` | Same detection as `<ext_glob>` |
-| `<ext_comma>` | Target file extensions (comma form) | as-is | Same detection as `<ext_glob>`, comma-separated without `*.` |
-| `<exclude_path>` | Excluded paths | as-is | Omit the exclusion filter |
-| `<dep_tool>` | Dependency analysis tool | as-is | Check installed tools (`madge`, `dependency-cruiser`); skip circular-dep analysis if none found |
+| `<src_dir>` | ソースディレクトリ | そのまま | プロジェクト構造から検出（`src/`・`lib/`・`app/`・`.`） |
+| `<ext_glob>` | 対象拡張子（glob 形式） | `-name '*.ext1' -o -name '*.ext2'` | プロジェクト設定から検出（例: `tsconfig.json` -> `*.ts *.tsx`） |
+| `<ext_include>` | 対象拡張子（glob 形式） | `--include='*.ext1' --include='*.ext2'` | `<ext_glob>` と同じ検出方法 |
+| `<ext_comma>` | 対象拡張子（カンマ形式） | そのまま | `<ext_glob>` と同じ検出方法・カンマ区切りで `*.` なし |
+| `<exclude_path>` | 除外パス | そのまま | 除外フィルターを省略 |
+| `<dep_tool>` | 依存関係分析ツール | そのまま | インストール済みツールを確認（`madge`・`dependency-cruiser`）・見つからない場合は循環依存分析をスキップ |
 
-### Configuration Persistence
+### 設定の永続化
 
-When writing detected configuration to CLAUDE.md, use this template:
+検出した設定を CLAUDE.md に書き込む際は、以下のテンプレートを使用する:
 
 ```markdown
 ## Code Metrics Configuration
@@ -67,116 +67,116 @@ Project-specific settings referenced by the `/code-metrics` skill.
 | Dependency tool | `{dep_tool}` |
 ```
 
-**Rules:**
-- Insert as a new `##` section in CLAUDE.md (after the development/DB commands section, before any unrelated sections)
-- If a placeholder could not be detected and the user did not provide a value, omit that row
-- Use the user-confirmed values, not the raw auto-detected values
-- After writing, re-read CLAUDE.md to verify the section was added correctly
+**ルール:**
+- CLAUDE.md に新しい `##` セクションとして挿入する（開発/DB コマンドセクションの後、無関係なセクションの前）
+- プレースホルダーを検出できず、ユーザーも値を提供しなかった場合は、その行を省略する
+- 自動検出した値ではなく、ユーザーが確認した値を使用する
+- 書き込み後、CLAUDE.md を再読み込みしてセクションが正しく追加されたことを確認する
 
 ---
 
-## Layer 1: Physical Metrics
+## レイヤー 1: 物理メトリクス
 
-Measures raw code characteristics per file.
+ファイルごとの生のコード特性を測定する。
 
-### Collection Commands
+### 収集コマンド
 
 ```bash
-# Lines of code per file (exclude blank lines and node_modules)
+# ファイルごとのコード行数（空白行と node_modules を除く）
 find <src_dir> <ext_glob> | xargs wc -l | sort -rn | head -30
 
-# Function count per file
+# ファイルごとの関数数
 grep -rn 'function \|=> {' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
-# Export count per file
+# ファイルごとのエクスポート数
 grep -rn '^export ' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
-# Nesting depth (proxy: count leading whitespace levels)
+# ネスト深度（プロキシ: 先頭の空白レベルをカウント）
 grep -rn '^\s\{12,\}' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
-# Function parameter count (functions with 4+ params)
+# 関数パラメータ数（4 つ以上のパラメータを持つ関数）
 grep -rPn '\(([^)]*,){3,}[^)]*\)' <src_dir> <ext_include> | head -20
 
-# Import count per file
+# ファイルごとのインポート数
 grep -rn '^import ' <src_dir> <ext_include> | \
   cut -d: -f1 | sort | uniq -c | sort -rn | head -20
 
-# Cyclomatic complexity proxy (branching keyword count per file)
+# 循環的複雑度のプロキシ（ファイルごとの分岐キーワード数）
 for f in $(find <src_dir> <ext_glob>); do
   count=$(grep -c -E '\bif\b|\belse\b|\bfor\b|\bwhile\b|\bswitch\b|\bcase\b|\bcatch\b|\?\?|&&|\|\|' "$f" 2>/dev/null || echo 0)
   [ "$count" -gt 0 ] && echo "$count $f"
 done | sort -rn | head -20
-# NOTE: File-level proxy. For files scoring high, drill into per-function
-# analysis by reading the file and counting branches per function body.
+# 注意: ファイルレベルのプロキシ。スコアが高いファイルは、ファイルを読んで
+# 関数ボディごとの分岐数をカウントして関数レベルで掘り下げること。
 ```
 
-### Thresholds
+### 閾値
 
-| Metric | OK | WARN | CRITICAL |
+| メトリクス | OK | 警告 | 危険 |
 |--------|-----|------|----------|
-| File SLOC | < 200 | 200-400 | > 400 |
-| Function length (lines) | < 30 | 30-50 | > 50 |
-| Cyclomatic complexity | < 6 | 6-10 | > 10 |
-| Nesting depth | < 3 | 3-4 | > 4 |
-| Parameter count | < 4 | 4-5 | > 5 |
-| Import count | < 8 | 8-12 | > 12 |
+| ファイル SLOC | 200 未満 | 200-400 | 400 超 |
+| 関数の長さ（行数） | 30 未満 | 30-50 | 50 超 |
+| 循環的複雑度 | 6 未満 | 6-10 | 10 超 |
+| ネスト深度 | 3 未満 | 3-4 | 4 超 |
+| パラメータ数 | 4 未満 | 4-5 | 5 超 |
+| インポート数 | 8 未満 | 8-12 | 12 超 |
 
-Report each file that exceeds WARN or CRITICAL thresholds.
+警告または危険の閾値を超えるファイルを全てレポートする。
 
 ---
 
-## Layer 2: Structural Metrics
+## レイヤー 2: 構造メトリクス
 
-Measures module dependencies and architectural integrity.
+モジュールの依存関係とアーキテクチャの整合性を測定する。
 
-### Collection Commands
+### 収集コマンド
 
 ```bash
-# Circular dependency detection
+# 循環依存の検出
 npx <dep_tool> --circular --extensions <ext_comma> <src_dir>
 
-# Full dependency graph as JSON (for fan-in/fan-out analysis)
+# 依存関係グラフ全体を JSON で出力（ファンイン/ファンアウト分析用）
 npx <dep_tool> --json --extensions <ext_comma> <src_dir>
 
-# Layer violation detection
-# If CLAUDE.md defines layer architecture rules (import constraints between modules),
-# for each rule:
-#   grep -rn "<must_not_import_pattern>" <source_path> <ext_include>
-#   If the rule has exceptions, pipe through: | grep -v "<exception_pattern>"
-# If no layer rules are defined, skip this step.
+# レイヤー違反の検出
+# CLAUDE.md にレイヤーアーキテクチャルール（モジュール間のインポート制約）が定義されている場合:
+#   ルールごとに:
+#     grep -rn "<must_not_import_pattern>" <source_path> <ext_include>
+#     ルールに例外がある場合: | grep -v "<exception_pattern>" をパイプ
+# レイヤールールが定義されていない場合はこのステップをスキップ。
 ```
 
-### Fan-In / Fan-Out Analysis
+### ファンイン / ファンアウト分析
 
-From the `<dep_tool> --json` output:
-- **Fan-out** = number of modules a file imports (direct dependencies)
-- **Fan-in** = number of modules that import a file (reverse dependencies)
-- **God module** = file with highest `fan-in x fan-out` product
+`<dep_tool> --json` の出力から:
+- **ファンアウト** = ファイルがインポートするモジュール数（直接依存）
+- **ファンイン** = ファイルをインポートするモジュール数（逆依存）
+- **ゴッドモジュール** = `ファンイン × ファンアウト` の積が最大のファイル
 
-### Coupling Weight
+### 結合重み
 
-Measures how many symbols each file imports per dependency. Distinguishes lightweight connections (1-2 symbols) from heavyweight ones (many symbols from a single source).
+ファイルが依存ごとにインポートするシンボル数を測定する。軽量な接続（1-2 シンボル）と重量な接続（1 つのソースから多くのシンボル）を区別する。
 
-#### Collection Command
+#### 収集コマンド
 
 ```bash
-# Per-dependency import breadth (runtime imports only)
+# 依存ごとのインポート幅（ランタイムインポートのみ）
 grep -rn "^import " <src_dir> <ext_include> | grep -v "import type " | \
   sed -n 's/.*{\([^}]*\)}.*/\1/p' | \
   awk -F',' '{print NF}' | \
   awk '{sum+=$1; if($1>max)max=$1} END {print "files:", NR, "mean:", (NR?sum/NR:0), "max:", max}'
 
-# Top files by total coupling weight (sum of all imported symbols)
+# 結合重み合計が大きいファイルのトップ一覧（全インポートシンボル数の合計）
 for f in $(find <src_dir> <ext_glob>); do
   w=$(grep "^import " "$f" 2>/dev/null | grep -v "import type " | \
     sed -n 's/.*{\([^}]*\)}.*/\1/p' | awk -F',' '{s+=NF} END {print s+0}')
   [ "$w" -gt 0 ] && echo "$w $f"
 done | sort -rn | head -20
 
-# Heaviest single dependencies (most symbols from one source)
+# 最も重い単一依存（1 つのソースから最も多くのシンボル）
 grep -rPn "^import \{[^}]+\} from " <src_dir> <ext_include> | grep -v "import type " | \
   while IFS= read -r line; do
     symbols=$(echo "$line" | sed -n 's/.*{\([^}]*\)}.*/\1/p' | awk -F',' '{print NF}')
@@ -184,20 +184,20 @@ grep -rPn "^import \{[^}]+\} from " <src_dir> <ext_include> | grep -v "import ty
   done | sort -rn | head -20
 ```
 
-#### Evaluation
+#### 評価
 
-- **Per-dependency weight**: Count of named symbols in each import statement (excluding type-only imports)
-- **Total module weight**: Sum of all per-dependency weights for a file
-- **Type-only imports** (`import type { ... }`) are excluded -- they create no runtime coupling
+- **依存ごとの重み**: 各インポート文の名前付きシンボル数（型専用インポートを除く）
+- **モジュールの重み合計**: ファイルの全依存の重みの合計
+- **型専用インポート**（`import type { ... }`）は除外 — ランタイム結合を生まない
 
-### Module Cohesion
+### モジュール凝集度
 
-Detects files that export symbols belonging to multiple unrelated domains/responsibilities.
+複数の無関係なドメイン/責務に属するシンボルをエクスポートするファイルを検出する。
 
-#### Collection Command
+#### 収集コマンド
 
 ```bash
-# List files with 2+ exports and their public symbols
+# 2 つ以上のエクスポートを持つファイルとその公開シンボルを一覧表示
 for f in $(find <src_dir> <ext_glob> | grep -v '<exclude_path>'); do
   count=$(grep -c '^export ' "$f" 2>/dev/null || echo 0)
   if [ "$count" -gt 1 ]; then
@@ -208,58 +208,58 @@ for f in $(find <src_dir> <ext_glob> | grep -v '<exclude_path>'); do
 done
 ```
 
-#### Evaluation Criteria
+#### 評価基準
 
-- All exports belong to the same domain -> **OK**
-- Matches a known cohesive pattern (see exclusions below) -> **OK** (skip)
-- 2 domains mixed -> **WARN**
-- 3+ domains mixed -> **CRITICAL**
+- 全エクスポートが同じドメインに属する -> **OK**
+- 既知の凝集パターンに一致（以下の除外パターンを参照） -> **OK**（スキップ）
+- 2 つのドメインが混在 -> **警告**
+- 3 つ以上のドメインが混在 -> **危険**
 
-#### Exclusion Patterns (Known Cohesive Exports)
+#### 除外パターン（既知の凝集エクスポート）
 
-If CLAUDE.md defines cohesion exclusion patterns (under the code-metrics configuration section), apply them -- matching files are inherently cohesive and should NOT be flagged. If absent, apply only universal patterns: barrel files (re-export-only modules) and constant-only files.
+CLAUDE.md のコードメトリクス設定セクションに凝集除外パターンが定義されている場合は適用する — 一致するファイルは本質的に凝集しておりフラグを立てるべきではない。定義されていない場合は、バレルファイル（再エクスポートのみのモジュール）と定数専用ファイルというユニバーサルパターンのみを適用する。
 
-### Thresholds
+### 閾値
 
-| Metric | OK | WARN | CRITICAL |
+| メトリクス | OK | 警告 | 危険 |
 |--------|-----|------|----------|
-| Circular deps (count) | 0 | -- | > 0 |
-| Layer violations (count) | 0 | -- | > 0 |
-| Fan-out (imports per file) | < 8 | 8-12 | > 12 |
-| Fan-in (dependents per file) | < 10 | 10-15 | > 15 |
-| God module (fan-in x fan-out) | < 50 | 50-100 | > 100 |
-| Module Cohesion violations | 0 | 1-2 | > 2 |
-| Coupling weight (per dep) | < 5 | 5-10 | > 10 |
-| Coupling weight (per file total) | < 30 | 30-60 | > 60 |
+| 循環依存数 | 0 | -- | 0 超 |
+| レイヤー違反数 | 0 | -- | 0 超 |
+| ファンアウト（ファイルごとのインポート数） | 8 未満 | 8-12 | 12 超 |
+| ファンイン（ファイルごとの依存元数） | 10 未満 | 10-15 | 15 超 |
+| ゴッドモジュール（ファンイン × ファンアウト） | 50 未満 | 50-100 | 100 超 |
+| モジュール凝集度違反数 | 0 | 1-2 | 2 超 |
+| 結合重み（依存ごと） | 5 未満 | 5-10 | 10 超 |
+| 結合重み（ファイル合計） | 30 未満 | 30-60 | 60 超 |
 
 ---
 
-## Layer 3: Evolution Metrics
+## レイヤー 3: 進化メトリクス
 
-Measures how code changes over time using git history.
+git 履歴を使ってコードが時間とともにどのように変化するかを測定する。
 
-### Collection Commands
+### 収集コマンド
 
 ```bash
-# Code churn: files with most additions+deletions in last 90 days
+# コードチャーン: 過去 90 日間の追加+削除が最も多いファイル
 git log --since="90 days ago" --numstat --format="" | \
   awk '{adds[$3]+=$1; dels[$3]+=$2} END {for(f in adds) print adds[f]+dels[f], adds[f], dels[f], f}' | \
   sort -rn | head -20
 
-# Change frequency: most frequently modified files in last 90 days
+# 変更頻度: 過去 90 日間で最も頻繁に変更されたファイル
 git log --since="90 days ago" --name-only --format="" | \
   sort | uniq -c | sort -rn | head -20
 
-# Bug-fix concentration: files most often in fix commits
+# バグ修正集中度: 過去 180 日間の fix コミットに最も多く含まれるファイル
 git log --since="180 days ago" --name-only --format="" --grep="^fix" | \
   sort | uniq -c | sort -rn | head -20
 
-# Author concentration: per-file single-author percentage
+# 作者集中度: ファイルごとの単一作者割合
 git log --since="180 days ago" --format="%an" --name-only | \
   awk '/^$/{next} !author{author=$0; next} {files[author][$0]++; total[$0]++; author=""}' \
-  # (simplified - use git shortlog for practical analysis)
+  # （簡略版 — 実用的な分析には git shortlog を使用）
 
-# Practical author concentration per file
+# ファイルごとの実用的な作者集中度
 for f in $(git log --since="180 days ago" --name-only --format="" | sort -u | head -30); do
   total=$(git log --since="180 days ago" --format="%an" -- "$f" | wc -l)
   top=$(git log --since="180 days ago" --format="%an" -- "$f" | sort | uniq -c | sort -rn | head -1)
@@ -267,154 +267,154 @@ for f in $(git log --since="180 days ago" --name-only --format="" | sort -u | he
 done
 ```
 
-### Temporal Coupling
+### テンポラルカップリング
 
-Detects files that frequently change together in the same commit, revealing hidden coupling not visible in import graphs.
+同じコミットで頻繁に一緒に変更されるファイルを検出し、インポートグラフでは見えない隠れた結合を明らかにする。
 
-#### Collection Command
+#### 収集コマンド
 
 ```bash
-# Temporal coupling: file pairs committed together in last 90 days
+# テンポラルカップリング: 過去 90 日間に同じコミットで変更されたファイルペア
 git log --since="90 days ago" --name-only --format="COMMIT_SEP" -- <src_dir> | \
   awk '/^COMMIT_SEP$/{for(i in f) for(j in f) if(i<j) p[i" <-> "j]++; delete f; next} NF{f[$0]=1} END{for(k in p) if(p[k]>=5) print p[k], k}' | \
   sort -rn | head -20
 ```
 
-#### Evaluation
+#### 評価
 
-- **Co-change count >= 5**: Files changed together 5+ times in 90 days
-- Pairs within the same module/feature are expected -- flag only cross-module pairs
-- Cross-layer pairs (e.g., a route + a UI component) indicate leaking abstractions
-- High temporal coupling + no import relationship = hidden dependency (CRITICAL)
-- High temporal coupling + direct import = expected but review coupling weight
+- **同時変更回数 >= 5**: 過去 90 日間で 5 回以上一緒に変更されたファイル
+- 同じモジュール/機能内のペアは想定内 — クロスモジュールのペアのみフラグを立てる
+- クロスレイヤーのペア（例: ルート + UI コンポーネント）は抽象化の漏れを示す
+- テンポラルカップリングが高くインポート関係がない = 隠れた依存（危険）
+- テンポラルカップリングが高く直接インポートあり = 想定内だが結合重みを確認
 
-### Thresholds
+### 閾値
 
-| Metric | OK | WARN | CRITICAL |
+| メトリクス | OK | 警告 | 危険 |
 |--------|-----|------|----------|
-| Churn (lines/90d) | < 500 | 500-1500 | > 1500 |
-| Change frequency (commits/90d) | < 15 | 15-30 | > 30 |
-| Bug-fix ratio | < 20% | 20-40% | > 40% |
-| Author concentration | < 70% | 70-90% | > 90% |
-| Temporal coupling (cross-module) | 0 | 1-3 | > 3 |
-| Temporal coupling (co-change count) | < 5 | 5-10 | > 10 |
+| チャーン（行数/90 日） | 500 未満 | 500-1500 | 1500 超 |
+| 変更頻度（コミット数/90 日） | 15 未満 | 15-30 | 30 超 |
+| バグ修正比率 | 20% 未満 | 20-40% | 40% 超 |
+| 作者集中度 | 70% 未満 | 70-90% | 90% 超 |
+| テンポラルカップリング（クロスモジュール） | 0 | 1-3 | 3 超 |
+| テンポラルカップリング（同時変更回数） | 5 未満 | 5-10 | 10 超 |
 
 ---
 
-## Layer 4: AI Semantic Analysis
+## レイヤー 4: AI セマンティック分析
 
-Human-readable assessment of the top hotspot files. Only collected in `full` mode.
+上位ホットスポットファイルの人間が読めるアセスメント。`full` モードでのみ収集する。
 
-### Procedure
+### 手順
 
-1. Identify the top 10 files by Hotspot Index (see Composite Scores)
-2. Read each file in full
-3. For each file, assess:
+1. ホットスポットインデックスの上位 10 ファイルを特定する（複合スコアを参照）
+2. 各ファイルを全文読む
+3. 各ファイルについて以下を評価する:
 
-| Aspect | What to Look For |
+| 観点 | 確認内容 |
 |--------|-----------------|
-| SRP Violations | Does this file/module do more than one thing? |
-| Naming Quality | Are names descriptive, consistent, and non-ambiguous? |
-| Dependency Direction | Do dependencies point inward (toward domain)? |
-| Domain Leakage | Does infrastructure detail leak into business logic? |
-| Side Effect Spread | Are side effects (I/O, mutations) contained or scattered? |
-| Module Cohesion | Do all public symbols belong to the same domain/responsibility? Are there mixed concerns (e.g., UI + API, auth + routing)? |
+| SRP 違反 | このファイル/モジュールは複数のことをしていないか？ |
+| 命名品質 | 名前は説明的・一貫性があり・曖昧でないか？ |
+| 依存関係の方向 | 依存関係はドメインに向かって内向きに向いているか？ |
+| ドメイン漏れ | インフラの詳細がビジネスロジックに漏れていないか？ |
+| 副作用の拡散 | 副作用（I/O・ミューテーション）は封じ込められているか、散在しているか？ |
+| モジュール凝集度 | 全ての公開シンボルが同じドメイン/責務に属しているか？混在した懸念（例: UI + API・認証 + ルーティング）はないか？ |
 
-4. Tag each finding with a severity:
-    - `[INFO]` -- Minor observation, no action needed
-    - `[WARN]` -- Should be addressed in next refactoring cycle
-    - `[CRITICAL]` -- Violates core architecture, fix immediately
+4. 各所見に重大度タグを付ける:
+    - `[INFO]` -- 軽微な観察・対応不要
+    - `[WARN]` -- 次のリファクタリングサイクルで対処すべき
+    - `[CRITICAL]` -- コアアーキテクチャ違反・即座に修正が必要
 
 ---
 
-## Composite Scores (0-10)
+## 複合スコア（0-10）
 
-Calculate after collecting raw metrics.
+生のメトリクス収集後に計算する。
 
-**Normalization**: For each component, normalize to a 0-10 scale:
-`component_norm = (file_value / max_value_in_codebase) * 10`, clamped to [0, 10].
-If the codebase maximum is 0 for a component, set all normalized values to 0.
+**正規化**: 各コンポーネントを 0-10 スケールに正規化する:
+`component_norm = (file_value / max_value_in_codebase) * 10`、[0, 10] にクランプ。
+コードベースの最大値が 0 の場合、全ての正規化値を 0 に設定する。
 
-| Score | Formula | Meaning |
+| スコア | 計算式 | 意味 |
 |-------|---------|---------|
-| **Hotspot Index** | `complexity_norm * 0.4 + churn_norm * 0.35 + centrality_norm * 0.25` | Files most likely to cause future issues. Higher = more urgent. |
-| **Architectural Drift** | `violations * 2 + cycles * 3 + god_modules + cohesion_violations + coupling_weight_violations` | Degree of architecture degradation. 0 = clean. |
-| **Cognitive Load Index** | `(complexity_norm * 3 + nesting_norm * 2 + params_norm + func_length_norm * 2) / 8` | How hard the code is to understand. Higher = harder. |
+| **ホットスポットインデックス** | `complexity_norm * 0.4 + churn_norm * 0.35 + centrality_norm * 0.25` | 将来的に問題を起こす可能性が最も高いファイル。高いほど緊急度が高い。 |
+| **アーキテクチャドリフト** | `violations * 2 + cycles * 3 + god_modules + cohesion_violations + coupling_weight_violations` | アーキテクチャ劣化の程度。0 がクリーン。 |
+| **認知負荷インデックス** | `(complexity_norm * 3 + nesting_norm * 2 + params_norm + func_length_norm * 2) / 8` | コードの理解しにくさ。高いほど難しい。 |
 
-### Score Interpretation
+### スコアの解釈
 
-| Range | Label | Action |
+| 範囲 | ラベル | アクション |
 |-------|-------|--------|
-| 0-2 | Healthy | No action needed |
-| 3-5 | Moderate | Plan improvements in next sprint |
-| 6-7 | Concerning | Prioritize in current sprint |
-| 8-10 | Critical | Address immediately |
+| 0-2 | 健全 | 対応不要 |
+| 3-5 | 普通 | 次のスプリントで改善を計画 |
+| 6-7 | 懸念あり | 現スプリントで優先対応 |
+| 8-10 | 危機的 | 即座に対処 |
 
 ---
 
-## Output Format
+## 出力フォーマット
 
-Present results using this template:
+このテンプレートを使って結果を表示する:
 
 ```
 ## Code Metrics Report -- {mode} mode
 
-### Composite Scores
+### 複合スコア
 
-| Score | Value | Status |
+| スコア | 値 | ステータス |
 |-------|-------|--------|
-| Hotspot Index | X.X / 10 | OK / WARN / CRITICAL |
-| Architectural Drift | X.X / 10 | OK / WARN / CRITICAL |
-| Cognitive Load Index | X.X / 10 | OK / WARN / CRITICAL |
+| ホットスポットインデックス | X.X / 10 | OK / 警告 / 危険 |
+| アーキテクチャドリフト | X.X / 10 | OK / 警告 / 危険 |
+| 認知負荷インデックス | X.X / 10 | OK / 警告 / 危険 |
 
-### Layer 1: Physical Metrics
+### レイヤー 1: 物理メトリクス
 
-Top files exceeding thresholds:
+閾値を超えるファイルのトップ:
 
-| File | SLOC | Func Len | Complexity | Nesting | Params | Imports | Status |
+| ファイル | SLOC | 関数長 | 複雑度 | ネスト | パラメータ | インポート | ステータス |
 |------|------|----------|------------|---------|--------|---------|--------|
 | ... | ... | ... | ... | ... | ... | ... | OK/WARN/CRIT |
 
-### Layer 2: Structural Metrics
+### レイヤー 2: 構造メトリクス
 
-**Circular Dependencies**: {count} found
-{list if any}
+**循環依存**: {count} 件発見
+{一覧（ある場合）}
 
-**Layer Violations**: {count} found
-{list with severity}
+**レイヤー違反**: {count} 件発見
+{重大度付きの一覧}
 
-**God Modules** (fan-in x fan-out > 100):
-{list if any}
+**ゴッドモジュール** (fan-in x fan-out > 100):
+{一覧（ある場合）}
 
-**Module Cohesion Violations**: {count} found
-{list of files with mixed-domain exports and severity}
+**モジュール凝集度違反**: {count} 件発見
+{混在ドメインエクスポートと重大度を持つファイルの一覧}
 
-**Coupling Weight Violations**: {count} found
-{list of files with heavy dependencies and their weight}
+**結合重み違反**: {count} 件発見
+{重い依存関係とその重みを持つファイルの一覧}
 
-### Layer 3: Evolution Metrics
+### レイヤー 3: 進化メトリクス
 
-**Hotspot Files** (high churn + high complexity):
+**ホットスポットファイル** (高チャーン + 高複雑度):
 
-| File | Churn | Frequency | Bug-Fix % | Author Conc. | Hotspot Score |
+| ファイル | チャーン | 頻度 | バグ修正% | 作者集中度 | ホットスポットスコア |
 |------|-------|-----------|-----------|-------------|---------------|
 | ... | ... | ... | ... | ... | ... |
 
-**Temporal Coupling** (cross-module co-changes):
+**テンポラルカップリング** (クロスモジュールの同時変更):
 
-| File A | File B | Co-changes | Relationship |
+| ファイル A | ファイル B | 同時変更回数 | 関係 |
 |--------|--------|------------|--------------|
-| ... | ... | ... | import / hidden / same-module |
+| ... | ... | ... | import / 隠れた依存 / 同モジュール |
 
-### Layer 4: Semantic Analysis (full mode only)
+### レイヤー 4: セマンティック分析 (full モードのみ)
 
-{Per-file findings with severity tags}
+{重大度タグ付きのファイルごとの所見}
 
 ---
 
-### ACTION ITEMS (prioritized)
+### アクション項目 (優先順)
 
-1. [CRITICAL] {description} -- {file}
-2. [HIGH] {description} -- {file}
-3. [MEDIUM] {description} -- {file}
+1. [CRITICAL] {説明} -- {ファイル}
+2. [HIGH] {説明} -- {ファイル}
+3. [MEDIUM] {説明} -- {ファイル}
 ```
