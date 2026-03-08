@@ -1,69 +1,69 @@
 # Test Coverage
 
-Analyze test coverage, identify gaps, and generate missing tests to reach 80%+ coverage.
+テストカバレッジを分析し、ギャップを特定して、80% 以上のカバレッジを達成するための不足しているテストを生成します。
 
-## Step 1: Detect Test Framework
+## ステップ 1: テストフレームワークの検出
 
-| Indicator | Coverage Command |
+| 判断基準 | カバレッジコマンド |
 |-----------|-----------------|
-| `jest.config.*` or `package.json` jest | `npx jest --coverage --coverageReporters=json-summary` |
+| `jest.config.*` または `package.json` の jest | `npx jest --coverage --coverageReporters=json-summary` |
 | `vitest.config.*` | `npx vitest run --coverage` |
-| `pytest.ini` / `pyproject.toml` pytest | `pytest --cov=src --cov-report=json` |
+| `pytest.ini` / `pyproject.toml` の pytest | `pytest --cov=src --cov-report=json` |
 | `Cargo.toml` | `cargo llvm-cov --json` |
-| `pom.xml` with JaCoCo | `mvn test jacoco:report` |
+| JaCoCo を使った `pom.xml` | `mvn test jacoco:report` |
 | `go.mod` | `go test -coverprofile=coverage.out ./...` |
 
-## Step 2: Analyze Coverage Report
+## ステップ 2: カバレッジレポートの分析
 
-1. Run the coverage command
-2. Parse the output (JSON summary or terminal output)
-3. List files **below 80% coverage**, sorted worst-first
-4. For each under-covered file, identify:
-   - Untested functions or methods
-   - Missing branch coverage (if/else, switch, error paths)
-   - Dead code that inflates the denominator
+1. カバレッジコマンドを実行する
+2. 出力を解析する (JSON サマリーまたはターミナル出力)
+3. **80% 未満のカバレッジのファイル**を最悪のものから順に一覧表示する
+4. カバレッジが低い各ファイルについて以下を特定する:
+   - テストされていない関数やメソッド
+   - 不足しているブランチカバレッジ (if/else、switch、エラーパス)
+   - 分母を膨らませているデッドコード
 
-## Step 3: Generate Missing Tests
+## ステップ 3: 不足しているテストの生成
 
-For each under-covered file, generate tests following this priority:
+カバレッジが低い各ファイルに対して、以下の優先順位でテストを生成してください:
 
-1. **Happy path** — Core functionality with valid inputs
-2. **Error handling** — Invalid inputs, missing data, network failures
-3. **Edge cases** — Empty arrays, null/undefined, boundary values (0, -1, MAX_INT)
-4. **Branch coverage** — Each if/else, switch case, ternary
+1. **ハッピーパス** — 有効な入力による主要な機能
+2. **エラー処理** — 無効な入力、データ不足、ネットワーク障害
+3. **エッジケース** — 空の配列、null/undefined、境界値 (0、-1、MAX_INT)
+4. **ブランチカバレッジ** — 各 if/else、switch のケース、三項演算子
 
-### Test Generation Rules
+### テスト生成ルール
 
-- Place tests adjacent to source: `foo.ts` → `foo.test.ts` (or project convention)
-- Use existing test patterns from the project (import style, assertion library, mocking approach)
-- Mock external dependencies (database, APIs, file system)
-- Each test should be independent — no shared mutable state between tests
-- Name tests descriptively: `test_create_user_with_duplicate_email_returns_409`
+- ソースの隣にテストを配置する: `foo.ts` → `foo.test.ts` (またはプロジェクトの規約に従う)
+- プロジェクトの既存テストパターンを使用する (インポートスタイル、アサーションライブラリ、モッキング手法)
+- 外部依存関係をモックする (データベース、API、ファイルシステム)
+- 各テストを独立させる — テスト間で共有の可変状態を持たない
+- テスト名は説明的につける: `test_create_user_with_duplicate_email_returns_409`
 
-## Step 4: Verify
+## ステップ 4: 検証
 
-1. Run the full test suite — all tests must pass
-2. Re-run coverage — verify improvement
-3. If still below 80%, repeat Step 3 for remaining gaps
+1. フルテストスイートを実行する — 全テストが通過する必要がある
+2. カバレッジを再実行する — 改善を確認する
+3. まだ 80% 未満の場合は、残りのギャップに対してステップ 3 を繰り返す
 
-## Step 5: Report
+## ステップ 5: レポート
 
-Show before/after comparison:
+改善前後の比較を表示してください:
 
 ```
-Coverage Report
+カバレッジレポート
 ──────────────────────────────
-File                   Before  After
-src/services/auth.ts   45%     88%
-src/utils/validation.ts 32%    82%
+ファイル                    改善前  改善後
+src/services/auth.ts        45%     88%
+src/utils/validation.ts     32%     82%
 ──────────────────────────────
-Overall:               67%     84%  ✅
+全体:                       67%     84%  ✅
 ```
 
-## Focus Areas
+## 重点エリア
 
-- Functions with complex branching (high cyclomatic complexity)
-- Error handlers and catch blocks
-- Utility functions used across the codebase
-- API endpoint handlers (request → response flow)
-- Edge cases: null, undefined, empty string, empty array, zero, negative numbers
+- 複雑な分岐を持つ関数 (高い循環複雑度)
+- エラーハンドラーと catch ブロック
+- コードベース全体で使われているユーティリティ関数
+- API エンドポイントハンドラー (リクエスト → レスポンスの流れ)
+- エッジケース: null、undefined、空文字列、空の配列、ゼロ、負の数
