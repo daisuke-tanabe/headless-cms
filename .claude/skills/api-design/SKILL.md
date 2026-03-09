@@ -1,27 +1,27 @@
 ---
 name: api-design
-description: REST API design patterns including resource naming, status codes, pagination, filtering, error responses, versioning, and rate limiting for production APIs.
+description: REST API設計パターン。リソース命名・ステータスコード・ページネーション・フィルタリング・エラーレスポンス・バージョニング・レート制限を含む本番向け API のベストプラクティス。
 ---
 
-# API Design Patterns
+# API設計パターン
 
-Conventions and best practices for designing consistent, developer-friendly REST APIs.
+一貫性があり、開発者に優しい REST API を設計するための規約とベストプラクティス。
 
-## When to Activate
+## 発動タイミング
 
-- Designing new API endpoints
-- Reviewing existing API contracts
-- Adding pagination, filtering, or sorting
-- Implementing error handling for APIs
-- Planning API versioning strategy
-- Building public or partner-facing APIs
+- 新しい API エンドポイントを設計するとき
+- 既存の API 契約をレビューするとき
+- ページネーション・フィルタリング・ソートを追加するとき
+- API のエラーハンドリングを実装するとき
+- API バージョニング戦略を計画するとき
+- 公開 API やパートナー向け API を構築するとき
 
-## Resource Design
+## リソース設計
 
-### URL Structure
+### URL 構造
 
 ```
-# Resources are nouns, plural, lowercase, kebab-case
+# リソースは名詞・複数形・小文字・kebab-case
 GET    /api/v1/users
 GET    /api/v1/users/:id
 POST   /api/v1/users
@@ -29,90 +29,90 @@ PUT    /api/v1/users/:id
 PATCH  /api/v1/users/:id
 DELETE /api/v1/users/:id
 
-# Sub-resources for relationships
+# 関係性にはサブリソースを使用
 GET    /api/v1/users/:id/orders
 POST   /api/v1/users/:id/orders
 
-# Actions that don't map to CRUD (use verbs sparingly)
+# CRUD にマッピングできないアクション（動詞は最小限に）
 POST   /api/v1/orders/:id/cancel
 POST   /api/v1/auth/login
 POST   /api/v1/auth/refresh
 ```
 
-### Naming Rules
+### 命名規則
 
 ```
-# GOOD
-/api/v1/team-members          # kebab-case for multi-word resources
-/api/v1/orders?status=active  # query params for filtering
-/api/v1/users/123/orders      # nested resources for ownership
+# 良い例
+/api/v1/team-members          # 複数単語のリソースは kebab-case
+/api/v1/orders?status=active  # フィルタリングにはクエリパラメータ
+/api/v1/users/123/orders      # 所有関係にはネストされたリソース
 
-# BAD
-/api/v1/getUsers              # verb in URL
-/api/v1/user                  # singular (use plural)
-/api/v1/team_members          # snake_case in URLs
-/api/v1/users/123/getOrders   # verb in nested resource
+# 悪い例
+/api/v1/getUsers              # URL に動詞を含めない
+/api/v1/user                  # 単数形は使わない（複数形を使う）
+/api/v1/team_members          # URL に snake_case は使わない
+/api/v1/users/123/getOrders   # ネストされたリソースに動詞は不可
 ```
 
-## HTTP Methods and Status Codes
+## HTTP メソッドとステータスコード
 
-### Method Semantics
+### メソッドのセマンティクス
 
-| Method | Idempotent | Safe | Use For |
+| メソッド | 冪等性 | 安全性 | 用途 |
 |--------|-----------|------|---------|
-| GET | Yes | Yes | Retrieve resources |
-| POST | No | No | Create resources, trigger actions |
-| PUT | Yes | No | Full replacement of a resource |
-| PATCH | No* | No | Partial update of a resource |
-| DELETE | Yes | No | Remove a resource |
+| GET | あり | あり | リソースの取得 |
+| POST | なし | なし | リソースの作成・アクションの実行 |
+| PUT | あり | なし | リソースの完全置換 |
+| PATCH | なし* | なし | リソースの部分更新 |
+| DELETE | あり | なし | リソースの削除 |
 
-*PATCH can be made idempotent with proper implementation
+*PATCH は適切な実装により冪等にできる
 
-### Status Code Reference
-
-```
-# Success
-200 OK                    — GET, PUT, PATCH (with response body)
-201 Created               — POST (include Location header)
-204 No Content            — DELETE, PUT (no response body)
-
-# Client Errors
-400 Bad Request           — Validation failure, malformed JSON
-401 Unauthorized          — Missing or invalid authentication
-403 Forbidden             — Authenticated but not authorized
-404 Not Found             — Resource doesn't exist
-409 Conflict              — Duplicate entry, state conflict
-422 Unprocessable Entity  — Semantically invalid (valid JSON, bad data)
-429 Too Many Requests     — Rate limit exceeded
-
-# Server Errors
-500 Internal Server Error — Unexpected failure (never expose details)
-502 Bad Gateway           — Upstream service failed
-503 Service Unavailable   — Temporary overload, include Retry-After
-```
-
-### Common Mistakes
+### ステータスコード一覧
 
 ```
-# BAD: 200 for everything
+# 成功
+200 OK                    — GET・PUT・PATCH（レスポンスボディあり）
+201 Created               — POST（Location ヘッダーを含める）
+204 No Content            — DELETE・PUT（レスポンスボディなし）
+
+# クライアントエラー
+400 Bad Request           — バリデーション失敗・不正な JSON
+401 Unauthorized          — 認証情報がないか無効
+403 Forbidden             — 認証済みだが権限なし
+404 Not Found             — リソースが存在しない
+409 Conflict              — 重複エントリ・状態の競合
+422 Unprocessable Entity  — セマンティクス上不正（正常な JSON だがデータが不正）
+429 Too Many Requests     — レート制限超過
+
+# サーバーエラー
+500 Internal Server Error — 予期しない障害（詳細を公開しない）
+502 Bad Gateway           — 上流サービスの障害
+503 Service Unavailable   — 一時的な過負荷・Retry-After を含める
+```
+
+### よくある間違い
+
+```
+# 悪い例: 全てに 200 を返す
 { "status": 200, "success": false, "error": "Not found" }
 
-# GOOD: Use HTTP status codes semantically
+# 良い例: HTTP ステータスコードを正しく使う
 HTTP/1.1 404 Not Found
 { "error": { "code": "not_found", "message": "User not found" } }
 
-# BAD: 500 for validation errors
-# GOOD: 400 or 422 with field-level details
+# 悪い例: バリデーションエラーに 500 を返す
+# 良い例: 400 または 422 とフィールドレベルの詳細
 
-# BAD: 200 for created resources
-# GOOD: 201 with Location header
+# 悪い例: 作成成功に 200 を返す
+# 良い例: Location ヘッダー付きの 201
 HTTP/1.1 201 Created
 Location: /api/v1/users/abc-123
 ```
 
-## Response Format
+## レスポンス形式
 
-### Success Response
+### 成功レスポンス
 
 ```json
 {
@@ -125,7 +125,7 @@ Location: /api/v1/users/abc-123
 }
 ```
 
-### Collection Response (with Pagination)
+### コレクションレスポンス（ページネーション付き）
 
 ```json
 {
@@ -147,7 +147,7 @@ Location: /api/v1/users/abc-123
 }
 ```
 
-### Error Response
+### エラーレスポンス
 
 ```json
 {
@@ -170,10 +170,10 @@ Location: /api/v1/users/abc-123
 }
 ```
 
-### Response Envelope Variants
+### レスポンスエンベロープのバリアント
 
 ```typescript
-// Option A: Envelope with data wrapper (recommended for public APIs)
+// オプション A: data ラッパー付きエンベロープ（公開 API に推奨）
 interface ApiResponse<T> {
   data: T;
   meta?: PaginationMeta;
@@ -188,38 +188,38 @@ interface ApiError {
   };
 }
 
-// Option B: Flat response (simpler, common for internal APIs)
-// Success: just return the resource directly
-// Error: return error object
-// Distinguish by HTTP status code
+// オプション B: フラットなレスポンス（シンプル・内部 API に多い）
+// 成功: リソースをそのまま返す
+// エラー: エラーオブジェクトを返す
+// HTTP ステータスコードで区別する
 ```
 
-## Pagination
+## ページネーション
 
-### Offset-Based (Simple)
+### オフセットベース（シンプル）
 
 ```
 GET /api/v1/users?page=2&per_page=20
 
-# Implementation
+# 実装
 SELECT * FROM users
 ORDER BY created_at DESC
 LIMIT 20 OFFSET 20;
 ```
 
-**Pros:** Easy to implement, supports "jump to page N"
-**Cons:** Slow on large offsets (OFFSET 100000), inconsistent with concurrent inserts
+**メリット:** 実装が簡単・「N ページ目にジャンプ」が可能
+**デメリット:** 大きなオフセットでは遅い（OFFSET 100000）・同時挿入時に不整合が起きる
 
-### Cursor-Based (Scalable)
+### カーソルベース（スケーラブル）
 
 ```
 GET /api/v1/users?cursor=eyJpZCI6MTIzfQ&limit=20
 
-# Implementation
+# 実装
 SELECT * FROM users
 WHERE id > :cursor_id
 ORDER BY id ASC
-LIMIT 21;  -- fetch one extra to determine has_next
+LIMIT 21;  -- has_next を判定するため 1 件多く取得
 ```
 
 ```json
@@ -232,83 +232,83 @@ LIMIT 21;  -- fetch one extra to determine has_next
 }
 ```
 
-**Pros:** Consistent performance regardless of position, stable with concurrent inserts
-**Cons:** Cannot jump to arbitrary page, cursor is opaque
+**メリット:** 位置に関わらず一定のパフォーマンス・同時挿入でも安定
+**デメリット:** 任意のページへのジャンプ不可・カーソルが不透明
 
-### When to Use Which
+### 使い分けの基準
 
-| Use Case | Pagination Type |
+| ユースケース | ページネーションの種類 |
 |----------|----------------|
-| Admin dashboards, small datasets (<10K) | Offset |
-| Infinite scroll, feeds, large datasets | Cursor |
-| Public APIs | Cursor (default) with offset (optional) |
-| Search results | Offset (users expect page numbers) |
+| 管理画面・小さなデータセット（10K 件未満） | オフセット |
+| 無限スクロール・フィード・大規模データセット | カーソル |
+| 公開 API | カーソル（デフォルト）＋オフセット（オプション） |
+| 検索結果 | オフセット（ユーザーがページ番号を期待するため） |
 
-## Filtering, Sorting, and Search
+## フィルタリング・ソート・検索
 
-### Filtering
+### フィルタリング
 
 ```
-# Simple equality
+# 単純な等値一致
 GET /api/v1/orders?status=active&customer_id=abc-123
 
-# Comparison operators (use bracket notation)
+# 比較演算子（ブラケット記法を使用）
 GET /api/v1/products?price[gte]=10&price[lte]=100
 GET /api/v1/orders?created_at[after]=2025-01-01
 
-# Multiple values (comma-separated)
+# 複数値（カンマ区切り）
 GET /api/v1/products?category=electronics,clothing
 
-# Nested fields (dot notation)
+# ネストされたフィールド（ドット記法）
 GET /api/v1/orders?customer.country=US
 ```
 
-### Sorting
+### ソート
 
 ```
-# Single field (prefix - for descending)
+# 単一フィールド（降順は - プレフィックス）
 GET /api/v1/products?sort=-created_at
 
-# Multiple fields (comma-separated)
+# 複数フィールド（カンマ区切り）
 GET /api/v1/products?sort=-featured,price,-created_at
 ```
 
-### Full-Text Search
+### 全文検索
 
 ```
-# Search query parameter
+# 検索クエリパラメータ
 GET /api/v1/products?q=wireless+headphones
 
-# Field-specific search
+# フィールド指定検索
 GET /api/v1/users?email=alice
 ```
 
-### Sparse Fieldsets
+### スパースフィールドセット
 
 ```
-# Return only specified fields (reduces payload)
+# 指定フィールドのみ返す（ペイロードを削減）
 GET /api/v1/users?fields=id,name,email
 GET /api/v1/orders?fields=id,total,status&include=customer.name
 ```
 
-## Authentication and Authorization
+## 認証と認可
 
-### Token-Based Auth
+### トークンベース認証
 
 ```
-# Bearer token in Authorization header
+# Authorization ヘッダーに Bearer トークン
 GET /api/v1/users
 Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 
-# API key (for server-to-server)
+# API キー（サーバー間通信用）
 GET /api/v1/data
 X-API-Key: sk_live_abc123
 ```
 
-### Authorization Patterns
+### 認可パターン
 
 ```typescript
-// Resource-level: check ownership
+// リソースレベル: 所有権を確認
 app.get("/api/v1/orders/:id", async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (!order) return res.status(404).json({ error: { code: "not_found" } });
@@ -316,16 +316,16 @@ app.get("/api/v1/orders/:id", async (req, res) => {
   return res.json({ data: order });
 });
 
-// Role-based: check permissions
+// ロールベース: 権限を確認
 app.delete("/api/v1/users/:id", requireRole("admin"), async (req, res) => {
   await User.delete(req.params.id);
   return res.status(204).send();
 });
 ```
 
-## Rate Limiting
+## レート制限
 
-### Headers
+### ヘッダー
 
 ```
 HTTP/1.1 200 OK
@@ -333,7 +333,7 @@ X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1640000000
 
-# When exceeded
+# 制限超過時
 HTTP/1.1 429 Too Many Requests
 Retry-After: 60
 {
@@ -344,58 +344,58 @@ Retry-After: 60
 }
 ```
 
-### Rate Limit Tiers
+### レート制限ティア
 
-| Tier | Limit | Window | Use Case |
+| ティア | 制限 | ウィンドウ | ユースケース |
 |------|-------|--------|----------|
-| Anonymous | 30/min | Per IP | Public endpoints |
-| Authenticated | 100/min | Per user | Standard API access |
-| Premium | 1000/min | Per API key | Paid API plans |
-| Internal | 10000/min | Per service | Service-to-service |
+| 匿名 | 30/分 | IP ごと | 公開エンドポイント |
+| 認証済み | 100/分 | ユーザーごと | 標準 API アクセス |
+| プレミアム | 1000/分 | API キーごと | 有料 API プラン |
+| 内部 | 10000/分 | サービスごと | サービス間通信 |
 
-## Versioning
+## バージョニング
 
-### URL Path Versioning (Recommended)
+### URL パスバージョニング（推奨）
 
 ```
 /api/v1/users
 /api/v2/users
 ```
 
-**Pros:** Explicit, easy to route, cacheable
-**Cons:** URL changes between versions
+**メリット:** 明示的・ルーティングが簡単・キャッシュ可能
+**デメリット:** バージョン間で URL が変わる
 
-### Header Versioning
+### ヘッダーバージョニング
 
 ```
 GET /api/users
 Accept: application/vnd.myapp.v2+json
 ```
 
-**Pros:** Clean URLs
-**Cons:** Harder to test, easy to forget
+**メリット:** URL がクリーン
+**デメリット:** テストしにくい・忘れやすい
 
-### Versioning Strategy
+### バージョニング戦略
 
 ```
-1. Start with /api/v1/ — don't version until you need to
-2. Maintain at most 2 active versions (current + previous)
-3. Deprecation timeline:
-   - Announce deprecation (6 months notice for public APIs)
-   - Add Sunset header: Sunset: Sat, 01 Jan 2026 00:00:00 GMT
-   - Return 410 Gone after sunset date
-4. Non-breaking changes don't need a new version:
-   - Adding new fields to responses
-   - Adding new optional query parameters
-   - Adding new endpoints
-5. Breaking changes require a new version:
-   - Removing or renaming fields
-   - Changing field types
-   - Changing URL structure
-   - Changing authentication method
+1. /api/v1/ から始める — 必要になるまでバージョンを切らない
+2. 同時にサポートするのは最大 2 バージョン（現行 + 前バージョン）
+3. 廃止スケジュール:
+   - 廃止予告（公開 API は 6 ヶ月前に通知）
+   - Sunset ヘッダーを付与: Sunset: Sat, 01 Jan 2026 00:00:00 GMT
+   - 廃止日以降は 410 Gone を返す
+4. 後方互換な変更は新バージョン不要:
+   - レスポンスへの新フィールド追加
+   - 新しいオプションクエリパラメータの追加
+   - 新エンドポイントの追加
+5. 破壊的変更は新バージョンが必要:
+   - フィールドの削除・リネーム
+   - フィールドの型変更
+   - URL 構造の変更
+   - 認証方式の変更
 ```
 
-## Implementation Patterns
+## 実装パターン
 
 ### TypeScript (Next.js API Route)
 
@@ -504,19 +504,19 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-## API Design Checklist
+## API 設計チェックリスト
 
-Before shipping a new endpoint:
+新しいエンドポイントをリリースする前に:
 
-- [ ] Resource URL follows naming conventions (plural, kebab-case, no verbs)
-- [ ] Correct HTTP method used (GET for reads, POST for creates, etc.)
-- [ ] Appropriate status codes returned (not 200 for everything)
-- [ ] Input validated with schema (Zod, Pydantic, Bean Validation)
-- [ ] Error responses follow standard format with codes and messages
-- [ ] Pagination implemented for list endpoints (cursor or offset)
-- [ ] Authentication required (or explicitly marked as public)
-- [ ] Authorization checked (user can only access their own resources)
-- [ ] Rate limiting configured
-- [ ] Response does not leak internal details (stack traces, SQL errors)
-- [ ] Consistent naming with existing endpoints (camelCase vs snake_case)
-- [ ] Documented (OpenAPI/Swagger spec updated)
+- [ ] リソース URL が命名規則に従っている（複数形・kebab-case・動詞なし）
+- [ ] 正しい HTTP メソッドを使用している（読み取りは GET・作成は POST など）
+- [ ] 適切なステータスコードを返している（全てに 200 を使わない）
+- [ ] スキーマ（Zod・Pydantic・Bean Validation）でバリデーションしている
+- [ ] エラーレスポンスがコードとメッセージを含む標準形式に従っている
+- [ ] リストエンドポイントにページネーションを実装している（カーソルまたはオフセット）
+- [ ] 認証を要求している（または明示的に公開として設定している）
+- [ ] 認可を確認している（ユーザーは自分のリソースにのみアクセス可能）
+- [ ] レート制限を設定している
+- [ ] レスポンスに内部情報が漏れていない（スタックトレース・SQL エラーなど）
+- [ ] 既存エンドポイントと命名が一貫している（camelCase vs snake_case）
+- [ ] ドキュメントを更新している（OpenAPI/Swagger スペック）

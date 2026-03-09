@@ -1,8 +1,8 @@
-# Coding Style
+# コーディングスタイル
 
-## Immutability (CRITICAL)
+## イミュータビリティ (CRITICAL)
 
-ALWAYS create new objects, NEVER mutate existing ones:
+常に新しいオブジェクトを生成し、既存のオブジェクトを直接変更してはならない:
 
 ```
 // Pseudocode
@@ -10,39 +10,39 @@ WRONG:  modify(original, field, value) → changes original in-place
 CORRECT: update(original, field, value) → returns new copy with change
 ```
 
-Rationale: Immutable data prevents hidden side effects, makes debugging easier, and enables safe concurrency.
+理由: イミュータブルなデータは隠れた副作用を防ぎ、デバッグを容易にし、安全な並行処理を可能にする。
 
-## File Organization
+## ファイル構成
 
-MANY SMALL FILES > FEW LARGE FILES:
-- High cohesion, low coupling
-- 200-400 lines typical, 800 max
-- Extract utilities from large modules
-- Organize by feature/domain, not by type
+少数の大きなファイルより多数の小さなファイルを優先:
+- 高凝集・疎結合
+- 典型的な行数は 200〜400 行、最大 800 行
+- 大きなモジュールからはユーティリティを抽出する
+- タイプ別ではなく、機能・ドメイン別に整理する
 
-## Error Handling
+## エラーハンドリング
 
-ALWAYS handle errors comprehensively:
-- Handle errors explicitly at every level
-- Provide user-friendly error messages in UI-facing code
-- Log detailed error context on the server side
-- Never silently swallow errors
+エラーは常に包括的に処理すること:
+- すべてのレベルで明示的にエラーを処理する
+- UI 向けコードではユーザーフレンドリーなエラーメッセージを提供する
+- サーバーサイドでは詳細なエラーコンテキストをログに記録する
+- エラーをサイレントに握り潰してはならない
 
-## Input Validation
+## 入力バリデーション
 
-ALWAYS validate at system boundaries:
-- Validate all user input before processing
-- Use schema-based validation where available
-- Fail fast with clear error messages
-- Never trust external data (API responses, user input, file content)
+システム境界では常にバリデーションを行うこと:
+- すべてのユーザー入力を処理前にバリデーションする
+- 利用可能であればスキーマベースのバリデーションを使用する
+- 明確なエラーメッセージとともに早期に失敗させる
+- 外部データ（API レスポンス、ユーザー入力、ファイル内容）を信頼してはならない
 
-## Code Quality Checklist
+## コード品質チェックリスト
 
-Before marking work complete:
-- [ ] Code is readable and well-named
-- [ ] Functions are small (<50 lines)
-- [ ] Files are focused (<800 lines)
-- [ ] No deep nesting (>4 levels)
-- [ ] Proper error handling
-- [ ] No hardcoded values (use constants or config)
-- [ ] No mutation (immutable patterns used)
+作業完了前に確認:
+- [ ] コードが読みやすく、適切に命名されている
+- [ ] 関数が小さい（50 行未満）
+- [ ] ファイルが適切にフォーカスされている（800 行未満）
+- [ ] 深いネストがない（4 レベル超）
+- [ ] 適切なエラーハンドリングがされている
+- [ ] ハードコードされた値がない（定数または設定を使用）
+- [ ] ミューテーションがない（イミュータブルパターンを使用）

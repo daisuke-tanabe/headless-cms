@@ -2,59 +2,59 @@
 description: Enforce test-driven development workflow. Scaffold interfaces, generate tests FIRST, then implement minimal code to pass. Ensure 80%+ coverage.
 ---
 
-# TDD Command
+# TDD コマンド
 
-This command invokes the **tdd-guide** agent to enforce test-driven development methodology.
+このコマンドは **tdd-guide** エージェントを呼び出し、テスト駆動開発の手法を強制します。
 
-## What This Command Does
+## このコマンドの機能
 
-1. **Scaffold Interfaces** - Define types/interfaces first
-2. **Generate Tests First** - Write failing tests (RED)
-3. **Implement Minimal Code** - Write just enough to pass (GREEN)
-4. **Refactor** - Improve code while keeping tests green (REFACTOR)
-5. **Verify Coverage** - Ensure 80%+ test coverage
+1. **インターフェースのスキャフォールド** - まず型・インターフェースを定義する
+2. **テストを先に生成** - 失敗するテストを書く (RED)
+3. **最小限のコードを実装** - テストを通過するだけのコードを書く (GREEN)
+4. **リファクタリング** - テストが緑のままコードを改善する (REFACTOR)
+5. **カバレッジの確認** - テストカバレッジ 80% 以上を確保する
 
-## When to Use
+## 使用場面
 
-Use `/tdd` when:
-- Implementing new features
-- Adding new functions/components
-- Fixing bugs (write test that reproduces bug first)
-- Refactoring existing code
-- Building critical business logic
+以下の場合に `/tdd` を使用してください:
+- 新しい機能を実装するとき
+- 新しい関数・コンポーネントを追加するとき
+- バグを修正するとき (まずバグを再現するテストを書く)
+- 既存のコードをリファクタリングするとき
+- 重要なビジネスロジックを構築するとき
 
-## How It Works
+## 動作の仕組み
 
-The tdd-guide agent will:
+tdd-guide エージェントは以下を行います:
 
-1. **Define interfaces** for inputs/outputs
-2. **Write tests that will FAIL** (because code doesn't exist yet)
-3. **Run tests** and verify they fail for the right reason
-4. **Write minimal implementation** to make tests pass
-5. **Run tests** and verify they pass
-6. **Refactor** code while keeping tests green
-7. **Check coverage** and add more tests if below 80%
+1. **入出力のインターフェース**を定義する
+2. **失敗するテストを書く** (コードがまだ存在しないため)
+3. **テストを実行し**、正しい理由で失敗することを確認する
+4. **テストを通過させる最小限の実装**を書く
+5. **テストを実行し**、通過することを確認する
+6. テストが緑のまま**コードをリファクタリング**する
+7. **カバレッジを確認し**、80% 未満の場合はテストを追加する
 
-## TDD Cycle
+## TDD サイクル
 
 ```
 RED → GREEN → REFACTOR → REPEAT
 
-RED:      Write a failing test
-GREEN:    Write minimal code to pass
-REFACTOR: Improve code, keep tests passing
-REPEAT:   Next feature/scenario
+RED:      失敗するテストを書く
+GREEN:    通過させる最小限のコードを書く
+REFACTOR: コードを改善し、テストを通過し続ける
+REPEAT:   次の機能・シナリオへ
 ```
 
-## Example Usage
+## 使用例
 
 ```
-User: /tdd I need a function to calculate market liquidity score
+ユーザー: /tdd マーケット流動性スコアを計算する関数が必要
 
-Agent (tdd-guide):
-# TDD Session: Market Liquidity Score Calculator
+エージェント (tdd-guide):
+# TDD セッション: マーケット流動性スコア計算機
 
-## Step 1: Define Interface (SCAFFOLD)
+## ステップ 1: インターフェース定義 (SCAFFOLD)
 
 ```typescript
 // lib/liquidity.ts
@@ -71,7 +71,7 @@ export function calculateLiquidityScore(market: MarketData): number {
 }
 ```
 
-## Step 2: Write Failing Test (RED)
+## ステップ 2: 失敗するテストを書く (RED)
 
 ```typescript
 // lib/liquidity.test.ts
@@ -121,7 +121,7 @@ describe('calculateLiquidityScore', () => {
 })
 ```
 
-## Step 3: Run Tests - Verify FAIL
+## ステップ 3: テスト実行 - 失敗を確認
 
 ```bash
 npm test lib/liquidity.test.ts
@@ -133,9 +133,9 @@ FAIL lib/liquidity.test.ts
 1 test failed, 0 passed
 ```
 
-✅ Tests fail as expected. Ready to implement.
+✅ テストが期待通り失敗しています。実装の準備ができました。
 
-## Step 4: Implement Minimal Code (GREEN)
+## ステップ 4: 最小限のコードを実装 (GREEN)
 
 ```typescript
 // lib/liquidity.ts
@@ -166,7 +166,7 @@ export function calculateLiquidityScore(market: MarketData): number {
 }
 ```
 
-## Step 5: Run Tests - Verify PASS
+## ステップ 5: テスト実行 - 通過を確認
 
 ```bash
 npm test lib/liquidity.test.ts
@@ -179,12 +179,12 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ All tests passing!
+✅ 全テスト通過！
 
-## Step 6: Refactor (IMPROVE)
+## ステップ 6: リファクタリング (IMPROVE)
 
 ```typescript
-// lib/liquidity.ts - Refactored with constants and better readability
+// lib/liquidity.ts - 定数と可読性を改善してリファクタリング
 const WEIGHTS = {
   VOLUME: 0.4,
   SPREAD: 0.3,
@@ -223,7 +223,7 @@ export function calculateLiquidityScore(market: MarketData): number {
 }
 ```
 
-## Step 7: Verify Tests Still Pass
+## ステップ 7: テストが引き続き通過することを確認
 
 ```bash
 npm test lib/liquidity.test.ts
@@ -236,9 +236,9 @@ PASS lib/liquidity.test.ts
 3 tests passed
 ```
 
-✅ Refactoring complete, tests still passing!
+✅ リファクタリング完了、テストも引き続き通過！
 
-## Step 8: Check Coverage
+## ステップ 8: カバレッジ確認
 
 ```bash
 npm test -- --coverage lib/liquidity.test.ts
@@ -250,77 +250,77 @@ liquidity.ts   |   100   |   100    |   100   |   100
 Coverage: 100% ✅ (Target: 80%)
 ```
 
-✅ TDD session complete!
+✅ TDD セッション完了！
 ```
 
-## TDD Best Practices
+## TDD ベストプラクティス
 
-**DO:**
-- ✅ Write the test FIRST, before any implementation
-- ✅ Run tests and verify they FAIL before implementing
-- ✅ Write minimal code to make tests pass
-- ✅ Refactor only after tests are green
-- ✅ Add edge cases and error scenarios
-- ✅ Aim for 80%+ coverage (100% for critical code)
+**実施すること:**
+- ✅ 実装の**前に**必ずテストを書く
+- ✅ テストを実行し、実装前に**失敗することを確認**する
+- ✅ テストを通過させる**最小限のコード**を書く
+- ✅ テストが緑になってから**リファクタリング**する
+- ✅ エッジケースとエラーシナリオを追加する
+- ✅ カバレッジ 80% 以上を目指す (重要なコードは 100%)
 
-**DON'T:**
-- ❌ Write implementation before tests
-- ❌ Skip running tests after each change
-- ❌ Write too much code at once
-- ❌ Ignore failing tests
-- ❌ Test implementation details (test behavior)
-- ❌ Mock everything (prefer integration tests)
+**実施しないこと:**
+- ❌ テストの前に実装を書く
+- ❌ 変更のたびにテストを実行しない
+- ❌ 一度に大量のコードを書く
+- ❌ 失敗するテストを無視する
+- ❌ 実装の詳細をテストする (振る舞いをテストすること)
+- ❌ すべてをモックする (インテグレーションテストを優先)
 
-## Test Types to Include
+## 含めるべきテストの種類
 
-**Unit Tests** (Function-level):
-- Happy path scenarios
-- Edge cases (empty, null, max values)
-- Error conditions
-- Boundary values
+**ユニットテスト** (関数レベル):
+- ハッピーパスのシナリオ
+- エッジケース (空、null、最大値)
+- エラー条件
+- 境界値
 
-**Integration Tests** (Component-level):
-- API endpoints
-- Database operations
-- External service calls
-- React components with hooks
+**インテグレーションテスト** (コンポーネントレベル):
+- API エンドポイント
+- データベース操作
+- 外部サービス呼び出し
+- フックを持つ React コンポーネント
 
-**E2E Tests** (use `/e2e` command):
-- Critical user flows
-- Multi-step processes
-- Full stack integration
+**E2E テスト** (`/e2e` コマンドを使用):
+- 重要なユーザーフロー
+- 複数ステップのプロセス
+- フルスタックインテグレーション
 
-## Coverage Requirements
+## カバレッジ要件
 
-- **80% minimum** for all code
-- **100% required** for:
-  - Financial calculations
-  - Authentication logic
-  - Security-critical code
-  - Core business logic
+- 全コードで**最低 80%**
+- 以下には **100% 必須**:
+  - 金融計算
+  - 認証ロジック
+  - セキュリティクリティカルなコード
+  - コアビジネスロジック
 
-## Important Notes
+## 重要な注意事項
 
-**MANDATORY**: Tests must be written BEFORE implementation. The TDD cycle is:
+**必須**: テストは実装の**前に**書かなければなりません。TDD サイクルは:
 
-1. **RED** - Write failing test
-2. **GREEN** - Implement to pass
-3. **REFACTOR** - Improve code
+1. **RED** - 失敗するテストを書く
+2. **GREEN** - 通過させるために実装する
+3. **REFACTOR** - コードを改善する
 
-Never skip the RED phase. Never write code before tests.
+RED フェーズを飛ばしてはいけません。テストの前にコードを書いてはいけません。
 
-## Integration with Other Commands
+## 他のコマンドとの連携
 
-- Use `/plan` first to understand what to build
-- Use `/tdd` to implement with tests
-- Use `/build-fix` if build errors occur
-- Use `/code-review` to review implementation
-- Use `/test-coverage` to verify coverage
+- 何を作るかを理解するために先に `/plan` を使用する
+- テストとともに実装するために `/tdd` を使用する
+- ビルドエラーが発生した場合は `/build-fix` を使用する
+- 実装のレビューには `/code-review` を使用する
+- カバレッジの確認には `/test-coverage` を使用する
 
-## Related Agents
+## 関連エージェント
 
-This command invokes the `tdd-guide` agent located at:
+このコマンドは以下のパスにある `tdd-guide` エージェントを呼び出します:
 `~/.claude/agents/tdd-guide.md`
 
-And can reference the `tdd-workflow` skill at:
+以下のスキルも参照できます:
 `~/.claude/skills/tdd-workflow/`

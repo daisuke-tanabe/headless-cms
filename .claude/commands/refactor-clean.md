@@ -1,80 +1,80 @@
 # Refactor Clean
 
-Safely identify and remove dead code with test verification at every step.
+デッドコードを安全に特定・削除し、すべてのステップでテストで検証します。
 
-## Step 1: Detect Dead Code
+## ステップ 1: デッドコードの検出
 
-Run analysis tools based on project type:
+プロジェクトの種類に応じた分析ツールを実行してください:
 
-| Tool | What It Finds | Command |
+| ツール | 検出対象 | コマンド |
 |------|--------------|---------|
-| knip | Unused exports, files, dependencies | `npx knip` |
-| depcheck | Unused npm dependencies | `npx depcheck` |
-| ts-prune | Unused TypeScript exports | `npx ts-prune` |
-| vulture | Unused Python code | `vulture src/` |
-| deadcode | Unused Go code | `deadcode ./...` |
-| cargo-udeps | Unused Rust dependencies | `cargo +nightly udeps` |
+| knip | 未使用のエクスポート、ファイル、依存関係 | `npx knip` |
+| depcheck | 未使用の npm 依存関係 | `npx depcheck` |
+| ts-prune | 未使用の TypeScript エクスポート | `npx ts-prune` |
+| vulture | 未使用の Python コード | `vulture src/` |
+| deadcode | 未使用の Go コード | `deadcode ./...` |
+| cargo-udeps | 未使用の Rust 依存関係 | `cargo +nightly udeps` |
 
-If no tool is available, use Grep to find exports with zero imports:
+ツールが利用できない場合は、Grep を使ってインポートがゼロのエクスポートを探してください:
 ```
-# Find exports, then check if they're imported anywhere
+# エクスポートを見つけ、どこかでインポートされているか確認する
 ```
 
-## Step 2: Categorize Findings
+## ステップ 2: 調査結果の分類
 
-Sort findings into safety tiers:
+調査結果を安全性の段階で分類してください:
 
-| Tier | Examples | Action |
+| 段階 | 例 | 対応 |
 |------|----------|--------|
-| **SAFE** | Unused utilities, test helpers, internal functions | Delete with confidence |
-| **CAUTION** | Components, API routes, middleware | Verify no dynamic imports or external consumers |
-| **DANGER** | Config files, entry points, type definitions | Investigate before touching |
+| **SAFE** | 未使用のユーティリティ、テストヘルパー、内部関数 | 安心して削除 |
+| **CAUTION** | コンポーネント、API ルート、ミドルウェア | 動的インポートや外部利用がないか確認してから削除 |
+| **DANGER** | 設定ファイル、エントリーポイント、型定義 | 触る前に詳しく調査する |
 
-## Step 3: Safe Deletion Loop
+## ステップ 3: 安全な削除ループ
 
-For each SAFE item:
+SAFE な各アイテムについて:
 
-1. **Run full test suite** — Establish baseline (all green)
-2. **Delete the dead code** — Use Edit tool for surgical removal
-3. **Re-run test suite** — Verify nothing broke
-4. **If tests fail** — Immediately revert with `git checkout -- <file>` and skip this item
-5. **If tests pass** — Move to next item
+1. **フルテストスイートを実行** — ベースライン確立 (全て緑)
+2. **デッドコードを削除** — Edit ツールで外科的に削除
+3. **テストスイートを再実行** — 何も壊れていないことを確認
+4. **テスト失敗の場合** — 直ちに `git checkout -- <file>` で元に戻し、このアイテムをスキップ
+5. **テスト通過の場合** — 次のアイテムへ
 
-## Step 4: Handle CAUTION Items
+## ステップ 4: CAUTION アイテムの対応
 
-Before deleting CAUTION items:
-- Search for dynamic imports: `import()`, `require()`, `__import__`
-- Search for string references: route names, component names in configs
-- Check if exported from a public package API
-- Verify no external consumers (check dependents if published)
+CAUTION アイテムを削除する前に:
+- 動的インポートを検索: `import()`, `require()`, `__import__`
+- 文字列参照を検索: 設定内のルート名、コンポーネント名
+- パブリックパッケージ API からエクスポートされていないか確認
+- 外部利用者がいないことを確認 (公開済みパッケージの場合は依存関係を確認)
 
-## Step 5: Consolidate Duplicates
+## ステップ 5: 重複の統合
 
-After removing dead code, look for:
-- Near-duplicate functions (>80% similar) — merge into one
-- Redundant type definitions — consolidate
-- Wrapper functions that add no value — inline them
-- Re-exports that serve no purpose — remove indirection
+デッドコード削除後、以下を探してください:
+- ほぼ重複した関数 (80% 以上が似ている) — 1 つにまとめる
+- 冗長な型定義 — 統合する
+- 価値を追加しないラッパー関数 — インライン化する
+- 意味のない再エクスポート — 間接参照を取り除く
 
-## Step 6: Summary
+## ステップ 6: サマリー
 
-Report results:
+結果を報告してください:
 
 ```
-Dead Code Cleanup
+デッドコードのクリーンアップ
 ──────────────────────────────
-Deleted:   12 unused functions
-           3 unused files
-           5 unused dependencies
-Skipped:   2 items (tests failed)
-Saved:     ~450 lines removed
+削除済み:  未使用の関数 12 個
+           未使用のファイル 3 個
+           未使用の依存関係 5 個
+スキップ:  2 アイテム (テスト失敗)
+削減:      約 450 行削除
 ──────────────────────────────
-All tests passing ✅
+全テスト通過 ✅
 ```
 
-## Rules
+## ルール
 
-- **Never delete without running tests first**
-- **One deletion at a time** — Atomic changes make rollback easy
-- **Skip if uncertain** — Better to keep dead code than break production
-- **Don't refactor while cleaning** — Separate concerns (clean first, refactor later)
+- **テストを実行せずに削除しない**
+- **一度に 1 つずつ削除** — アトミックな変更でロールバックを容易にする
+- **不確かな場合はスキップ** — デッドコードを残す方が本番を壊すよりも良い
+- **クリーニング中にリファクタリングしない** — 関心を分離する (先にクリーン、後でリファクタリング)

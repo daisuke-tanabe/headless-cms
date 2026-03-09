@@ -1,68 +1,68 @@
 ---
 name: postgres-patterns
-description: PostgreSQL database patterns for query optimization, schema design, indexing, and security. Based on Supabase best practices.
+description: クエリ最適化・スキーマ設計・インデックス・セキュリティに関する PostgreSQL データベースパターン。Supabase のベストプラクティスに基づく。
 ---
 
-# PostgreSQL Patterns
+# PostgreSQL パターン
 
-Quick reference for PostgreSQL best practices. For detailed guidance, use the `database-reviewer` agent.
+PostgreSQL のベストプラクティスのクイックリファレンス。詳細なガイダンスは `database-reviewer` エージェントを使用する。
 
-## When to Activate
+## 発動タイミング
 
-- Writing SQL queries or migrations
-- Designing database schemas
-- Troubleshooting slow queries
-- Implementing Row Level Security
-- Setting up connection pooling
+- SQL クエリまたはマイグレーションを書くとき
+- データベーススキーマを設計するとき
+- 遅いクエリのトラブルシューティングをするとき
+- Row Level Security を実装するとき
+- コネクションプーリングをセットアップするとき
 
-## Quick Reference
+## クイックリファレンス
 
-### Index Cheat Sheet
+### インデックスチートシート
 
-| Query Pattern | Index Type | Example |
+| クエリパターン | インデックス種別 | 例 |
 |--------------|------------|---------|
-| `WHERE col = value` | B-tree (default) | `CREATE INDEX idx ON t (col)` |
+| `WHERE col = value` | B-tree（デフォルト） | `CREATE INDEX idx ON t (col)` |
 | `WHERE col > value` | B-tree | `CREATE INDEX idx ON t (col)` |
-| `WHERE a = x AND b > y` | Composite | `CREATE INDEX idx ON t (a, b)` |
+| `WHERE a = x AND b > y` | 複合 | `CREATE INDEX idx ON t (a, b)` |
 | `WHERE jsonb @> '{}'` | GIN | `CREATE INDEX idx ON t USING gin (col)` |
 | `WHERE tsv @@ query` | GIN | `CREATE INDEX idx ON t USING gin (col)` |
-| Time-series ranges | BRIN | `CREATE INDEX idx ON t USING brin (col)` |
+| 時系列範囲 | BRIN | `CREATE INDEX idx ON t USING brin (col)` |
 
-### Data Type Quick Reference
+### データ型クイックリファレンス
 
-| Use Case | Correct Type | Avoid |
+| ユースケース | 正しい型 | 避けるべき型 |
 |----------|-------------|-------|
-| IDs | `bigint` | `int`, random UUID |
-| Strings | `text` | `varchar(255)` |
-| Timestamps | `timestamptz` | `timestamp` |
-| Money | `numeric(10,2)` | `float` |
-| Flags | `boolean` | `varchar`, `int` |
+| ID | `bigint` | `int`・ランダム UUID |
+| 文字列 | `text` | `varchar(255)` |
+| タイムスタンプ | `timestamptz` | `timestamp` |
+| 金額 | `numeric(10,2)` | `float` |
+| フラグ | `boolean` | `varchar`・`int` |
 
-### Common Patterns
+### よくあるパターン
 
-**Composite Index Order:**
+**複合インデックスの順序:**
 ```sql
--- Equality columns first, then range columns
+-- 等値カラムを先に・範囲カラムを後に
 CREATE INDEX idx ON orders (status, created_at);
--- Works for: WHERE status = 'pending' AND created_at > '2024-01-01'
+-- 有効なクエリ: WHERE status = 'pending' AND created_at > '2024-01-01'
 ```
 
-**Covering Index:**
+**カバリングインデックス:**
 ```sql
 CREATE INDEX idx ON users (email) INCLUDE (name, created_at);
--- Avoids table lookup for SELECT email, name, created_at
+-- SELECT email, name, created_at のテーブルルックアップを回避
 ```
 
-**Partial Index:**
+**パーシャルインデックス:**
 ```sql
 CREATE INDEX idx ON users (email) WHERE deleted_at IS NULL;
--- Smaller index, only includes active users
+-- 小さなインデックス・アクティブなユーザーのみを含む
 ```
 
-**RLS Policy (Optimized):**
+**RLS ポリシー（最適化済み）:**
 ```sql
 CREATE POLICY policy ON orders
-  USING ((SELECT auth.uid()) = user_id);  -- Wrap in SELECT!
+  USING ((SELECT auth.uid()) = user_id);  -- SELECT でラップする！
 ```
 
 **UPSERT:**
@@ -73,13 +73,13 @@ ON CONFLICT (user_id, key)
 DO UPDATE SET value = EXCLUDED.value;
 ```
 
-**Cursor Pagination:**
+**カーソルページネーション:**
 ```sql
 SELECT * FROM products WHERE id > $last_id ORDER BY id LIMIT 20;
--- O(1) vs OFFSET which is O(n)
+-- O(1) vs OFFSET の O(n)
 ```
 
-**Queue Processing:**
+**キュー処理:**
 ```sql
 UPDATE jobs SET status = 'processing'
 WHERE id = (
@@ -89,10 +89,10 @@ WHERE id = (
 ) RETURNING *;
 ```
 
-### Anti-Pattern Detection
+### アンチパターン検出
 
 ```sql
--- Find unindexed foreign keys
+-- インデックスのない外部キーを検索
 SELECT conrelid::regclass, a.attname
 FROM pg_constraint c
 JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY(c.conkey)
@@ -102,45 +102,45 @@ WHERE c.contype = 'f'
     WHERE i.indrelid = c.conrelid AND a.attnum = ANY(i.indkey)
   );
 
--- Find slow queries
+-- 遅いクエリを検索
 SELECT query, mean_exec_time, calls
 FROM pg_stat_statements
 WHERE mean_exec_time > 100
 ORDER BY mean_exec_time DESC;
 
--- Check table bloat
+-- テーブルの膨張を確認
 SELECT relname, n_dead_tup, last_vacuum
 FROM pg_stat_user_tables
 WHERE n_dead_tup > 1000
 ORDER BY n_dead_tup DESC;
 ```
 
-### Configuration Template
+### 設定テンプレート
 
 ```sql
--- Connection limits (adjust for RAM)
+-- コネクション制限（RAM に合わせて調整）
 ALTER SYSTEM SET max_connections = 100;
 ALTER SYSTEM SET work_mem = '8MB';
 
--- Timeouts
+-- タイムアウト
 ALTER SYSTEM SET idle_in_transaction_session_timeout = '30s';
 ALTER SYSTEM SET statement_timeout = '30s';
 
--- Monitoring
+-- モニタリング
 CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 
--- Security defaults
+-- セキュリティデフォルト
 REVOKE ALL ON SCHEMA public FROM public;
 
 SELECT pg_reload_conf();
 ```
 
-## Related
+## 関連リソース
 
-- Agent: `database-reviewer` - Full database review workflow
-- Skill: `clickhouse-io` - ClickHouse analytics patterns
-- Skill: `backend-patterns` - API and backend patterns
+- エージェント: `database-reviewer` - データベース全体のレビューワークフロー
+- スキル: `clickhouse-io` - ClickHouse アナリティクスパターン
+- スキル: `backend-patterns` - API とバックエンドパターン
 
 ---
 
-*Based on [Supabase Agent Skills](https://github.com/supabase/agent-skills) (MIT License)*
+*[Supabase Agent Skills](https://github.com/supabase/agent-skills)（MIT ライセンス）をもとに作成*
