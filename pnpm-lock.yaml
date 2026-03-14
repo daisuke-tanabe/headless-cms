@@ -16,13 +16,13 @@ importers:
         version: 5.61.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hono/clerk-auth':
         specifier: 3.1.0
-        version: 3.1.0(hono@4.12.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 3.1.0(hono@4.12.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@hono/node-server':
         specifier: 1.19.11
-        version: 1.19.11(hono@4.12.7)
+        version: 1.19.11(hono@4.12.8)
       '@hono/zod-validator':
         specifier: 0.7.6
-        version: 0.7.6(hono@4.12.7)(zod@4.3.6)
+        version: 0.7.6(hono@4.12.8)(zod@4.3.6)
       '@hookform/resolvers':
         specifier: 5.2.2
         version: 5.2.2(react-hook-form@7.71.2(react@19.2.4))
@@ -39,8 +39,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       hono:
-        specifier: 4.12.7
-        version: 4.12.7
+        specifier: 4.12.8
+        version: 4.12.8
       immer:
         specifier: 11.1.4
         version: 11.1.4
@@ -1935,8 +1935,8 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-  hono@4.12.7:
-    resolution: {integrity: sha512-jq9l1DM0zVIvsm3lv9Nw9nlJnMNPOcAtsbsgiUhWcFzPE99Gvo6yRTlszSLLYacMeQ6quHD6hMfId8crVHvexw==}
+  hono@4.12.8:
+    resolution: {integrity: sha512-VJCEvtrezO1IAR+kqEYnxUOoStaQPGrCmX3j4wDTNOcD1uRPFpGlwQUIW8niPuvHXaTUxeOUl5MMDGrl+tmO9A==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -3020,22 +3020,22 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@hono/clerk-auth@3.1.0(hono@4.12.7)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
+  '@hono/clerk-auth@3.1.0(hono@4.12.8)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
       '@clerk/backend': 2.32.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       '@clerk/shared': 3.47.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      hono: 4.12.7
+      hono: 4.12.8
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@hono/node-server@1.19.11(hono@4.12.7)':
+  '@hono/node-server@1.19.11(hono@4.12.8)':
     dependencies:
-      hono: 4.12.7
+      hono: 4.12.8
 
-  '@hono/zod-validator@0.7.6(hono@4.12.7)(zod@4.3.6)':
+  '@hono/zod-validator@0.7.6(hono@4.12.8)(zod@4.3.6)':
     dependencies:
-      hono: 4.12.7
+      hono: 4.12.8
       zod: 4.3.6
 
   '@hookform/resolvers@5.2.2(react-hook-form@7.71.2(react@19.2.4))':
@@ -4390,7 +4390,7 @@ snapshots:
 
   has-flag@4.0.0: {}
 
-  hono@4.12.7: {}
+  hono@4.12.8: {}
 
   html-escaper@2.0.2: {}
 
