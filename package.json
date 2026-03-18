@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.8",
-    "@tailwindcss/vite": "4.2.1",
+    "@tailwindcss/vite": "4.2.2",
     "@types/node": "24.10.13",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
@@ -70,7 +70,7 @@
     "concurrently": "9.2.1",
     "lefthook": "2.1.4",
     "prisma": "6.19.2",
-    "tailwindcss": "4.2.1",
+    "tailwindcss": "4.2.2",
     "tsx": "4.21.0",
     "typescript": "5.9.3",
     "vite": "8.0.0",
